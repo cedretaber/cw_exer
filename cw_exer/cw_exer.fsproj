@@ -49,23 +49,27 @@
   <ItemGroup>
     <Folder Include="core\" />
     <Folder Include="core\Data\" />
-    <Folder Include="core\Event\" />
-    <Folder Include="core\Event\Contents\" />
+    <Folder Include="core\Scenario\" />
+    <Folder Include="core\Yado\" />
+    <Folder Include="core\Cards\" />
+    <Folder Include="core\Scenario\Event\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="Script.fsx" />
     <Compile Include="core\Data\Types.fs" />
     <Compile Include="core\Data\Flag.fs" />
     <Compile Include="core\Data\Step.fs" />
-    <Compile Include="core\Event\Contents\BranchSelection.fs" />
-    <Compile Include="core\Event\Contents\TalkMessage.fs" />
-    <Compile Include="core\Event\Contents\TalkDialog.fs" />
-    <Compile Include="core\Event\Contents\BranchAbility.fs" />
-    <Compile Include="core\Event\Contents\BranchRandomSelect.fs" />
-    <Compile Include="core\Event\Contents\BranchKeyCode.fs" />
-    <Compile Include="core\Event\Content.fs" />
+    <Compile Include="core\Scenario\Info.fs" />
+    <Compile Include="core\Scenario\Event\Contents\BranchAbility.fs" />
+    <Compile Include="core\Scenario\Event\Contents\BranchKeyCode.fs" />
+    <Compile Include="core\Scenario\Event\Contents\BranchRandomSelect.fs" />
+    <Compile Include="core\Scenario\Event\Contents\BranchSelection.fs" />
+    <Compile Include="core\Scenario\Event\Contents\TalkDialog.fs" />
+    <Compile Include="core\Scenario\Event\Contents\TalkMessage.fs" />
+    <Compile Include="core\Scenario\Event\Content.fs" />
+    <Compile Include="core\Scenario\Status.fs" />
+    <Compile Include="Script.fsx" />
   </ItemGroup>
   <Import Project="$(FSharpTargetsPath)" />
   <ProjectExtensions>

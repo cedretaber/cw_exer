@@ -1,8 +1,8 @@
-﻿namespace CardWirthEngine.Event
+﻿namespace CardWirthEngine.Scenario.Event
 
 open CardWirthEngine.Data
 open CardWirthEngine.Data.Types
-open CardWirthEngine.Event.Contents
+open CardWirthEngine.Scenario.Event.Contents
 
 module rec Content =
 
@@ -53,7 +53,7 @@ module rec Content =
     | BranchSelect of Bools * BranchSelect.t
     | BranchAbility of Bools * BranchAbility.t
     | BranchRandom of Bools * value : Percent
-    | BranchMultiRandom of Nexts (* Wsn.2 *)
+    | BranchMultiRandom of Nexts (* Wsn.2 未実装 *)
     | BranchLevel of Bools * target : Target * level : int
     | BranchStatus of Bools * target : Target * status : Status
     | BranchPartyNumber of Bools * value : int
@@ -70,7 +70,7 @@ module rec Content =
     | BranchBeast of Bools * beast_id : BeastId
     | BranchMoney of Bools * value : int
     | BranchCoupon of Bools * range : Range * value : CouponName
-    | BranchMultiCoupon of Nexts (* Wsn.2 *)
+    | BranchMultiCoupon of Nexts (* Wsn.2 未実装 *)
     | BranchCompleteStamp of Bools * value : ScenarioName
     | BranchGossip of Bools * value : GossipName
     | BranchKeyCode of Bools * BranchKeyCode.t

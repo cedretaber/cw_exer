@@ -1,4 +1,4 @@
-﻿namespace CardWirthEngine.Event.Contents
+﻿namespace CardWirthEngine.Scenario.Event.Contents
 
 open CardWirthEngine.Data.Types
 
@@ -12,9 +12,9 @@ module TalkMessage =
     | Card // カード
     | Valued of (CouponName * int) list // 評価メンバ
   
-  type t = {
-    image : ImageType;
-    text : string
-  }
+  type t =
+    { image : ImageType
+    ; text : string
+    }
 
   let t image text = { image = image; text = text }

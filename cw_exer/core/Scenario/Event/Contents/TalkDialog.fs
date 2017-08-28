@@ -1,4 +1,4 @@
-﻿namespace CardWirthEngine.Event.Contents
+﻿namespace CardWirthEngine.Scenario.Event.Contents
 
 open CardWirthEngine.Data.Types
 
@@ -10,9 +10,9 @@ module TalkDialog =
     | Random
     | Card
 
-  type t = {
-    image : ImageType;
-    text : string
-  }
+  type t =
+    { image : ImageType
+    ; text : string
+    }
 
   let t image text = { image = image; text = text }

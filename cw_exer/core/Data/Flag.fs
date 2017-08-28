@@ -5,10 +5,10 @@ module Flag =
   type label = string
   type status = bool
 
-  type t = {
-    true_label : label;
-    false_label : label
-  }
+  type t =
+    { true_label : label
+    ; false_label : label
+    }
 
   let t : string -> string -> t =
     fun true_label false_label ->

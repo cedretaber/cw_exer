@@ -1,4 +1,4 @@
-﻿namespace CardWirthEngine.Event.Contents
+﻿namespace CardWirthEngine.Scenario.Event.Contents
 
 module BranchSelect =
   type Target
