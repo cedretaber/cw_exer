@@ -1,3 +1,3 @@
 練習用レポジトリ
 
-CardWirthPy, CardWirth XEditoを参考にしています。
+CardWirthPy, CardWirth XEditorを参考にしています。
