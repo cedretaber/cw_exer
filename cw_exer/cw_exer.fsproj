@@ -17,6 +17,10 @@
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <PlatformTarget>anycpu</PlatformTarget>
+    <Tailcalls>true</Tailcalls>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <NoWarn>0062</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -28,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <GenerateTailCalls>true</GenerateTailCalls>
     <PlatformTarget>anycpu</PlatformTarget>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <NoWarn>0062</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
     <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
@@ -49,6 +56,29 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
+    <None Include="packages.config" />
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="core\Data\Types.fs" />
+    <Compile Include="core\Data\Flag.fs" />
+    <Compile Include="core\Data\Step.fs" />
+    <Compile Include="core\Scenario\Events\Contents\BranchAbility.fs" />
+    <Compile Include="core\Scenario\Events\Contents\BranchKeyCode.fs" />
+    <Compile Include="core\Scenario\Events\Contents\BranchRandomSelect.fs" />
+    <Compile Include="core\Scenario\Events\Contents\BranchSelection.fs" />
+    <Compile Include="core\Scenario\Events\Contents\TalkDialog.fs" />
+    <Compile Include="core\Scenario\Events\Contents\TalkMessage.fs" />
+    <Compile Include="core\Scenario\Events\Content.fs" />
+    <Compile Include="core\Scenario\Event.fs" />
+    <Compile Include="core\Scenario\Summary.fs" />
+    <Compile Include="core\Scenario\Areas\MenuCard.fs" />
+    <Compile Include="core\Scenario\Area.fs" />
+    <Compile Include="core\GameMasters\State.fs" />
+    <Compile Include="core\GameMasters\Input.fs" />
+    <Compile Include="core\GameMasters\Output.fs" />
+    <Compile Include="core\GameMaster.fs" />
+    <Compile Include="Script.fsx" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -59,33 +89,6 @@
     <Reference Include="FSharp.Core">
       <HintPath>..\packages\FSharp.Core.4.1.0.2\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="core\" />
-    <Folder Include="core\Data\" />
-    <Folder Include="core\Scenario\" />
-    <Folder Include="core\Yado\" />
-    <Folder Include="core\Cards\" />
-    <Folder Include="core\Scenario\Event\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="core\Data\Types.fs" />
-    <Compile Include="core\Data\Flag.fs" />
-    <Compile Include="core\Data\Step.fs" />
-    <Compile Include="core\Scenario\Info.fs" />
-    <Compile Include="core\Scenario\Event\Contents\BranchAbility.fs" />
-    <Compile Include="core\Scenario\Event\Contents\BranchKeyCode.fs" />
-    <Compile Include="core\Scenario\Event\Contents\BranchRandomSelect.fs" />
-    <Compile Include="core\Scenario\Event\Contents\BranchSelection.fs" />
-    <Compile Include="core\Scenario\Event\Contents\TalkDialog.fs" />
-    <Compile Include="core\Scenario\Event\Contents\TalkMessage.fs" />
-    <Compile Include="core\Scenario\Event\Content.fs" />
-    <Compile Include="core\Scenario\Status.fs" />
-    <Compile Include="Script.fsx" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="FSharp.Core">
       <HintPath>..\packages\FSharp.Core.4.2.3\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>

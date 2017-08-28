@@ -1,4 +1,4 @@
-﻿namespace CardWirthEngine.Scenario.Event
+﻿namespace CardWirthEngine.Scenario.Events
 
 open CardWirthEngine.Data
 open CardWirthEngine.Data.Types
@@ -9,16 +9,16 @@ module rec Content =
   type Nexts = t list
   type Texts = (StartName * t) list
   type Bools = (bool * t) list
-  type Steps = (Step.status * t) list
+  type Steps = (Step.State * t) list
   type AreaIds = (AreaId * t) list
   type BattleIds = (BattleId * t) list
   type Trios = (Comparison3 * t) list
 
   type t
     (* Terminal *)
-    = Start of name : StartName
+    = Start of Nexts * name : StartName
     | StartBattle of battle_id : BattleId
-    | End of is_complete : isCompleted
+    | End of is_complete : IsCompleted
     | EndBadEnd
     | ChangeArea of area_id : AreaId
     | EffectBreak
@@ -35,20 +35,20 @@ module rec Content =
     | CallStart of Nexts * name : StartName
     | CallPackage of Nexts * name : PackageId
     (* Data *)
-    | BranchFlag of Bools * flag : Flag.name
-    | SetFlag of Nexts * flag : Flag.name * value : Flag.status
-    | ReverseFlag of Nexts * flag : Flag.name
-    | SubstituteFlag of Nexts * source : Flag.status * target : Flag.status
-    | BranchFlagCmp of Bools * left : Flag.name * right : Flag.name
-    | CheckFlag of Nexts * flag : Flag.name
-    | BranchMultiStep of Steps * step : Step.name
-    | BranchStep of Bools * step : Step.name * value : Step.status
-    | SetStep of Nexts * step : Step.name * value : Step.status
-    | SetStepUp of Nexts * step : Step.name
-    | SetStepDown of Nexts * step : Step.name
-    | SubstituteStep of Nexts * source : Step.status * target : Step.status
-    | BranchStepCmp of Trios * left : Step.name * right : Step.name
-    | CheckStep of Nexts * step : Step.name
+    | BranchFlag of Bools * flag : Flag.Name
+    | SetFlag of Nexts * flag : Flag.Name * value : Flag.State
+    | ReverseFlag of Nexts * flag : Flag.Name
+    | SubstituteFlag of Nexts * source : Flag.State * target : Flag.State
+    | BranchFlagCmp of Bools * left : Flag.Name * right : Flag.Name
+    | CheckFlag of Nexts * flag : Flag.Name
+    | BranchMultiStep of Steps * step : Step.Name
+    | BranchStep of Bools * step : Step.Name * value : Step.State
+    | SetStep of Nexts * step : Step.Name * value : Step.State
+    | SetStepUp of Nexts * step : Step.Name
+    | SetStepDown of Nexts * step : Step.Name
+    | SubstituteStep of Nexts * source : Step.State * target : Step.State
+    | BranchStepCmp of Trios * left : Step.Name * right : Step.Name
+    | CheckStep of Nexts * step : Step.Name
     (* Utility *)
     | BranchSelect of Bools * BranchSelect.t
     | BranchAbility of Bools * BranchAbility.t

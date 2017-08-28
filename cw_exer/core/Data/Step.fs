@@ -1,18 +1,21 @@
 ﻿namespace CardWirthEngine.Data
 
 module Step =
-  let step_length = 10
+  let step_length = 1024
 
-  type name = string
-  type label = string
-  type status = int
+  type Name = string
+  type Label = string
+  type State = int
 
-  type t = label array
+  type t = 
+    { steps : Label array
+    ; default_status : State
+    }
 
   exception InvalidStepLengthException
 
-  let t : string array -> t =
-    fun str_arr ->
+  let t : string array -> int -> t =
+    fun str_arr default_status ->
       if Array.length str_arr = step_length
-        then str_arr
+        then { steps = str_arr; default_status = default_status }
         else raise InvalidStepLengthException

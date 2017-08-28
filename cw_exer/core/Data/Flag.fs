@@ -1,15 +1,19 @@
 ﻿namespace CardWirthEngine.Data
 
 module Flag =
-  type name = string
-  type label = string
-  type status = bool
+  type Name = string
+  type Label = string
+  type State = bool
 
   type t =
-    { true_label : label
-    ; false_label : label
+    { true_label : Label
+    ; false_label : Label
+    ; default_status : State
     }
 
-  let t : string -> string -> t =
-    fun true_label false_label ->
-      { true_label = true_label; false_label = false_label }
+  let t : string -> string -> bool -> t =
+    fun true_label false_label default_status ->
+      { true_label = true_label
+      ; false_label = false_label
+      ; default_status = default_status
+      }

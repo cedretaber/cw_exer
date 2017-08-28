@@ -13,6 +13,7 @@ module Types =
   type InfoId = int
 
   type ScenarioName = string
+  type AuthorName = string
   type GossipName = string
   type StartName = string
 
@@ -21,7 +22,7 @@ module Types =
   type CouponName = string
 
   (* シナリオが終了済みか否か *)
-  type isCompleted = bool
+  type IsCompleted = bool
 
   type Path = string
 
@@ -267,11 +268,24 @@ module Types =
     = And // 全てに一致
     | Or // どれか一つに一致
 
+  type SpreadType
+    = Auto
+
   type Bgm
     = Midi of Path
     | Mp3 of Path
 
   type Sound
     = Wave of Path
+
+  type Location =
+    { left : int
+    ; top : int
+    }
+
+  type Size =
+    { width : int
+    ; height : int
+    }
   
   type Effect = unit

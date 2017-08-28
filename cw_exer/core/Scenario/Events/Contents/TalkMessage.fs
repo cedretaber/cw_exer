@@ -14,7 +14,18 @@ module TalkMessage =
   
   type t =
     { image : ImageType
+    ; boundarycheck : bool
+    ; centeringx : bool
+    ; columns : int
     ; text : string
     }
 
-  let t image text = { image = image; text = text }
+  let t image boundarycheck centeringx columns text =
+    { image = image
+    ; boundarycheck = boundarycheck
+    ; centeringx = centeringx
+    ; columns = columns
+    ; text = text
+    }
+
+  let t' image text = t image false false 1 text
