@@ -71,7 +71,7 @@ module Types =
     | Max // 最大値
     | Fixed // 固定値(Wsn.1)
 
-  type PlayerPosition
+  type AdventurerPosition
     = First
     | Second
     | Third

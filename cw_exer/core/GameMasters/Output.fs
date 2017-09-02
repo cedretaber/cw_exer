@@ -11,14 +11,15 @@ module Output =
     | StartBattle of BattleId
     | Message of text : string * selections : string list // 画像なしメッセージ
     | Dialog of path : Path * text : string * selections : string list // 画像ありメッセージ
-    | Wait of decimal
+    | Wait of Decisecond
     | Bgm of Bgm
     | Sound of Sound
-    | Effect of PlayerPosition * Sound
+    | Effect of AdventurerPosition * Sound
     | Flag of Flag.Name * Flag.State
     | PartyDown
     | PartyUp
     | Break
+    | EventEnd
     | None
 
   type t = State.t * t'

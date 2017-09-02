@@ -7,12 +7,19 @@ open CardWirthEngine.Scenario.Event.Contents
 module rec Content =
 
   type Nexts = t list
-  type Texts = (StartName * t) list
+  type Texts = (string * t) list
   type Bools = (bool * t) list
   type Steps = (Step.State * t) list
   type AreaIds = (AreaId * t) list
   type BattleIds = (BattleId * t) list
   type Trios = (Comparison3 * t) list
+
+  let find_next : 'a -> ('a * t) list -> t option =
+    fun selected nexts ->
+      let maybe_tuple = List.tryFind (function (key, _) -> key = selected) nexts in
+      match maybe_tuple with
+        Option.None -> Option.None
+      | Some(_, value) -> Some(value)
 
   type t
     (* Terminal *)

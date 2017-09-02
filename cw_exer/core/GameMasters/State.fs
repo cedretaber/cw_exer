@@ -9,8 +9,13 @@ module State =
   type Area
     = Area of AreaId
     | Battle of BattleId
+
+  type Event
+    = Content of Event.t * Content.t
+    | Action
+
   type State
-    = OnEvent of (Event.t * Content.t) list
+    = OnEvent of Event list
     | OnField
     | OnBattle
 
@@ -19,4 +24,5 @@ module State =
     ; flags : (Flag.Name, Flag.State) Map
     ; steps : (Step.Name, Step.State) Map
     ; state : State
+    ; bgm : Bgm
     }

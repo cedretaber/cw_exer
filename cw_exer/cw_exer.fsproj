@@ -58,6 +58,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="core\Utils\Maybe.fs" />
     <Compile Include="core\Data\Types.fs" />
     <Compile Include="core\Data\Flag.fs" />
     <Compile Include="core\Data\Step.fs" />
