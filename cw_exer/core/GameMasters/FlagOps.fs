@@ -6,16 +6,11 @@ open CardWirthEngine.Scenario.Events
 open CardWirthEngine.GameMasters
 
 module FlagOps =
-
   let get : Flag.Name -> State.t -> Flag.State =
     fun name ->
       function
       { flags = flags } ->
-        flags
-        |> Map.tryFind name
-        |> Option.fold
-          (fun _ state -> state)
-          false
+        Map.find name flags
 
   let set : Flag.Name -> Flag.State -> State.t -> State.t =
     fun name bool state ->

@@ -12,7 +12,7 @@ module rec Content =
   type Steps = (Step.State * t) list
   type AreaIds = (AreaId * t) list
   type BattleIds = (BattleId * t) list
-  type Trios = (Comparison3 * t) list
+  type Trios = (Comparison * t) list
 
   let select : int -> 'a list -> 'a option = List.tryItem
 
@@ -22,6 +22,12 @@ module rec Content =
     type t
       = Random
       | From of Flag.Name
+
+  module SourceStep =
+    type t
+      = Random
+      | SelectedAdventurer
+      | From of Step.Name
 
   type 'a NextContent
     = Nexts of Nexts
@@ -58,10 +64,10 @@ module rec Content =
     | SetStep of Nexts * step : Step.Name * value : Step.State
     | SetStepUp of Nexts * step : Step.Name
     | SetStepDown of Nexts * step : Step.Name
-    | SubstituteStep of Nexts * source : Step.State * target : Step.State
+    | SubstituteStep of Nexts * source : SourceStep.t * target : Step.Name
     | BranchMultiStep of Steps * step : Step.Name
     | BranchStepCmp of Trios * left : Step.Name * right : Step.Name
-    | CheckStep of Nexts * step : Step.Name
+    | CheckStep of Nexts * step : Step.Name * value : Step.State * cmp : Comparison
     (* Utility *)
     | BranchSelect of Bools * BranchSelect.t
     | BranchAbility of Bools * BranchAbility.t

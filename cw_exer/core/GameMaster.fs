@@ -1,11 +1,13 @@
 ﻿namespace CardWirthEngine
 
+open CardWirthEngine.Data
 open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Events
 open CardWirthEngine.Scenario.Events.Content
 open CardWirthEngine.GameMasters
 
 module rec GameMaster =
+
   let Void = Output.None
 
   let run : State.t -> Input.t -> Output.t =
@@ -37,21 +39,24 @@ module rec GameMaster =
           state, output
         
         (* Check step or flag *)
-        let check =
+        let inline check state =
           function
             Content.CheckFlag (_, name) ->
               FlagOps.get name state
-          | _ -> true in
+          | Content.CheckStep (_, name, right, cmp) ->
+              let left = StepOps.get name state in
+              Types.compare cmp left right
+          | _ -> true
 
         (* Through next contents *)
         let inline next_content state nexts =
-          match List.tryFind check nexts with
+          match List.tryFind (check state) nexts with
             Some next' -> next_line state next'
           | None -> end_line state
         let inline next_content' state nexts =
           let maybe_next =
             List.tryFind
-              (function _, t -> check t)
+              (function _, t -> check state t)
               nexts in
           match maybe_next with
             Some (_, next') -> next_line state next'
@@ -63,18 +68,6 @@ module rec GameMaster =
           | List list -> next_content' state list
         let inline through' next =
           through state next
-
-        (* Branch *)
-        let inline next_branch key nexts =
-          let check =
-            function
-              key', next when key' = key ->
-                if check next then Some next else None
-            | _, _ ->
-                None in
-          match Content.next check nexts with
-            Some next -> next_line' next
-          | None -> end_line'
 
         (* Start Contents *)
         let inline go_start start_name =
@@ -122,6 +115,18 @@ module rec GameMaster =
               Input.None
           else
             state, Output.LoadPackage package_id
+
+        (* Branch *)
+        let inline next_branch f nexts =
+          let check =
+            function
+              key, next when f key ->
+                if check state next then Some next else None
+            | _, _ ->
+                None in
+          match Content.next check nexts with
+            Some next -> next_line' next
+          | None -> end_line'
 
         (* Message next *)
         let inline message_select selected nexts =
@@ -212,7 +217,7 @@ module rec GameMaster =
         (* Data *)
         | BranchFlag (bools, name), _ ->
             next_branch
-              (FlagOps.get name state)
+              (fun name' -> name' = FlagOps.get name state)
               bools
 
         | SetFlag (nexts, name, flag), _ ->
@@ -232,26 +237,49 @@ module rec GameMaster =
 
         | BranchFlagCmp (bools, left, right), _ ->
             next_branch
-              (FlagOps.compare left right state)
+              (fun bool -> bool = FlagOps.compare left right state)
               bools
 
-        | CheckFlag (nexts, name), _ ->
-            if FlagOps.get name state
-            then
-              through' <| Nexts nexts
-            else
-              end_line'
-        
-        
-        of Next * flag : Flag.Name
+        (* フラグのチェックは直前のコンテントで行う *)
+        | CheckFlag (nexts, _), _ ->
+            through' <| Nexts nexts
 
+        (* ステップ比較は 以上=true, 未満=false *)
+        | BranchStep (bools, name, value), _ ->
+            next_branch
+              (fun bool -> bool = (StepOps.get name state >= value))
+              bools
 
+        | SetStep (nexts, name, value), _ ->
+            through
+              (StepOps.set name value state)
+              (Nexts nexts)
 
-        | BranchStep of Bools * step : Step.Name * value : Step.State
-        | SetStep of Next * step : Step.Name * value : Step.State
-        | SetStepUp of Next * step : Step.Name
-        | SetStepDown of Next * step : Step.Name
-        | SubstituteStep of Next * source : Step.State * target : Step.State
-        | BranchMultiStep of Steps * step : Step.Name
-        | BranchStepCmp of Trios * left : Step.Name * right : Step.Name
-        | CheckStep of Next * step : Step.Name
+        | SetStepUp (nexts, name), _ ->
+            through
+              (StepOps.increment name state)
+              (Nexts nexts)
+
+        | SetStepDown (nexts, name), _ ->
+            through
+              (StepOps.decrement name state)
+              (Nexts nexts)
+
+        | SubstituteStep (nexts, source, target), _ ->
+            through
+              (StepOps.substitute source target state)
+              (Nexts nexts)
+
+        | BranchMultiStep (steps, name), _ ->
+            next_branch
+              (fun step -> step = StepOps.get name state)
+              steps
+
+        | BranchStepCmp (trios, left, right), _ ->
+            next_branch
+              (fun cmp -> Types.compare cmp left right)
+              trios
+
+        (* CheckFlagに同じ *)
+        | CheckStep (nexts, _, _, _), _ ->
+            through' <| Nexts nexts

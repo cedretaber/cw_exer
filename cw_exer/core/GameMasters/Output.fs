@@ -15,7 +15,7 @@ module Output =
     | Wait of Decisecond
     | Bgm of Bgm
     | Sound of Sound
-    | Effect of AdventurerPosition * Sound
+    | Effect of int * Sound
     | Flag of Flag.Name * Flag.State
     | PartyDown
     | PartyUp

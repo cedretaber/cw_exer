@@ -7,7 +7,7 @@ module Input =
     (* ダイアログ・選択肢 *)
     = NextMessage of int
     | PackageLoaded
-    | SelectAdventurer of AdventurerPosition 
+    | SelectAdventurer of int 
     | Cancel
     | Void
     | None

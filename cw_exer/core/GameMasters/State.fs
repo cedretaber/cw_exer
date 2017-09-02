@@ -20,10 +20,12 @@ module State =
     | OnBattle
 
   type t =
-    { current_area : Area
+    { summary : Info.Summary.t
+    ; current_area : Area
     ; flags : (Flag.Name, Flag.State) Map
     ; steps : (Step.Name, Step.State) Map
     ; state : State
+    ; selected_adventurer : int
     ; bgm : Bgm
     ; random : System.Random
     }

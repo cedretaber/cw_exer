@@ -71,14 +71,6 @@ module Types =
     | Max // 最大値
     | Fixed // 固定値(Wsn.1)
 
-  type AdventurerPosition
-    = First
-    | Second
-    | Third
-    | Fourth
-    | Fifth
-    | Sixth
-
   type Target
     = Selected of sleep : bool // 選択中メンバ
     | Unselected of sleep : bool // 非選択メンバ
@@ -170,9 +162,15 @@ module Types =
     | PixelDissolve // ピクセルディゾルブ式
     | Fade // フェード式
 
-  type Comparison4 = Eq | Ne | Lt | Gt
+  type Comparison = Eq | Ne | Lt | Gt
 
-  type Comparison3 = LT | EQ | GT
+  let compare : Comparison -> 'a -> 'a -> bool =
+    fun comp x y ->
+      match comp with
+        Eq -> x = y
+      | Ne -> x <> y
+      | Lt -> x < y
+      | Gt -> x > y
 
   type BlendMode
     = Normal // 標準
