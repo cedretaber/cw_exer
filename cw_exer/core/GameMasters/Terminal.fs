@@ -1,17 +1,20 @@
 ﻿namespace CardWirthEngine.GameMasters
 
 module Terminal =
-  let inline end_scenario state is_completed =
-    state, Output.EndScenario is_completed
+  let inline end_scenario is_completed =
+    Output.EndScenario is_completed
 
-  let inline gameover state =
-    state, Output.Gameover
+  let gameover =
+    Output.Gameover
 
-  let inline move_area state area_id =
-    state, Output.MoveArea area_id
+  let inline move_area area_id =
+    Output.MoveArea area_id
 
-  let inline start_battle state battle_id =
-    state, Output.StartBattle battle_id
+  let inline start_battle battle_id =
+    Output.StartBattle battle_id
 
-  let inline effect_break state =
-    state, Output.Break
+  let effect_break =
+    Output.Break
+
+  let inline is_loaded state package_id =
+    true

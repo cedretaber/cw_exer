@@ -9,6 +9,7 @@ module Output =
     | Gameover
     | MoveArea of AreaId
     | StartBattle of BattleId
+    | LoadPackage of PackageId
     | Message of text : string * selections : string list // 画像なしメッセージ
     | Dialog of path : Path * text : string * selections : string list // 画像ありメッセージ
     | Wait of Decisecond

@@ -57,17 +57,32 @@ module rec GameMaster =
         let inline call_start post_next start_name =
           match Event.find start_name event with
             Some next ->
-              read state
+              read
+                state
                 (State.Content (event, next) :: State.Content (event, post_next) :: rest)
                 Input.None
           | None ->
               next_line' post_next
 
         let inline go_package package_id =
-          state, Void
+          if Terminal.is_loaded state package_id
+          then
+            read
+              state
+              rest
+              Input.None
+          else
+            state, Output.LoadPackage package_id
 
         let inline call_package post_next package_id =
-          state, Void
+          if Terminal.is_loaded state package_id
+          then
+            read
+              state
+              (State.Content (event, post_next) :: rest)
+              Input.None
+          else
+            state, Output.LoadPackage package_id
 
         let inline select_message selected texts =
           match Content.next' selected texts with
@@ -80,19 +95,19 @@ module rec GameMaster =
             through' <| Next next
 
         | StartBattle battle_id, _ ->
-            Terminal.start_battle state battle_id
+            output <| Terminal.start_battle battle_id
 
         | End is_completed, _ ->
-            Terminal.end_scenario state is_completed
+            output <| Terminal.end_scenario is_completed
 
         | EndBadEnd, _ ->
-            Terminal.gameover state
+            output Terminal.gameover
 
         | ChangeArea area_id, _ ->
-            Terminal.move_area state area_id
+            output <| Terminal.move_area area_id
 
         | EffectBreak, _ ->
-            Terminal.effect_break state
+            output Terminal.effect_break
 
         | LinkStart start_name, _ ->
             go_start start_name
