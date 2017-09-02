@@ -21,6 +21,7 @@ module rec GameMaster =
         [] -> state, Output.EventEnd
       | State.Content (event, content) :: rest ->
 
+        (* Step next contens *)
         let inline next_line state next =
           read state (State.Content (event, next) :: rest) Input.None
         let inline next_line' next =
@@ -30,78 +31,108 @@ module rec GameMaster =
           read state rest Input.None
         let end_line' =
           end_line state
-
+        
+        (* Output with same state *)
         let inline output output =
           state, output
+        
+        (* Check step or flag *)
+        let check =
+          function
+            Content.CheckFlag (_, name) ->
+              FlagOps.get name state
+          | _ -> true in
 
-        let inline next_branch key nexts =
-          match Map.tryFind key nexts with
-            Some next -> next_line' next
-          | None -> end_line'
+        (* Through next contents *)
+        let inline next_content state nexts =
+          match List.tryFind check nexts with
+            Some next' -> next_line state next'
+          | None -> end_line state
+        let inline next_content' state nexts =
+          let maybe_next =
+            List.tryFind
+              (function _, t -> check t)
+              nexts in
+          match maybe_next with
+            Some (_, next') -> next_line state next'
+          | None -> end_line state
 
         let inline through state next =
           match next with
-            Next None -> end_line state
-          | Next (Some next') -> next_line state next'
-          | Nexts nexts ->
-            match Array.tryHead nexts with
-              Some next' -> next_line state next'
-            | None -> end_line state
-          | Map map ->
-            let maybe_next =
-              Map.tryPick
-                (fun _ next' -> Some next')
-                map in
-            match maybe_next with
-              Some next' -> next_line state next'
-            | None -> end_line state
+            Nexts nexts -> next_content state nexts
+          | List list -> next_content' state list
         let inline through' next =
           through state next
 
+        (* Branch *)
+        let inline next_branch key nexts =
+          let check =
+            function
+              key', next when key' = key ->
+                if check next then Some next else None
+            | _, _ ->
+                None in
+          match Content.next check nexts with
+            Some next -> next_line' next
+          | None -> end_line'
+
+        (* Start Contents *)
         let inline go_start start_name =
           match Event.find start_name event with
             Some next -> next_line' next
           | None -> end_line'
 
-        let inline call_start post_next start_name =
+        let inline call_start nexts start_name =
+          let callback =
+            State.Content
+              ( event
+              , Content.CallStart (nexts, start_name, true)
+              ) in
           match Event.find start_name event with
             Some next ->
               read
                 state
-                (State.Content (event, next) :: State.Content (event, post_next) :: rest)
+                (State.Content (event, next) :: callback :: rest)
                 Input.None
           | None ->
-              next_line' post_next
+              read state (callback :: rest) Input.None
 
+        (* Package Contents *)
         let inline go_package package_id =
           if Terminal.is_loaded state package_id
           then
             read
               state
-              rest
+              (rest)
               Input.None
           else
             state, Output.LoadPackage package_id
 
-        let inline call_package post_next package_id =
+        let inline call_package nexts package_id =
+          let callback =
+            State.Content
+              ( event
+              , Content.CallPackage (nexts, package_id, true)
+              ) in
           if Terminal.is_loaded state package_id
           then
             read
               state
-              (State.Content (event, post_next) :: rest)
+              (callback :: rest)
               Input.None
           else
             state, Output.LoadPackage package_id
 
-        let inline select_message selected texts =
-          match Content.next' selected texts with
-            Some next -> next_line' next
+        (* Message next *)
+        let inline message_select selected nexts =
+          match Content.select selected nexts with
+            Some (_, next) -> next_line' next
           | None -> end_line'
 
         match content, input with
         (* Terminal *)
-          Start (next, _), _ ->
-            through' <| Next next
+          Start (nexts, _), _ ->
+            through' <| Nexts nexts
 
         | StartBattle battle_id, _ ->
             output <| Terminal.start_battle battle_id
@@ -128,51 +159,55 @@ module rec GameMaster =
         | TalkMessage (_, message), Input.None -> // メッセージ表示
             output <| Standard.message message
         | TalkMessage (nexts, _), Input.NextMessage selected -> // 選択肢選択
-            select_message selected nexts
+            message_select selected nexts
         | TalkMessage (nexts, _), _ ->
-            through' <| Nexts nexts
+            through' <| List nexts
           
         | TalkDialog (_, dialog), Input.None ->
             output <| Standard.dialog dialog
         | TalkDialog (nexts, _), Input.NextMessage selected ->
-            select_message selected nexts
+            message_select selected nexts
         | TalkDialog (nexts, _), _ ->
-            through' <| Nexts nexts
+            through' <| List nexts
 
         | PlayBgm (_, bgm), Input.None ->
             Standard.bgm state bgm
-        | PlayBgm (next, _), _ ->
-            through' <| Next next
+        | PlayBgm (nexts, _), _ ->
+            through' <| Nexts nexts
 
         | PlaySound (_, sound), Input.None ->
             output <| Standard.sound sound
-        | PlaySound (next, _), _ ->
-            through' <| Next next
+        | PlaySound (nexts, _), _ ->
+            through' <| Nexts nexts
 
         | Wait (_, deciseconds), Input.None ->
             output <| Standard.wait deciseconds
-        | Wait (next, _), _ ->
-            through' <| Next next
+        | Wait (nexts, _), _ ->
+            through' <| Nexts nexts
             
-        | ElaspeTime next, Input.None ->
+        | ElaspeTime nexts, Input.None ->
             through
               (Standard.elaspe_time state)
-              (Next next)
+              (Nexts nexts)
 
         | Effect (_, effect), Input.None ->
             Standard.effect state effect
-        | Effect (next, _), _ ->
-            through' <| Next next
-
-        | CallStart (Some next, start_name), _ ->
-            call_start next start_name
-        | CallStart (None, start_name), _ ->
+        | Effect (nexts, _), _ ->
+            through' <| Nexts nexts
+            
+        | CallStart ([], start_name, false), _ ->
             go_start start_name
-
-        | CallPackage (Some next, package_id), _ ->
-            call_package next package_id
-        | CallPackage (None, package_id), _ ->
+        | CallStart (nexts, start_name, false), _ ->
+            call_start nexts start_name
+        | CallStart (nexts, _, true), _ ->
+            through' <| Nexts nexts
+            
+        | CallPackage ([], package_id, false), _ ->
             go_package package_id
+        | CallPackage (nexts, package_id, false), _ ->
+            call_package nexts package_id
+        | CallPackage (nexts, _, true), _ ->
+            through' <| Nexts nexts
 
         (* Data *)
         | BranchFlag (bools, name), _ ->
@@ -180,30 +215,30 @@ module rec GameMaster =
               (FlagOps.get name state)
               bools
 
-        | SetFlag (next, name, flag), _ ->
+        | SetFlag (nexts, name, flag), _ ->
             through
               (FlagOps.set name flag state)
-              (Next next)
+              (Nexts nexts)
 
-        | ReverseFlag (next, name), _ ->
+        | ReverseFlag (nexts, name), _ ->
             through
               (FlagOps.flip name state)
-              (Next next)
+              (Nexts nexts)
 
-        | SubstituteFlag (next, source, target), _ ->
+        | SubstituteFlag (nexts, source, target), _ ->
             through
               (FlagOps.substitute source target state)
-              (Next next)
+              (Nexts nexts)
 
         | BranchFlagCmp (bools, left, right), _ ->
             next_branch
               (FlagOps.compare left right state)
               bools
 
-        | CheckFlag (next, name), _ ->
+        | CheckFlag (nexts, name), _ ->
             if FlagOps.get name state
             then
-              through' <| Next next
+              through' <| Nexts nexts
             else
               end_line'
         
@@ -212,11 +247,11 @@ module rec GameMaster =
 
 
 
-        | BranchMultiStep of Steps * step : Step.Name
         | BranchStep of Bools * step : Step.Name * value : Step.State
         | SetStep of Next * step : Step.Name * value : Step.State
         | SetStepUp of Next * step : Step.Name
         | SetStepDown of Next * step : Step.Name
         | SubstituteStep of Next * source : Step.State * target : Step.State
+        | BranchMultiStep of Steps * step : Step.Name
         | BranchStepCmp of Trios * left : Step.Name * right : Step.Name
         | CheckStep of Next * step : Step.Name
