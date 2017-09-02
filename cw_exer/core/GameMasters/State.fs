@@ -25,4 +25,5 @@ module State =
     ; steps : (Step.Name, Step.State) Map
     ; state : State
     ; bgm : Bgm
+    ; random : System.Random
     }

@@ -34,17 +34,26 @@ module rec GameMaster =
         let inline output output =
           state, output
 
+        let inline next_branch key nexts =
+          match Map.tryFind key nexts with
+            Some next -> next_line' next
+          | None -> end_line'
+
         let inline through state next =
           match next with
             Next None -> end_line state
           | Next (Some next') -> next_line state next'
-          | Texts texts ->
-            match Array.tryHead texts with
+          | Nexts nexts ->
+            match Array.tryHead nexts with
               Some next' -> next_line state next'
             | None -> end_line state
-          | List list ->
-            match List.tryHead list with
-              Some (_, next') -> next_line state next'
+          | Map map ->
+            let maybe_next =
+              Map.tryPick
+                (fun _ next' -> Some next')
+                map in
+            match maybe_next with
+              Some next' -> next_line state next'
             | None -> end_line state
         let inline through' next =
           through state next
@@ -121,14 +130,14 @@ module rec GameMaster =
         | TalkMessage (nexts, _), Input.NextMessage selected -> // 選択肢選択
             select_message selected nexts
         | TalkMessage (nexts, _), _ ->
-            through' <| Texts nexts
+            through' <| Nexts nexts
           
         | TalkDialog (_, dialog), Input.None ->
             output <| Standard.dialog dialog
         | TalkDialog (nexts, _), Input.NextMessage selected ->
             select_message selected nexts
         | TalkDialog (nexts, _), _ ->
-            through' <| Texts nexts
+            through' <| Nexts nexts
 
         | PlayBgm (_, bgm), Input.None ->
             Standard.bgm state bgm
@@ -155,16 +164,59 @@ module rec GameMaster =
         | Effect (next, _), _ ->
             through' <| Next next
 
-        | CallStart (Some next, start_name), Input.None ->
+        | CallStart (Some next, start_name), _ ->
             call_start next start_name
-        | CallStart (None, start_name), Input.None ->
+        | CallStart (None, start_name), _ ->
             go_start start_name
-        | CallStart (next, _), _ ->
-            through' <| Next next
 
-        | CallPackage (Some next, package_id), Input.None ->
+        | CallPackage (Some next, package_id), _ ->
             call_package next package_id
-        | CallPackage (None, package_id), Input.None ->
+        | CallPackage (None, package_id), _ ->
             go_package package_id
-        | CallPackage (next, _), _ ->
-            through' <| Next next
+
+        (* Data *)
+        | BranchFlag (bools, name), _ ->
+            next_branch
+              (FlagOps.get name state)
+              bools
+
+        | SetFlag (next, name, flag), _ ->
+            through
+              (FlagOps.set name flag state)
+              (Next next)
+
+        | ReverseFlag (next, name), _ ->
+            through
+              (FlagOps.flip name state)
+              (Next next)
+
+        | SubstituteFlag (next, source, target), _ ->
+            through
+              (FlagOps.substitute source target state)
+              (Next next)
+
+        | BranchFlagCmp (bools, left, right), _ ->
+            next_branch
+              (FlagOps.compare left right state)
+              bools
+
+        | CheckFlag (next, name), _ ->
+            if FlagOps.get name state
+            then
+              through' <| Next next
+            else
+              end_line'
+        
+        
+        of Next * flag : Flag.Name
+
+
+
+        | BranchMultiStep of Steps * step : Step.Name
+        | BranchStep of Bools * step : Step.Name * value : Step.State
+        | SetStep of Next * step : Step.Name * value : Step.State
+        | SetStepUp of Next * step : Step.Name
+        | SetStepDown of Next * step : Step.Name
+        | SubstituteStep of Next * source : Step.State * target : Step.State
+        | BranchStepCmp of Trios * left : Step.Name * right : Step.Name
+        | CheckStep of Next * step : Step.Name

@@ -59,6 +59,7 @@
     <None Include="packages.config" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="core\Utils\Maybe.fs" />
+    <Compile Include="core\Utils\MapUtil.fs" />
     <Compile Include="core\Data\Types.fs" />
     <Compile Include="core\Data\Flag.fs" />
     <Compile Include="core\Data\Step.fs" />
@@ -76,6 +77,9 @@
     <Compile Include="core\GameMasters\State.fs" />
     <Compile Include="core\GameMasters\Input.fs" />
     <Compile Include="core\GameMasters\Output.fs" />
+    <Compile Include="core\GameMasters\Terminal.fs" />
+    <Compile Include="core\GameMasters\Standard.fs" />
+    <Compile Include="core\GameMasters\Data\Flag.fs" />
     <Compile Include="core\GameMaster.fs" />
     <Compile Include="Script.fsx" />
   </ItemGroup>

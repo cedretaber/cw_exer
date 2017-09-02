@@ -5,26 +5,27 @@ open CardWirthEngine.Data.Types
 open CardWirthEngine.Scenario.Event.Contents
 
 module rec Content =
-  open Content
-    
+
   type Next = t option
-  type Texts = t array
-  type Bools = (bool * t) list
-  type Steps = (Step.State * t) list
-  type AreaIds = (AreaId * t) list
-  type BattleIds = (BattleId * t) list
-  type Trios = (Comparison3 * t) list
+  type Nexts = t array
+  type Bools = (bool, t) Map
+  type Steps = (Step.State, t) Map
+  type AreaIds = (AreaId, t) Map
+  type BattleIds = (BattleId, t) Map
+  type Trios = (Comparison3, t) Map
+
+  module SourceFlag =
+    type t
+      = Random
+      | From of Flag.Name
 
   type NextContent<'a when 'a : comparison>
     = Next of Next
-    | Texts of Texts
-    | List of ('a * t) list
+    | Nexts of Nexts
+    | Map of ('a, t) Map
   
-  let next : 'a -> ('a * t) list -> t option =
-    fun key list ->
-      list
-      |> List.tryFind (function key', _ -> key = key')
-      |> Option.map (function _, value -> value)
+  let next : 'a -> ('a, t) Map -> t option =
+    Map.tryFind
   let next' : int -> t array -> t option =
     fun idx ->
       function
@@ -42,8 +43,8 @@ module rec Content =
     | LinkStart of link_name : string
     | LinkPackage of package_id : PackageId
     (* Standard *)
-    | TalkMessage of Texts * TalkMessage.t
-    | TalkDialog of Texts * TalkDialog.t
+    | TalkMessage of Nexts * TalkMessage.t
+    | TalkDialog of Nexts * TalkDialog.t
     | PlayBgm of Next * bgm : Bgm
     | PlaySound of Next * sound : Sound
     | Wait of Next * value : Decisecond
@@ -55,22 +56,22 @@ module rec Content =
     | BranchFlag of Bools * flag : Flag.Name
     | SetFlag of Next * flag : Flag.Name * value : Flag.State
     | ReverseFlag of Next * flag : Flag.Name
-    | SubstituteFlag of Next * source : Flag.State * target : Flag.State
+    | SubstituteFlag of Next * source : SourceFlag.t * target : Flag.Name
     | BranchFlagCmp of Bools * left : Flag.Name * right : Flag.Name
     | CheckFlag of Next * flag : Flag.Name
-    | BranchMultiStep of Steps * step : Step.Name
     | BranchStep of Bools * step : Step.Name * value : Step.State
     | SetStep of Next * step : Step.Name * value : Step.State
     | SetStepUp of Next * step : Step.Name
     | SetStepDown of Next * step : Step.Name
     | SubstituteStep of Next * source : Step.State * target : Step.State
+    | BranchMultiStep of Steps * step : Step.Name
     | BranchStepCmp of Trios * left : Step.Name * right : Step.Name
     | CheckStep of Next * step : Step.Name
     (* Utility *)
     | BranchSelect of Bools * BranchSelect.t
     | BranchAbility of Bools * BranchAbility.t
     | BranchRandom of Bools * value : Percent
-    | BranchMultiRandom of Next (* Wsn.2 未実装 *)
+    | BranchMultiRandom of Nexts (* Wsn.2 *)
     | BranchLevel of Bools * target : Target * level : int
     | BranchStatus of Bools * target : Target * status : Status
     | BranchPartyNumber of Bools * value : int
@@ -87,7 +88,7 @@ module rec Content =
     | BranchBeast of Bools * beast_id : BeastId
     | BranchMoney of Bools * value : int
     | BranchCoupon of Bools * range : Range * value : CouponName
-    | BranchMultiCoupon of Next (* Wsn.2 未実装 *)
+    | BranchMultiCoupon of Next * target : Target (* Wsn.2 *)
     | BranchCompleteStamp of Bools * value : ScenarioName
     | BranchGossip of Bools * value : GossipName
     | BranchKeyCode of Bools * BranchKeyCode.t

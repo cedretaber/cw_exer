@@ -1,4 +1,4 @@
-﻿module CardWirthEngine.Utils
+﻿namespace CardWirthEngine.Utils
 
 module Maybe =
   type Maybe internal () =

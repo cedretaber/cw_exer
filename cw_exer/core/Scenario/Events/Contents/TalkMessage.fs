@@ -18,14 +18,17 @@ module TalkMessage =
     ; centeringx : bool
     ; columns : int
     ; text : string
+    ; selections : string array
     }
 
-  let t image boundarycheck centeringx columns text =
+  let t image boundarycheck centeringx columns text selections =
     { image = image
     ; boundarycheck = boundarycheck
     ; centeringx = centeringx
     ; columns = columns
     ; text = text
+    ; selections = selections
     }
 
-  let t' image text = t image false false 1 text
+  let t' image text selections =
+    t image false false 1 text selections
