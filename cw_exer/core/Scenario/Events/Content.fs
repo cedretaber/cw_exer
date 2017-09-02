@@ -5,25 +5,35 @@ open CardWirthEngine.Data.Types
 open CardWirthEngine.Scenario.Event.Contents
 
 module rec Content =
-
-  type Nexts = t list
-  type Texts = (string * t) list
+  open Content
+    
+  type Next = t option
+  type Texts = t array
   type Bools = (bool * t) list
   type Steps = (Step.State * t) list
   type AreaIds = (AreaId * t) list
   type BattleIds = (BattleId * t) list
   type Trios = (Comparison3 * t) list
 
-  let find_next : 'a -> ('a * t) list -> t option =
-    fun selected nexts ->
-      let maybe_tuple = List.tryFind (function (key, _) -> key = selected) nexts in
-      match maybe_tuple with
-        Option.None -> Option.None
-      | Some(_, value) -> Some(value)
+  type NextContent<'a when 'a : comparison>
+    = Next of Next
+    | Texts of Texts
+    | List of ('a * t) list
+  
+  let next : 'a -> ('a * t) list -> t option =
+    fun key list ->
+      list
+      |> List.tryFind (function key', _ -> key = key')
+      |> Option.map (function _, value -> value)
+  let next' : int -> t array -> t option =
+    fun idx ->
+      function
+      | arr when Array.length arr < idx -> Some arr.[idx]
+      | _ -> Option.None
 
   type t
     (* Terminal *)
-    = Start of Nexts * name : StartName
+    = Start of Next * name : StartName
     | StartBattle of battle_id : BattleId
     | End of is_complete : IsCompleted
     | EndBadEnd
@@ -34,33 +44,33 @@ module rec Content =
     (* Standard *)
     | TalkMessage of Texts * TalkMessage.t
     | TalkDialog of Texts * TalkDialog.t
-    | PlayBgm of Nexts * bgm : Bgm
-    | PlaySound of Nexts * sound : Sound
-    | Wait of Nexts * value : Decisecond
-    | ElaspeTime of Nexts
-    | Effect of Nexts * effect : Effect
-    | CallStart of Nexts * name : StartName
-    | CallPackage of Nexts * name : PackageId
+    | PlayBgm of Next * bgm : Bgm
+    | PlaySound of Next * sound : Sound
+    | Wait of Next * value : Decisecond
+    | ElaspeTime of Next
+    | Effect of Next * effect : Effect
+    | CallStart of Next * name : StartName
+    | CallPackage of Next * name : PackageId
     (* Data *)
     | BranchFlag of Bools * flag : Flag.Name
-    | SetFlag of Nexts * flag : Flag.Name * value : Flag.State
-    | ReverseFlag of Nexts * flag : Flag.Name
-    | SubstituteFlag of Nexts * source : Flag.State * target : Flag.State
+    | SetFlag of Next * flag : Flag.Name * value : Flag.State
+    | ReverseFlag of Next * flag : Flag.Name
+    | SubstituteFlag of Next * source : Flag.State * target : Flag.State
     | BranchFlagCmp of Bools * left : Flag.Name * right : Flag.Name
-    | CheckFlag of Nexts * flag : Flag.Name
+    | CheckFlag of Next * flag : Flag.Name
     | BranchMultiStep of Steps * step : Step.Name
     | BranchStep of Bools * step : Step.Name * value : Step.State
-    | SetStep of Nexts * step : Step.Name * value : Step.State
-    | SetStepUp of Nexts * step : Step.Name
-    | SetStepDown of Nexts * step : Step.Name
-    | SubstituteStep of Nexts * source : Step.State * target : Step.State
+    | SetStep of Next * step : Step.Name * value : Step.State
+    | SetStepUp of Next * step : Step.Name
+    | SetStepDown of Next * step : Step.Name
+    | SubstituteStep of Next * source : Step.State * target : Step.State
     | BranchStepCmp of Trios * left : Step.Name * right : Step.Name
-    | CheckStep of Nexts * step : Step.Name
+    | CheckStep of Next * step : Step.Name
     (* Utility *)
     | BranchSelect of Bools * BranchSelect.t
     | BranchAbility of Bools * BranchAbility.t
     | BranchRandom of Bools * value : Percent
-    | BranchMultiRandom of Nexts (* Wsn.2 未実装 *)
+    | BranchMultiRandom of Next (* Wsn.2 未実装 *)
     | BranchLevel of Bools * target : Target * level : int
     | BranchStatus of Bools * target : Target * status : Status
     | BranchPartyNumber of Bools * value : int
@@ -77,35 +87,35 @@ module rec Content =
     | BranchBeast of Bools * beast_id : BeastId
     | BranchMoney of Bools * value : int
     | BranchCoupon of Bools * range : Range * value : CouponName
-    | BranchMultiCoupon of Nexts (* Wsn.2 未実装 *)
+    | BranchMultiCoupon of Next (* Wsn.2 未実装 *)
     | BranchCompleteStamp of Bools * value : ScenarioName
     | BranchGossip of Bools * value : GossipName
     | BranchKeyCode of Bools * BranchKeyCode.t
     (* Get *)
-    | GetCast of Nexts * cast_id : CastId * start_action : StartAction
-    | GetItem of Nexts * item_id : ItemId * target : Range * value : int
-    | GetSkill of Nexts * skill_id : SkillId * target : Range * value : int
-    | GetInfo of Nexts * indo_id : InfoId
-    | GetBeast of Nexts * beast_id : BeastId * target : Range * value : int
-    | GetMoney of Nexts * value : int
-    | GetCoupon of Nexts * target : Target * point : int * value : CouponName
-    | GetCompleteStamp of Nexts * value : ScenarioName
-    | GetGossip of Nexts * value : GossipName
+    | GetCast of Next * cast_id : CastId * start_action : StartAction
+    | GetItem of Next * item_id : ItemId * target : Range * value : int
+    | GetSkill of Next * skill_id : SkillId * target : Range * value : int
+    | GetInfo of Next * indo_id : InfoId
+    | GetBeast of Next * beast_id : BeastId * target : Range * value : int
+    | GetMoney of Next * value : int
+    | GetCoupon of Next * target : Target * point : int * value : CouponName
+    | GetCompleteStamp of Next * value : ScenarioName
+    | GetGossip of Next * value : GossipName
     (* Lost *)
-    | LoseCast of Nexts * cast_id : CastId
-    | LoseItem of Nexts * item_id : ItemId * target : Range * value : int
-    | LoseSkill of Nexts * skill_id : SkillId * target : Range * value : int
-    | LoseInfo of Nexts * indo_id : InfoId
-    | LoseBeast of Nexts * beast_id : BeastId * target : Range * value : int
-    | LoseMoney of Nexts * value : int
-    | LoseCoupon of Nexts * target : Target * value : CouponName
-    | LoseCompeteStamp of Nexts * value : ScenarioName
-    | LoseGossip of Nexts * value : GossipName
+    | LoseCast of Next * cast_id : CastId
+    | LoseItem of Next * item_id : ItemId * target : Range * value : int
+    | LoseSkill of Next * skill_id : SkillId * target : Range * value : int
+    | LoseInfo of Next * indo_id : InfoId
+    | LoseBeast of Next * beast_id : BeastId * target : Range * value : int
+    | LoseMoney of Next * value : int
+    | LoseCoupon of Next * target : Target * value : CouponName
+    | LoseCompeteStamp of Next * value : ScenarioName
+    | LoseGossip of Next * value : GossipName
     (* Visual *)
-    | ShowParty of Nexts
-    | HideParty of Nexts
-    | ChangeBgImage of Nexts
-    | MoveBgImage of Nexts
-    | ReplaceBgImage of Nexts
-    | LoseBgImage of Nexts
-    | Redisplay of Nexts
+    | ShowParty of Next
+    | HideParty of Next
+    | ChangeBgImage of Next
+    | MoveBgImage of Next
+    | ReplaceBgImage of Next
+    | LoseBgImage of Next
+    | Redisplay of Next

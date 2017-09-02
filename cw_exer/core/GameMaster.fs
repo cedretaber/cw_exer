@@ -21,30 +21,46 @@ module rec GameMaster =
         [] -> state, Output.EventEnd
       | State.Content (event, content) :: rest ->
 
-        let end_scenario is_completed = state, Output.EndScenario is_completed in
-        let gameover = state, Output.Gameover in
-        let move_area area_id = state, Output.MoveArea area_id in
-        let start_battle battle_id = state, Output.StartBattle battle_id in
-        let effect_break = state, Output.Break in
+        let inline end_scenario is_completed =
+          state, Output.EndScenario is_completed
 
-        let next_line next = read state (State.Content (event, next) :: rest) Input.None in
-        let end_line = read state rest Input.None in
+        let gameover =
+          state, Output.Gameover
 
-        let through =
-          function
-            [] -> end_line
-          | next :: _ -> next_line next
-        let through' =
-          function
-            [] -> end_line
-          | (_, next) :: _ -> next_line next
+        let inline move_area area_id =
+          state, Output.MoveArea area_id
 
-        let go_start start_name =
+        let inline start_battle battle_id =
+          state, Output.StartBattle battle_id
+
+        let effect_break =
+          state, Output.Break
+
+        let inline next_line next =
+          read state (State.Content (event, next) :: rest) Input.None
+
+        let end_line =
+          read state rest Input.None
+
+        let inline through next =
+          match next with
+            Next None -> end_line
+          | Next (Some next') -> next_line next'
+          | Texts texts ->
+            match Array.tryHead texts with
+              Some next' -> next_line next'
+            | None -> end_line
+          | List list ->
+            match List.tryHead list with
+              Some (_, next') -> next_line next'
+            | None -> end_line
+
+        let inline go_start start_name =
           match Event.find start_name event with
             Some next -> next_line next
           | None -> end_line
 
-        let call_start post_next start_name =
+        let inline call_start post_next start_name =
           match Event.find start_name event with
             Some next ->
               read state
@@ -53,15 +69,27 @@ module rec GameMaster =
           | None ->
               next_line post_next
 
-        let select_message selected nexts =
-          match find_next selected nexts with
-            Some(next) -> next_line next
+        let inline go_package package_id =
+          state, Void
+
+        let inline call_package post_next package_id =
+          state, Void
+
+        let inline output_message message =
+          state, Output.Message ("", [""])
+
+        let inline output_dialog dialog =
+          state, Output.Message ("", [""])
+
+        let inline select_message selected texts =
+          match Content.next' selected texts with
+            Some next -> next_line next
           | None -> end_line
 
         match content, input with
         (* Terminal *)
-          Start (nexts, _), _ ->
-            through nexts
+          Start (next, _), _ ->
+            through <| Next next
 
         | StartBattle battle_id, _ ->
             start_battle battle_id
@@ -86,52 +114,52 @@ module rec GameMaster =
         
         (* Standard *)
         | TalkMessage (_, message), Input.None -> // メッセージ表示
-            state, Output.Message ("", [""])
+            output_message message
         | TalkMessage (nexts, _), Input.NextMessage selected -> // 選択肢選択
             select_message selected nexts
         | TalkMessage (nexts, _), _ ->
-            through' nexts
+            through <| Texts nexts
           
-        | TalkDialog (_, message), Input.None ->
-            state, Output.Message ("", [""])
+        | TalkDialog (_, dialog), Input.None ->
+            output_dialog dialog
         | TalkDialog (nexts, _), Input.NextMessage selected ->
             select_message selected nexts
         | TalkDialog (nexts, _), _ ->
-            through' nexts
+            through <| Texts nexts
 
         | PlayBgm (_, bgm), Input.None ->
             { state with bgm = bgm }, Output.Bgm bgm
-        | PlayBgm (nexts, _), _ ->
-            through nexts
+        | PlayBgm (next, _), _ ->
+            through <| Next next
 
         | PlaySound (_, sound), Input.None ->
             state, Output.Sound sound
-        | PlaySound (nexts, _), _ ->
-            through nexts
+        | PlaySound (next, _), _ ->
+            through <| Next next
 
         | Wait (_, deciseconds), Input.None ->
             state, Output.Wait deciseconds
-        | Wait (nexts, _), _ ->
-            through nexts
+        | Wait (next, _), _ ->
+            through <| Next next
 
-        | ElaspeTime nexts, _ ->
-            through nexts
+        | ElaspeTime next, _ ->
+            through <| Next next
 
         | Effect (_, effect), Input.None ->
             state, Void
-        | Effect (nexts, _), _ ->
-            through nexts
+        | Effect (next, _), _ ->
+            through <| Next next
 
-        | CallStart (next :: _, start_name), Input.None ->
+        | CallStart (Some next, start_name), Input.None ->
             call_start next start_name
-        | CallStart ([], start_name), Input.None ->
+        | CallStart (None, start_name), Input.None ->
             go_start start_name
-        | CallStart (nexts, _), _ ->
-            through nexts
+        | CallStart (next, _), _ ->
+            through <| Next next
 
-        | CallPackage (next :: _, package_id), Input.None ->
-            state, Void
-        | CallPackage ([], package_id), Input.None ->
-            state, Void
-        | CallPackage (nexts, _), _ ->
-            through nexts
+        | CallPackage (Some next, package_id), Input.None ->
+            call_package next package_id
+        | CallPackage (None, package_id), Input.None ->
+            go_package package_id
+        | CallPackage (next, _), _ ->
+            through <| Next next
