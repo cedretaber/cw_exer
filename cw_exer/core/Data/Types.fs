@@ -30,14 +30,6 @@ module Types =
 
   type Percent = uint8
 
-  type Mentality
-    = Normal // 正常
-    | Sleep // 睡眠
-    | Confuse // 混乱
-    | Overheat // 激昂
-    | Brave // 勇敢
-    | Panic // 恐慌
-
   type EffectType
     = Physic // 物理
     | Magic // 魔法
@@ -76,26 +68,6 @@ module Types =
     | Unselected of sleep : bool // 非選択メンバ
     | Random of sleep : bool // ランダムメンバ
     | Party of sleep : bool // 全員
-
-  type Mental
-    = Aggressive // 好戦
-    | Unaggressive // 平和
-    | Cheerful // 社交
-    | Uncheerful // 内向
-    | Brave // 勇敢
-    | Unbrave // 臆病
-    | Cautious // 慎重
-    | Uncautious // 大胆
-    | Trickish // 狡猾
-    | Untrickish // 正直
-
-  type Physical
-    = Dex // 敏捷度
-    | Agl // 器用度
-    | Int // 知力
-    | Str // 膂力
-    | Vit // 生命力
-    | Min // 精神力
 
   type Status
     = Active // 行動可能
