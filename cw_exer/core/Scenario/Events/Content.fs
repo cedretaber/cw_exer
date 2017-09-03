@@ -73,8 +73,8 @@ module rec Content =
     | BranchAbility of Bools * BranchAbility.t
     | BranchRandom of Bools * value : Percent
     | BranchMultiRandom of Nexts (* Wsn.2 *)
-    | BranchLevel of Bools * target : Target * level : int
-    | BranchStatus of Bools * target : Target * status : Status
+    | BranchLevel of Bools * target : Target.t * level : int
+    | BranchStatus of Bools * target : Target.t * status : Status
     | BranchPartyNumber of Bools * value : int
     | BranchArea of AreaIds
     | BranchBattle of BattleIds
@@ -89,7 +89,7 @@ module rec Content =
     | BranchBeast of Bools * beast_id : BeastId
     | BranchMoney of Bools * value : int
     | BranchCoupon of Bools * range : Range * value : CouponName
-    | BranchMultiCoupon of Texts * target : Target (* Wsn.2 *)
+    | BranchMultiCoupon of Texts * target : Target.t (* Wsn.2 *)
     | BranchCompleteStamp of Bools * value : ScenarioName
     | BranchGossip of Bools * value : GossipName
     | BranchKeyCode of Bools * BranchKeyCode.t
@@ -100,7 +100,7 @@ module rec Content =
     | GetInfo of Nexts * indo_id : InfoId
     | GetBeast of Nexts * beast_id : BeastId * target : Range * value : int
     | GetMoney of Nexts * value : int
-    | GetCoupon of Nexts * target : Target * point : int * value : CouponName
+    | GetCoupon of Nexts * target : Target.t * point : int * value : CouponName
     | GetCompleteStamp of Nexts * value : ScenarioName
     | GetGossip of Nexts * value : GossipName
     (* Lost *)
@@ -110,7 +110,7 @@ module rec Content =
     | LoseInfo of Nexts * indo_id : InfoId
     | LoseBeast of Nexts * beast_id : BeastId * target : Range * value : int
     | LoseMoney of Nexts * value : int
-    | LoseCoupon of Nexts * target : Target * value : CouponName
+    | LoseCoupon of Nexts * target : Target.t * value : CouponName
     | LoseCompeteStamp of Nexts * value : ScenarioName
     | LoseGossip of Nexts * value : GossipName
     (* Visual *)

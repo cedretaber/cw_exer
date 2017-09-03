@@ -1,5 +1,6 @@
-﻿namespace CardWirthEngine.Data
+﻿namespace CardWirthEngine.Cards
 
+open CardWirthEngine.Data.Types
 open CardWirthEngine.Data.Casts
 
 module Adventurer =
@@ -89,7 +90,7 @@ module Adventurer =
   type Property =
     { id: int
     ; name : string
-    ; image : string
+    ; image : Path
     ; description : string
     ; level : int
     ; life : Life

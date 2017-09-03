@@ -30,44 +30,16 @@ module Types =
 
   type Percent = uint8
 
-  type EffectType
-    = Physic // 物理
-    | Magic // 魔法
-    | MagicalPhysic // 魔法的物理
-    | PhysicalMagic // 物理的魔法
-    | None // 無
-
-  type Resist
-    = Avoid// 回避
-    | Resist // 抵抗
-    | Unfail // 必中
-
-  type CardVisual
-    = None// 無し
-    | Reverse // 反転
-    | Horizontal// 横震動
-    | Vertical // 縦振動
-
-  type Element
-    = All // 全
-    | Health // 肉体
-    | Mind // 精神
-    | Miracle // 神聖
-    | Magic // 魔法
-    | Fire // 炎
-    | Ice // 冷気
-
-  type DamageType
-    = LevelRatio // レベル比
-    | Normal // 値の直接指定
-    | Max // 最大値
-    | Fixed // 固定値(Wsn.1)
-
   type Target
-    = Selected of sleep : bool // 選択中メンバ
-    | Unselected of sleep : bool // 非選択メンバ
-    | Random of sleep : bool // ランダムメンバ
-    | Party of sleep : bool // 全員
+    = Selected
+    | Unselected
+    | Random
+    | Party
+
+  type BranchTarget =
+    { target : Target
+    ; sleep : bool
+    }
 
   type Status
     = Active // 行動可能
@@ -108,17 +80,6 @@ module Types =
     | Field // フィールド全体
     | CouponHolder // 称号所有者(Wsn.2)
     | CardTarget // カードの効果対象(Wsn.2)。
-
-  type Enhance
-    = Action // 行動
-    | Avoid // 回避
-    | Resist // 抵抗
-    | Defense // 防御
-
-  type Premium
-    = Normal // 日用品
-    | Rare // 希少品
-    | Premium // 貴重品
 
   type CardTarget
     = None // 対象無し
@@ -178,56 +139,6 @@ module Types =
     = Default // エンジンの設定を使用する
     | True // 強制的にスムージングする
     | False // 強制的にスムージングしない
-
-  type MType
-    = Heal
-    | Damage
-    | Absorb
-    | Paralyze
-    | DisParalyze
-    | Poison
-    | DisPoison
-    | GetSkillPower
-    | LoseSkillPower
-    | Sleep
-    | Confuse
-    | Overheat
-    | Brave
-    | Panic
-    | Normal
-    | Bind
-    | DisBind
-    | Silence
-    | DisSilence
-    | FaceUp
-    | FaceDown
-    | AntiMagic
-    | DisAntiMagic
-    | EnhanceAction
-    | EnhanceAvoid
-    | EnhanceResist
-    | EnhanceDefense
-    | VanishTarget
-    | VanishCard
-    | VanishBeast
-    | DealAttackCard
-    | DealPowerfulAttackCard
-    | DealCriticalAttackCard
-    | DealFeintCard
-    | DealDefenseCard
-    | DealDistanceCard
-    | DealConfuseCard
-    | DealSkillCard
-    | SummonBeast
-    | CancelAction
-    | NoEffect
-
-  type MArg
-    = ValueType // レベル比・直接等、値のタイプ
-    | UValue // ダメージ・回復量
-    | AValue // ボーナス値
-    | Round // 継続ラウンド数
-    | Beast // 召喚獣
 
   type CardImagePosition
     = Default // 指定無し(クラシックな位置に合わせる)
