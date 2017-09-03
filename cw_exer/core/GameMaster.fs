@@ -283,3 +283,19 @@ module rec GameMaster =
         (* CheckFlagに同じ *)
         | CheckStep (nexts, _, _, _), _ ->
             through' <| Nexts nexts
+
+        (* Utility *)
+        | BranchSelect (bools, select), _ ->
+        
+        of Bools * BranchSelect.t
+        | BranchAbility of Bools * BranchAbility.t
+        | BranchRandom of Bools * value : Percent
+        | BranchMultiRandom of Nexts (* Wsn.2 *)
+        | BranchLevel of Bools * target : Target * level : int
+        | BranchStatus of Bools * target : Target * status : Status
+        | BranchPartyNumber of Bools * value : int
+        | BranchArea of AreaIds
+        | BranchBattle of BattleIds
+        | BranchIsBattle of Bools
+        | BranchRandomSelect of Bools * BranchRandomSelect.t
+        | BranchRound of Bools * value : int
