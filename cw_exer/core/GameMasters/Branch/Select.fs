@@ -1,7 +1,7 @@
 ﻿namespace CardWirthEngine.GameMasters.Branch
 
 open CardWirthEngine.Util
-open CardWirthEngine.Scenario.Event.Contents.BranchSelect
+open CardWirthEngine.Scenario.Events.Contents.BranchSelect
 open CardWirthEngine.Cards
 open CardWirthEngine.GameMasters
 
@@ -58,4 +58,3 @@ module Select =
             |> appraise initial coupons
             |> List.maxBy second
             |> function index, _ -> State.set_selected_pc index state, Output.None
-        

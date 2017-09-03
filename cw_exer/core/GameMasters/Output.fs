@@ -4,9 +4,22 @@ open CardWirthEngine.Data
 open CardWirthEngine.Data.Types
 open CardWirthEngine.Data.Skills
 open CardWirthEngine.Scenario
-open CardWirthEngine.Scenario.Event.Contents
+open CardWirthEngine.Scenario.Events.Contents
 
 module Output =
+
+  type ImageType
+    = PCNumber of int
+    | File of Path
+    | Card
+
+  type Message =
+    { boundarycheck : bool
+    ; centeringx : bool
+    ; columns : int
+    ; text : string
+    ; selections : (int * string) list
+    }
 
   type t'
     = EndScenario of IsCompleted
@@ -14,8 +27,8 @@ module Output =
     | MoveArea of AreaId
     | StartBattle of BattleId
     | LoadPackage of PackageId
-    | Message of text : string * selections : string list // 画像なしメッセージ
-    | Dialog of path : Path * text : string * selections : string list // 画像ありメッセージ
+    | Message of message : Message // 画像なしメッセージ
+    | Dialog of image : ImageType * message : Message // 画像ありメッセージ
     | Wait of Decisecond
     | Bgm of Bgm * Play.t
     | Sound of Sound * Play.t
@@ -29,3 +42,5 @@ module Output =
     | None
 
   type t = State.t * t'
+
+  let inline t state output = state, output

@@ -1,4 +1,4 @@
-﻿namespace CardWirthEngine.Scenario.Event.Contents
+﻿namespace CardWirthEngine.Scenario.Events.Contents
 
 open CardWirthEngine.Data.Types
 
@@ -18,17 +18,15 @@ module TalkMessage =
     ; centeringx : bool
     ; columns : int
     ; text : string
-    ; selections : string array
     }
 
-  let t image boundarycheck centeringx columns text selections =
+  let t image boundarycheck centeringx columns text =
     { image = image
     ; boundarycheck = boundarycheck
     ; centeringx = centeringx
     ; columns = columns
     ; text = text
-    ; selections = selections
     }
 
-  let t' image text selections =
-    t image false false 1 text selections
+  let t' image text =
+    t image false false 1 text

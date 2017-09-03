@@ -1,4 +1,4 @@
-﻿namespace CardWirthEngine.Scenario.Event.Contents
+﻿namespace CardWirthEngine.Scenario.Events.Contents
 
 open CardWirthEngine.Data.Types
 

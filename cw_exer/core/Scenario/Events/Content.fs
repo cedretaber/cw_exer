@@ -2,7 +2,7 @@
 
 open CardWirthEngine.Data
 open CardWirthEngine.Data.Types
-open CardWirthEngine.Scenario.Event.Contents
+open CardWirthEngine.Scenario.Events.Contents
 
 module rec Content =
     
