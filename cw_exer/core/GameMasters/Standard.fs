@@ -12,11 +12,11 @@ module Standard =
   let inline dialog dialog =
     Output.Message ("", [""])
 
-  let inline bgm state bgm =
-    { state with bgm = bgm }, Output.Bgm bgm
+  let inline bgm state bgm play =
+    change_bgm bgm state, Output.Bgm (bgm, play)
 
-  let inline sound sound =
-    Output.Sound sound
+  let inline sound sound play =
+    Output.Sound (sound, play)
 
   let inline wait deciseconds =
     Output.Wait deciseconds

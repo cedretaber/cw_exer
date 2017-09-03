@@ -8,7 +8,7 @@ module Input =
     = NextMessage of int
     | Loaded
     | LoadFailed of string
-    | SelectAdventurer of int 
+    | SelectPlayerCharactor of int 
     | Cancel
     | Void
     | None

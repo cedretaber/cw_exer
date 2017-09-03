@@ -161,9 +161,11 @@ module Types =
   type Bgm
     = Midi of Path
     | Mp3 of Path
+    | Stop
 
   type Sound
     = Wave of Path
+    | Stop
 
   type Location =
     { left : int

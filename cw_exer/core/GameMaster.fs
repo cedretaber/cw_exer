@@ -1,5 +1,6 @@
 ﻿namespace CardWirthEngine
 
+open CardWirthEngine.Util
 open CardWirthEngine.Data
 open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Events
@@ -13,9 +14,9 @@ module rec GameMaster =
   let run : State.t -> Input.t -> Output.t =
     fun state input ->
       match state with
-        { state = State.OnEvent contents } -> read state contents input
-      | { state = State.OnField } -> state, Void
-      | { state = State.OnBattle } -> state, Void
+        State.Scenario ({ state = State.OnEvent contents }, _, _) -> read state contents input
+      | State.Scenario ({ state = State.OnField }, _, _) -> state, Void
+      | State.Scenario ({ state = State.OnBattle }, _, _) -> state, Void
       
   let rec read : State.t -> State.Event list -> Input.t -> Output.t =
     fun state contents input ->
@@ -117,7 +118,7 @@ module rec GameMaster =
             state, Output.LoadPackage package_id
 
         (* Branch *)
-        let inline next_branch f nexts =
+        let inline next_branch state f nexts =
           let check =
             function
               key, next when f key ->
@@ -127,12 +128,18 @@ module rec GameMaster =
           match Content.next check nexts with
             Some next -> next_line' next
           | None -> end_line'
+        let inline next_branch' f nexts =
+          next_branch state f nexts
 
         (* Message next *)
         let inline message_select selected nexts =
           match Content.select selected nexts with
             Some (_, next) -> next_line' next
           | None -> end_line'
+
+        (* Flag change *)
+        let inline flag_change state flag_name flag_state =
+          state, Output.Flag (flag_name, flag_state)
 
         match content, input with
         (* Terminal *)
@@ -175,14 +182,14 @@ module rec GameMaster =
         | TalkDialog (nexts, _), _ ->
             through' <| List nexts
 
-        | PlayBgm (_, bgm), Input.None ->
-            Standard.bgm state bgm
-        | PlayBgm (nexts, _), _ ->
+        | PlayBgm (_, bgm, play), Input.None ->
+            Standard.bgm state bgm play
+        | PlayBgm (nexts, _, _), _ ->
             through' <| Nexts nexts
 
-        | PlaySound (_, sound), Input.None ->
-            output <| Standard.sound sound
-        | PlaySound (nexts, _), _ ->
+        | PlaySound (_, sound, play), Input.None ->
+            output <| Standard.sound sound play
+        | PlaySound (nexts, _, _), _ ->
             through' <| Nexts nexts
 
         | Wait (_, deciseconds), Input.None ->
@@ -216,27 +223,31 @@ module rec GameMaster =
 
         (* Data *)
         | BranchFlag (bools, name), _ ->
-            next_branch
+            next_branch'
               (fun name' -> name' = FlagOps.get name state)
               bools
-
-        | SetFlag (nexts, name, flag), _ ->
-            through
+              
+        | SetFlag (_, name, flag), Input.None ->
+            flag_change
               (FlagOps.set name flag state)
-              (Nexts nexts)
-
-        | ReverseFlag (nexts, name), _ ->
-            through
-              (FlagOps.flip name state)
-              (Nexts nexts)
-
-        | SubstituteFlag (nexts, source, target), _ ->
-            through
-              (FlagOps.substitute source target state)
-              (Nexts nexts)
+              name flag
+        | SetFlag (nexts, _, _), _ ->
+            through' <| Nexts nexts
+            
+        | ReverseFlag (_, name), Input.None ->
+            let new_state, flag = FlagOps.flip name state in
+            flag_change new_state name flag
+        | ReverseFlag (nexts, _), _ ->
+            through' <| Nexts nexts
+            
+        | SubstituteFlag (_, source, target), Input.None ->
+            let new_state, flag = FlagOps.substitute source target state in
+            flag_change new_state target flag
+        | SubstituteFlag (nexts, _, _), _ ->
+            through' <| Nexts nexts
 
         | BranchFlagCmp (bools, left, right), _ ->
-            next_branch
+            next_branch'
               (fun bool -> bool = FlagOps.compare left right state)
               bools
 
@@ -246,7 +257,7 @@ module rec GameMaster =
 
         (* ステップ比較は 以上=true, 未満=false *)
         | BranchStep (bools, name, value), _ ->
-            next_branch
+            next_branch'
               (fun bool -> bool = (StepOps.get name state >= value))
               bools
 
@@ -271,12 +282,12 @@ module rec GameMaster =
               (Nexts nexts)
 
         | BranchMultiStep (steps, name), _ ->
-            next_branch
+            next_branch'
               (fun step -> step = StepOps.get name state)
               steps
 
         | BranchStepCmp (trios, left, right), _ ->
-            next_branch
+            next_branch'
               (fun cmp -> Types.compare cmp left right)
               trios
 
@@ -285,11 +296,35 @@ module rec GameMaster =
             through' <| Nexts nexts
 
         (* Utility *)
+        | BranchSelect (bools, _), Input.SelectPlayerCharactor index ->
+            next_branch
+              (Branch.Select.set_selected_pc index state)
+              (is_true)
+              bools
+        | BranchSelect (bools, _), Input.Cancel ->
+            next_branch'
+              (is_false)
+              bools
         | BranchSelect (bools, select), _ ->
+            match Branch.Select.select select state with
+              _, (Output.SelectPlayerCharactor _ as out) ->
+                output out
+            | new_state, Output.None ->
+                next_branch new_state (is_true) bools
+            | _, _ ->
+                next_branch' (is_true) bools
+
+        | BranchAbility (bools, ability), _ ->
+            next_branch'
+              (fun t -> t = Branch.Abilities.judge ability state)
+              bools
+
+        | BranchRandom (bools, percent), _ ->
+            next_branch'
+              (fun t -> t = Branch.Random.dice (int percent) state)
+              bools
         
-        of Bools * BranchSelect.t
-        | BranchAbility of Bools * BranchAbility.t
-        | BranchRandom of Bools * value : Percent
+        of Bools * value : Percent
         | BranchMultiRandom of Nexts (* Wsn.2 *)
         | BranchLevel of Bools * target : Target * level : int
         | BranchStatus of Bools * target : Target * status : Status

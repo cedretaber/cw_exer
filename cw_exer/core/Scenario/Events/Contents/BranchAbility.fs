@@ -1,13 +1,14 @@
 ﻿namespace CardWirthEngine.Scenario.Event.Contents
 
 open CardWirthEngine.Data.Types
+open CardWirthEngine.Data.Casts
 
 module BranchAbility =
   type t =
     { level : int
-    ; target : Target
-    ; physical : Physical
-    ; mental : Mental
+    ; target : BranchTarget
+    ; physical : Physical.t
+    ; mental : Mental.t
     }
 
   let t level target physical mental =

@@ -46,8 +46,8 @@ module rec Content =
     (* Standard *)
     | TalkMessage of Texts * TalkMessage.t
     | TalkDialog of Texts * TalkDialog.t
-    | PlayBgm of Nexts * bgm : Bgm
-    | PlaySound of Nexts * sound : Sound
+    | PlayBgm of Nexts * bgm : Bgm * play : Play.t
+    | PlaySound of Nexts * sound : Sound * play : Play.t
     | Wait of Nexts * value : Decisecond
     | ElaspeTime of Nexts
     | Effect of Nexts * effect : Effect.t

@@ -52,19 +52,29 @@ module State =
     ; global_state : GlobalState
     ; cards : Cards
     ; state : State
-    ; selected_adventurer : int
+    ; selected_pc : int
     ; bgm : Bgm
     }
 
   type t =
     Scenario of Scenario * Party.t * System.Random
     with
+      (* Anywhere *)
       member this.random max =
         match this with
           Scenario (_, _, random) -> random.Next max
       member this.random (min, max) =
         match this with
           Scenario (_, _, random) -> random.Next (min, max)
+      member this.party =
+        match this with
+          Scenario (_, party, _) -> party
+
+      (* Scenario *)
+      member this.get_selected_pc =
+        match this with
+          Scenario (scenario, _, _) ->
+            scenario.selected_pc
       member this.get_global_state =
         match this with
           Scenario (scenario, _, _) ->
@@ -122,3 +132,28 @@ module State =
   let inline skills (state: t) = state.get_cards.skills
   let inline items (state: t) = state.get_cards.items
   let inline beasts (state: t) = state.get_cards.beasts
+
+  (* party ops *)
+
+  exception InvalidSelectedAdventurer
+
+  let inline get_selected_pc (state: t) =
+    match state with
+      Scenario({ selected_pc = idx }, party, _) ->
+        let advs = party.adventurers in
+        if idx < Array.length advs
+        then
+          advs.[idx]
+        else
+          raise InvalidSelectedAdventurer
+
+  let inline set_selected_pc idx (state: t) =
+    match state with
+      Scenario (scenario, party, random) ->
+        Scenario ({ scenario with selected_pc = idx }, party, random)
+
+  (* BGM *)
+  let inline change_bgm bgm state =
+    match state with
+      Scenario (scenario, party, random) ->
+        Scenario ({ scenario with bgm = bgm }, party, random)

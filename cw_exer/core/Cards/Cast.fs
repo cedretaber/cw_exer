@@ -100,3 +100,17 @@ module Cast =
     ; items : Item.t list
     ; beasts : Beast.t list
     }
+
+  let inline is_active cast =
+    let prop = cast.property in
+    match prop with
+      (* 体力が0 *)
+      { life = { current = life } } when life <= 0 -> false
+      (* 麻痺または石化 *)
+    | { status = { paralyze = paralyze } } when paralyze > 0 -> false
+    | _ -> true
+
+  let inline has_coupon cast (coupon: Coupon.t) =
+    cast.property.coupons
+    |> List.exists
+      (function { name = name } -> name = coupon.name)

@@ -60,6 +60,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="core\Utils\Maybe.fs" />
     <Compile Include="core\Utils\MapUtil.fs" />
+    <Compile Include="core\Util.fs" />
     <Compile Include="core\Data\Types.fs" />
     <Compile Include="core\Data\Flag.fs" />
     <Compile Include="core\Data\Step.fs" />
@@ -80,16 +81,20 @@
     <Compile Include="core\Scenario\Events\Contents\BranchSelection.fs" />
     <Compile Include="core\Scenario\Events\Contents\TalkDialog.fs" />
     <Compile Include="core\Scenario\Events\Contents\TalkMessage.fs" />
+    <Compile Include="core\Scenario\Events\Contents\Effect.fs" />
+    <Compile Include="core\Scenario\Events\Contents\Play.fs" />
     <Compile Include="core\Scenario\Events\Content.fs" />
     <Compile Include="core\Scenario\Event.fs" />
     <Compile Include="core\Scenario\Summary.fs" />
     <Compile Include="core\Scenario\Areas\MenuCard.fs" />
     <Compile Include="core\Scenario\Area.fs" />
+    <Compile Include="core\Scenario\FieldCard.fs" />
     <Compile Include="core\Cards\Property.fs" />
     <Compile Include="core\Cards\Beast.fs" />
     <Compile Include="core\Cards\Item.fs" />
     <Compile Include="core\Cards\Skill.fs" />
     <Compile Include="core\Cards\Cast.fs" />
+    <Compile Include="core\GameMasters\Party.fs" />
     <Compile Include="core\GameMasters\State.fs" />
     <Compile Include="core\GameMasters\FlagOps.fs" />
     <Compile Include="core\GameMasters\StepOps.fs" />
@@ -97,6 +102,9 @@
     <Compile Include="core\GameMasters\Output.fs" />
     <Compile Include="core\GameMasters\Terminal.fs" />
     <Compile Include="core\GameMasters\Standard.fs" />
+    <Compile Include="core\GameMasters\Branch\Select.fs" />
+    <Compile Include="core\GameMasters\Branch\Abilities.fs" />
+    <Compile Include="core\GameMasters\Branch\Random.fs" />
     <Compile Include="core\GameMaster.fs" />
     <Compile Include="Script.fsx" />
   </ItemGroup>
