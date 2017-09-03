@@ -196,7 +196,7 @@ module rec GameMaster =
               (Nexts nexts)
 
         | Effect (_, effect), Input.None ->
-            Standard.effect state effect
+            output <| Standard.effect effect
         | Effect (nexts, _), _ ->
             through' <| Nexts nexts
             

@@ -174,5 +174,3 @@ module Types =
     { width : int
     ; height : int
     }
-  
-  type Effect = unit

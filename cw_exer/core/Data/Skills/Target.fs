@@ -4,6 +4,6 @@ open CardWirthEngine.Data.Types
 
 module Target =
   type t =
-    { t : Target
+    { ct : CardTarget
     ; all_range : bool
     }

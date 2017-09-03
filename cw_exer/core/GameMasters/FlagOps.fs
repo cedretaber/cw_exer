@@ -7,14 +7,10 @@ open CardWirthEngine.GameMasters
 
 module FlagOps =
   let get : Flag.Name -> State.t -> Flag.State =
-    fun name ->
-      function
-      { flags = flags } ->
-        Map.find name flags
+    State.get_flag
 
   let set : Flag.Name -> Flag.State -> State.t -> State.t =
-    fun name bool state ->
-      { state with flags = MapUtil.updated name bool state.flags }
+    State.set_flag
 
   let flip : Flag.Name -> State.t -> State.t =
     fun name state ->
@@ -25,7 +21,7 @@ module FlagOps =
     fun source name state ->
       let flag =
         match source with
-          Content.SourceFlag.Random -> state.random.Next 2 = 0
+          Content.SourceFlag.Random -> state.random 2 = 0
         | Content.SourceFlag.From name -> get name state in
       set name flag state
 

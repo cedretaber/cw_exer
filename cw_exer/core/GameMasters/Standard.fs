@@ -1,6 +1,8 @@
 ﻿namespace CardWirthEngine.GameMasters
 
 open CardWirthEngine.Data.Types
+open CardWirthEngine.Data.Skills
+open CardWirthEngine.Scenario
 open State
 
 module Standard =
@@ -22,5 +24,5 @@ module Standard =
   let inline elaspe_time state =
     state
 
-  let inline effect state effect =
-    state, Output.Effect (First, Wave "")
+  let inline effect effect =
+    Output.Effect (FieldCard.Adventurer 1, CardVisual.None, Wave "")

@@ -2,9 +2,8 @@
 
 open CardWirthEngine.Data.Types
 open CardWirthEngine.Data.Casts
-open CardWirthEngine.Data.Skills
 
-module Adventurer =
+module Cast =
   type Life =
     { max : int
     ; current : int

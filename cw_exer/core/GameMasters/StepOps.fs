@@ -9,35 +9,17 @@ module StepOps =
   open State
 
   let get : Step.Name -> State.t -> Step.State =
-    fun name ->
-      function
-      { steps = steps } ->
-        Map.find name steps
-
-  exception InvalidStepIndexException
-
-  let private read_step name =
-    function
-      { summary = summary; steps = steps } ->
-        let step_info = Map.find name summary.steps in
-        step_info, steps
+    State.get_step
 
   let set : Step.Name -> Step.State -> State.t -> State.t =
-    fun name idx state ->
-      let step_info, steps = read_step name state in
-      if idx >= 0 && idx < Array.length step_info.steps
-      then
-        { state with steps = MapUtil.updated name idx steps }
-      else
-        raise InvalidStepIndexException
+    State.set_step
 
   let private crement f name state =
-    let step_info, steps = read_step name state in
-    let step = Map.find name steps in
+    let step = get name state in
     let idx = f step in
-    if idx >= 0 && idx < Array.length step_info.steps
+    if idx >= 0 && idx < State.get_step_length name state
     then
-      { state with steps = MapUtil.updated name idx steps }
+      set name idx state
     else
       state
 
@@ -46,16 +28,15 @@ module StepOps =
 
   let substitute : Content.SourceStep.t -> Step.Name -> State.t -> State.t =
     fun source target state ->
-      let target_info, steps = read_step target state in
-      let target_length = Array.length target_info.steps in
+      let target_length = State.get_step_length target state in
       let step =
         match source with
           Content.SourceStep.Random ->
-            state.random.Next target_length
+            state.random target_length
         | Content.SourceStep.SelectedAdventurer ->
             state.selected_adventurer
         | Content.SourceStep.From name ->
-            Map.find name steps in
+            get name state in
       if step <= target_length
       then
         set target step state

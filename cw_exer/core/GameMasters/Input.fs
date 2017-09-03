@@ -6,7 +6,8 @@ module Input =
   type t
     (* ダイアログ・選択肢 *)
     = NextMessage of int
-    | PackageLoaded
+    | Loaded
+    | LoadFailed of string
     | SelectAdventurer of int 
     | Cancel
     | Void

@@ -2,6 +2,8 @@
 
 open CardWirthEngine.Data
 open CardWirthEngine.Data.Types
+open CardWirthEngine.Data.Skills
+open CardWirthEngine.Scenario
 
 module Output =
   type t'
@@ -15,7 +17,7 @@ module Output =
     | Wait of Decisecond
     | Bgm of Bgm
     | Sound of Sound
-    | Effect of int * Sound
+    | Effect of target : FieldCard.t * visual :  CardVisual.t * sound : Sound
     | Flag of Flag.Name * Flag.State
     | PartyDown
     | PartyUp
