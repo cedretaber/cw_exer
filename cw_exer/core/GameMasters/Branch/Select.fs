@@ -24,18 +24,20 @@ module Select =
         advs
 
   let inline private appraise initial coupons advs =
-    let go = fun adv ->
-      List.fold
-        (fun acm coupon ->
-            acm +
-              if Cast.has_coupon adv coupon
-              then coupon.value
-              else 0)
-        initial
-        coupons in
-    List.map
-      (function idx, adv -> idx, go adv)
-      advs
+    let go =
+      fun idx adv -> async {
+        return idx, List.fold
+          (fun acm coupon ->
+              acm +
+                if Cast.has_coupon adv coupon
+                then coupon.value
+                else 0)
+          initial
+          coupons
+      } in
+    [ for idx, adv in advs -> go idx adv ]
+    |> Async.Parallel 
+    |> Async.RunSynchronously
 
   let select selection (state: State.t) =
     match selection with
@@ -56,5 +58,5 @@ module Select =
         | Valued (initial, coupons) ->
             advs_with_index
             |> appraise initial coupons
-            |> List.maxBy second
+            |> Array.maxBy second
             |> function index, _ -> State.set_selected_pc index state, Output.None

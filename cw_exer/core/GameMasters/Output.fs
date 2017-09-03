@@ -22,7 +22,8 @@ module Output =
     }
 
   type t'
-    = EndScenario of IsCompleted
+    = StartScenario of ScenarioName
+    | EndScenario of IsCompleted
     | Gameover
     | MoveArea of AreaId
     | StartBattle of BattleId

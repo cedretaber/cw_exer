@@ -10,7 +10,7 @@ open CardWirthEngine.Cards
 module State =
 
   type Area
-    = Area of AreaId
+    = Area of Area.t
     | Battle of BattleId
 
   type Event
@@ -48,16 +48,17 @@ module State =
 
   type Scenario =
     { summary : Info.Summary.t
+    ; cards : Cards
+    (* 以下、可変情報 *)
     ; current_area : Area
     ; global_state : GlobalState
-    ; cards : Cards
     ; state : State
     ; selected_pc : int
     ; bgm : Bgm
     }
 
-  type t =
-    Scenario of Scenario * Party.t * System.Random
+  type t
+    = Scenario of Scenario * Party.t * System.Random
     with
       (* Anywhere *)
       member this.random max =

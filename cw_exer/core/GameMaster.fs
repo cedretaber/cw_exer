@@ -14,9 +14,12 @@ module rec GameMaster =
   let run : State.t -> Input.t -> Output.t =
     fun state input ->
       match state with
-        State.Scenario ({ state = State.OnEvent contents }, _, _) -> read state contents input
-      | State.Scenario ({ state = State.OnField }, _, _) -> state, Void
-      | State.Scenario ({ state = State.OnBattle }, _, _) -> state, Void
+        State.Scenario ({ state = State.OnEvent contents }, _, _) ->
+          read state contents input
+      | State.Scenario ({ state = State.OnField }, _, _) ->
+          state, Void
+      | State.Scenario ({ state = State.OnBattle }, _, _) ->
+          state, Void
       
   let rec read : State.t -> State.Event list -> Input.t -> Output.t =
     fun state contents input ->
