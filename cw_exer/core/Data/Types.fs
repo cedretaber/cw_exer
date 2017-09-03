@@ -29,6 +29,12 @@ module Types =
   type Decisecond = uint32
 
   type Percent = uint8
+  
+  type Enhance
+    = Action // 行動
+    | Avoid // 回避
+    | Resist // 抵抗
+    | Defense // 防御
 
   type Target
     = Selected

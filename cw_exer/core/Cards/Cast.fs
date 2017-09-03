@@ -2,6 +2,7 @@
 
 open CardWirthEngine.Data.Types
 open CardWirthEngine.Data.Casts
+open CardWirthEngine.Data.Skills
 
 module Adventurer =
   type Life =
@@ -80,13 +81,6 @@ module Adventurer =
       ; anti_magic : int
       }
 
-  type Enhance =
-    { action : int
-    ; avoid : int
-    ; resist : int
-    ; Unfail : int
-    }
-
   type Property =
     { id: int
     ; name : string
@@ -103,5 +97,7 @@ module Adventurer =
 
   type t =
     { property : Property
-    ;
+    ; skills : Skill.t list
+    ; items : Item.t list
+    ; beasts : Beast.t list
     }

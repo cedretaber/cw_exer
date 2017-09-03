@@ -17,7 +17,7 @@ module Property =
     ; resist_type : Resist.t
     ; success_rate : int
     ; visual_effect : CardVisual.t
-    ; enhance : Enhance.t
+    ; enhance : Enhance
     ; sound_paths : Path array
     ; key_codes : string list
     ; premium : Premium.t
