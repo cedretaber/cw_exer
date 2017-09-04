@@ -103,7 +103,7 @@
     <Compile Include="core\GameMasters\Terminal.fs" />
     <Compile Include="core\GameMasters\Standard.fs" />
     <Compile Include="core\GameMasters\Branch\Select.fs" />
-    <Compile Include="core\GameMasters\Branch\Abilities.fs" />
+    <Compile Include="core\GameMasters\Branch\Adventurer.fs" />
     <Compile Include="core\GameMasters\Branch\Random.fs" />
     <Compile Include="core\GameMaster.fs" />
     <Compile Include="Script.fsx" />
