@@ -103,13 +103,12 @@ module Types =
 
   type Comparison = Eq | Ne | Lt | Gt
 
-  let compare : Comparison -> 'a -> 'a -> bool =
-    fun comp x y ->
-      match comp with
-        Eq -> x = y
-      | Ne -> x <> y
-      | Lt -> x < y
-      | Gt -> x > y
+  let inline compare comp x y =
+    match comp with
+      Eq -> x = y
+    | Ne -> x <> y
+    | Lt -> x < y
+    | Gt -> x > y
 
   type BlendMode
     = Normal // 標準

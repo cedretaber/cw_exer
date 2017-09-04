@@ -70,6 +70,8 @@ module State =
       member this.party =
         match this with
           Scenario (_, party, _) -> party
+      member this.adventurers =
+        this.party.adventurers
 
       (* Scenario *)
       member this.get_selected_pc =
@@ -152,6 +154,12 @@ module State =
     match state with
       Scenario (scenario, party, random) ->
         Scenario ({ scenario with selected_pc = idx }, party, random)
+
+  let inline get_random_pc (state: t) =
+    match state with
+      Scenario (_, party, _) ->
+        let idx = state.random <| Party.party_count party in
+        Party.at idx party
 
   (* BGM *)
   let inline change_bgm bgm state =

@@ -8,6 +8,7 @@ open CardWirthEngine.Scenario.Events.Content
 open CardWirthEngine.GameMasters
 
 module rec GameMaster =
+  open GameMasters.Branch
 
   let Void = Output.None
 
@@ -261,7 +262,7 @@ module rec GameMaster =
 
     | BranchFlagCmp (bools, left, right), _ ->
         next_branch'
-          (fun bool -> bool = FlagOps.compare left right state)
+          (fun b -> b = FlagOps.compare left right state)
           bools
 
     (* フラグのチェックは直前のコンテントで行う *)
@@ -271,7 +272,7 @@ module rec GameMaster =
     (* ステップ比較は 以上=true, 未満=false *)
     | BranchStep (bools, name, value), _ ->
         next_branch'
-          (fun bool -> bool = (StepOps.get name state >= value))
+          (fun b -> b = (StepOps.get name state >= value))
           bools
 
     | SetStep (nexts, name, value), _ ->
@@ -329,24 +330,30 @@ module rec GameMaster =
 
     | BranchAbility (bools, ability), _ ->
         next_branch'
-          (fun t -> t = Branch.Abilities.judge ability state)
+          (fun b -> b = Branch.Adventurer.judge ability state)
           bools
 
     | BranchRandom (bools, percent), _ ->
         next_branch'
-          (fun t -> t = Branch.Random.dice (int percent) state)
+          (fun b -> b = Branch.Random.dice (int percent) state)
           bools
 
     | BranchMultiRandom nexts, _ ->
         select_multi
           (Branch.Random.multi nexts state)
           nexts
+    | BranchLevel (bools, target, level), _ ->
+        next_branch'
+          (fun b -> b = Adventurer.level target level state)
+          bools
 
-        
-        
-        of Nexts (* Wsn.2 *)
-        | BranchLevel of Bools * target : Target * level : int
-        | BranchStatus of Bools * target : Target * status : Status
+    | BranchStatus (bools, target, status), _ ->
+        next_branch'
+          (fun t -> t = Adventurer.status target status state)
+          bools
+    
+    
+    of Bools * target : Target * status : Status
         | BranchPartyNumber of Bools * value : int
         | BranchArea of AreaIds
         | BranchBattle of BattleIds
