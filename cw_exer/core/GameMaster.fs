@@ -1,7 +1,6 @@
 ﻿namespace CardWirthEngine
 
 open CardWirthEngine.Util
-open CardWirthEngine.Data
 open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Events
 open CardWirthEngine.Scenario.Events.Content

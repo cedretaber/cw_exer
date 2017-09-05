@@ -6,3 +6,5 @@ module Util =
 
   let is_true (bool: bool) = bool
   let is_false bool = not bool
+
+  let equals a b = a = b
