@@ -6,6 +6,7 @@ module Type =
   type AreaId = int
   type BattleId = int
   type PackageId = int
+
   type CastId = int
   type SkillId = int
   type ItemId = int

@@ -5,9 +5,8 @@ open CardWirthEngine.Data.Type
 open CardWirthEngine.Scenario
 
 module Skill =
-    
   type t =
-    { property : Property.t
+    { property : SkillId Property.t
     ; level : Level
     ; hold : bool
     ; motions : Motion.t list

@@ -5,8 +5,8 @@ open CardWirthEngine.Data.Types
 open CardWirthEngine.Data.Skills
 
 module Property =
-  type t =
-    { id : int
+  type 'id t =
+    { id : 'id
     ; name : string
     ; image : Path
     ; description : string
