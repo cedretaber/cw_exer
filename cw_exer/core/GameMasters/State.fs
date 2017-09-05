@@ -17,11 +17,6 @@ module State =
     = Content of Event.t * Content.t
     | Action
 
-  type State
-    = OnEvent of Event list
-    | OnField
-    | OnBattle
-
   type AreaState
     = Area of id : AreaId
     | Battle of id : BattleId
@@ -52,7 +47,7 @@ module State =
     (* 以下、可変情報 *)
     ; current_area : Area
     ; global_state : GlobalState
-    ; state : State
+    ; eventStack : Event list
     ; selected_pc : int
     ; bgm : Bgm
     }

@@ -15,12 +15,10 @@ module rec GameMaster =
   let run : State.t -> Input.t -> Output.t =
     fun state input ->
       match state with
-        State.Scenario ({ state = State.OnEvent contents }, _, _) ->
+        State.Scenario ({ eventStack = [] }, _, _) ->
+          state, Void
+      | State.Scenario ({ eventStack = contents }, _, _) ->
           read state contents input
-      | State.Scenario ({ state = State.OnField }, _, _) ->
-          state, Void
-      | State.Scenario ({ state = State.OnBattle }, _, _) ->
-          state, Void
       
   let rec read : State.t -> State.Event list -> Input.t -> Output.t =
     fun state contents input ->
@@ -135,8 +133,8 @@ module rec GameMaster =
         | _, _ ->
             None in
       match Content.next check nexts with
-        Some next -> next_line' next
-      | None -> end_line'
+        Some next -> next_line state next
+      | None -> end_line state
     let inline next_branch' f nexts =
       next_branch state f nexts
 
