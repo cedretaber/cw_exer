@@ -209,7 +209,7 @@ module rec GameMaster =
     | Wait (nexts, _), _ ->
         through' <| Nexts nexts
         
-    | ElaspeTime nexts, Input.None ->
+    | ElaspeTime nexts, _ ->
         through
           (Standard.elaspe_time state)
           (Nexts nexts)
@@ -327,8 +327,11 @@ module rec GameMaster =
             next_branch' (is_true) bools
 
     | BranchAbility (bools, ability), _ ->
-        next_branch'
-          (Util.equals <| Branch.Adventurer.judge ability state)
+        let new_state, bool =
+          Branch.Adventurer.judge ability state in
+        next_branch
+          new_state
+          (Util.equals bool)
           bools
 
     | BranchRandom (bools, percent), _ ->
@@ -343,40 +346,46 @@ module rec GameMaster =
 
     | BranchLevel (bools, target, level), _ ->
         next_branch'
-          (Util.equals <| Adventurer.level target level state)
+          (Util.equals <| Branch.Adventurer.level target level state)
           bools
 
     | BranchStatus (bools, target, status), _ ->
-        next_branch'
-          (Util.equals <| Adventurer.status target status state)
+        let new_state, bool =
+          Branch.Adventurer.status target status state in
+        next_branch
+          new_state
+          (Util.equals bool)
           bools
 
     | BranchPartyNumber (bools, value), _ ->
         next_branch'
-          (Util.equals <| Adventurer.party_count value state)
+          (Util.equals <| Branch.Adventurer.party_count value state)
           bools
 
     | BranchArea (bools, id), _ ->
         next_branch'
-          (Util.equals <| AreaOrBattle.is_area_in id state)
+          (Util.equals <| Branch.AreaOrBattle.is_area_in id state)
           bools
 
     | BranchBattle (bools, id), _ ->
         next_branch'
-          (Util.equals <| AreaOrBattle.is_battle_in id state)
+          (Util.equals <| Branch.AreaOrBattle.is_battle_in id state)
           bools
 
     | BranchIsBattle bools, _ ->
         next_branch'
-          (Util.equals <| AreaOrBattle.is_battle state)
+          (Util.equals <| Branch.AreaOrBattle.is_battle state)
           bools
 
     | BranchRandomSelect (bools, condition), _ ->
-        next_branch'
-          (Util.equals <| Adventurer.random_select condition state)
+        let new_state, bool =
+          Branch.Adventurer.random_select condition state in
+        next_branch
+          new_state
+          (Util.equals bool)
           bools
 
     | BranchRound (bools, value, cmp), _ ->
         next_branch'
-          (Util.equals <| AreaOrBattle.round cmp value state)
+          (Util.equals <| Branch.AreaOrBattle.round cmp value state)
           bools

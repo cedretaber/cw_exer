@@ -38,6 +38,11 @@ module State =
     ; beasts : Beasts
     ; infos : Infos
     }
+  
+  type SelectedCast
+    = PC of int
+    | Enemy of int
+    | Companion of int
 
   type Scenario =
     { summary : Info.Summary.t
@@ -46,7 +51,7 @@ module State =
     ; current_area : Area
     ; global_state : GlobalState
     ; eventStack : Event list
-    ; selected_pc : int
+    ; selected : SelectedCast
     ; companions : Cast.t array
     ; bgm : Bgm
     }
@@ -91,10 +96,13 @@ module State =
         this.scenario.cards
       member this.global_state =
         this.scenario.global_state
-      member this.selected_pc =
-        this.scenario.selected_pc
       member this.companions =
         this.scenario.companions
+      member this.selected =
+        match this.scenario.selected with
+          PC idx -> Some this.adventurers.[idx]
+        | Enemy idx -> Option.map (fun enemies -> Array.get enemies idx) this.enemies
+        | Companion idx -> Some this.companions.[idx]
 
   (* global state ops *)
   let inline set_global_state global_state (state : t) =
@@ -149,26 +157,24 @@ module State =
 
   exception InvalidSelectedAdventurerException
 
-  let inline get_selected_pc (state: t) =
-    match state with
-      Scenario({ selected_pc = idx }, party, _) ->
-        let advs = party.adventurers in
-        if idx < Array.length advs
-        then
-          idx, advs.[idx]
-        else
-          raise InvalidSelectedAdventurerException
-
-  let inline set_selected_pc idx (state: t) =
-    match state with
-      Scenario (scenario, party, random) ->
-        Scenario ({ scenario with selected_pc = idx }, party, random)
-
   let inline get_random_pc (state: t) =
     match state with
       Scenario (_, party, _) ->
         let idx = state.random <| Party.party_count party in
         idx, Party.at idx party
+
+  let inline set_selected selected (state: t) =
+    match state with
+      Scenario (scenario, party, random) ->
+        Scenario ({ scenario with selected = selected }, party, random)
+
+  let inline get_selected_or_random (state: t) =
+    match state.selected with
+      Some cast ->
+        state, cast
+    | Option.None ->
+      let idx, selected = get_random_pc state in
+      set_selected (PC idx) state, selected
         
 
   (* Enemy Ops *)

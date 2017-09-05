@@ -60,6 +60,8 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="core\Utils\Maybe.fs" />
     <Compile Include="core\Utils\MapUtil.fs" />
+    <Compile Include="core\Utils\Pair.fs" />
+    <Compile Include="core\Utils\Triplet.fs" />
     <Compile Include="core\Util.fs" />
     <Compile Include="core\Data\Types\Enhance.fs" />
     <Compile Include="core\Data\Types\Comparison.fs" />
@@ -90,12 +92,15 @@
     <Compile Include="core\Scenario\Summary.fs" />
     <Compile Include="core\Scenario\Areas\MenuCard.fs" />
     <Compile Include="core\Scenario\Area.fs" />
+    <Compile Include="core\Scenario\Battle.fs" />
+    <Compile Include="core\Scenario\Package.fs" />
     <Compile Include="core\Scenario\FieldCard.fs" />
     <Compile Include="core\Cards\Property.fs" />
     <Compile Include="core\Cards\Beast.fs" />
     <Compile Include="core\Cards\Item.fs" />
     <Compile Include="core\Cards\Skill.fs" />
     <Compile Include="core\Cards\Cast.fs" />
+    <Compile Include="core\Cards\Info.fs" />
     <Compile Include="core\GameMasters\Party.fs" />
     <Compile Include="core\GameMasters\State.fs" />
     <Compile Include="core\GameMasters\FlagOps.fs" />
@@ -107,6 +112,7 @@
     <Compile Include="core\GameMasters\Branch\Select.fs" />
     <Compile Include="core\GameMasters\Branch\Adventurer.fs" />
     <Compile Include="core\GameMasters\Branch\Random.fs" />
+    <Compile Include="core\GameMasters\Branch\AreaOrBattle.fs" />
     <Compile Include="core\GameMaster.fs" />
     <Compile Include="Script.fsx" />
   </ItemGroup>

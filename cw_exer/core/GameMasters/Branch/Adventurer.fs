@@ -1,13 +1,44 @@
 ﻿namespace CardWirthEngine.GameMasters.Branch
 
+open CardWirthEngine
 open CardWirthEngine.Utils
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Cards
+open CardWirthEngine.Scenario.Events.Contents.BranchAbility
 open CardWirthEngine.Scenario.Events.Contents.BranchRandomSelect
 open CardWirthEngine.GameMasters
 
 module Adventurer =
-  let inline judge ability state = true
+
+  let inline private judge_ability level sleep physical mental cast =
+    match sleep, cast with
+      true, Cast.Bind _
+    | true, Cast.Sleep _ -> false
+    | _ -> true
+      
+
+  let inline judge ability (state : State.t) =
+    let { level = level
+        ; target = { target = target; sleep = sleep }
+        ; physical = physical
+        ; mental = mental
+        } = ability in
+    match target with
+      Target.Selected ->
+        let new_state, cast = State.get_selected_or_random state in
+        new_state, judge_ability level sleep physical mental cast
+    | Target.Random ->
+        let idx, cast = State.get_random_pc state in
+        Pair.t
+          (State.set_selected (State.PC idx) state)
+          (judge_ability level sleep physical mental cast)
+    | Target.Party ->
+        state,
+        Array.forall
+          (judge_ability level sleep physical mental)
+          state.adventurers
+    | _ ->
+      state, false
 
   exception InvalidTargetException of Target
 
@@ -16,7 +47,7 @@ module Adventurer =
       Target.Party ->
         Party.average_level state.party >= level
     | Target.Selected ->
-        (State.get_selected_pc state |> Pair.second).property.level >= level
+        (State.get_selected_or_random state |> Pair.second).property.level >= level
     | _ -> raise <| InvalidTargetException target
 
   let inline private judge_status status (cast : Cast.t) =
@@ -54,14 +85,16 @@ module Adventurer =
   let inline status target status (state : State.t) =
     match target with
       Target.Selected ->
-        State.get_selected_pc state
-        |> Pair.second
-        |> judge_status status
+        let new_state, cast =
+          State.get_selected_or_random state in
+        new_state, judge_status status cast
     | Target.Random ->
-        State.get_random_pc state
-        |> Pair.second
-        |> judge_status status
+        let idx, cast =
+          State.get_random_pc state in
+        State.set_selected (State.PC idx) state,
+        judge_status status cast
     | Target.Party ->
+        state,
         Array.forall
           (judge_status status)
           state.adventurers
@@ -75,26 +108,30 @@ module Adventurer =
   let inline private generate_casts party enemy npc (state : State.t) =
     seq {
       if party then
-        for cast in state.party.adventurers -> cast
+        for idx, cast
+          in Array.indexed state.party.adventurers ->
+            State.set_selected (State.PC idx) state, cast
       if enemy then
         let enemies =
           Option.fold
             (fun _ enemies -> enemies)
             Array.empty
             state.enemies
-        for cast in enemies -> cast
+        for cast in enemies ->
+          state, cast
       if npc then 
-        for cast in state.companions -> cast
+        for cast in state.companions ->
+          state, cast
     }
 
-  let inline private level_filter level (casts : Cast.t seq) =
+  let inline private level_filter level (casts : ('a * Cast.t) seq) =
     match level with
       Option.None ->
         casts
     | Some { max = max; min = min } ->
         Seq.filter
           (function
-            { property = { level = level } } ->
+            _, { property = { level = level } } ->
               min <= level && level <= max)
           casts
 
@@ -104,7 +141,7 @@ module Adventurer =
         casts
     | Some status ->
         Seq.filter
-          (fun cast -> judge_status status cast)
+          (function _, cast -> judge_status status cast)
           casts
 
   let random_select condition (state : State.t) =
@@ -120,4 +157,6 @@ module Adventurer =
     |> level_filter level
     |> status_filter status
     |> Seq.tryHead
-    |> Option.isSome
+    |> Option.fold
+      (Util.const' <| function state, _ -> state, true)
+      (state, false)

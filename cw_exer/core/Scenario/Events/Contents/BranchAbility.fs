@@ -5,7 +5,7 @@ open CardWirthEngine.Data.Casts
 
 module BranchAbility =
   type t =
-    { level : int
+    { level : Level
     ; target : BranchTarget
     ; physical : Physical.t
     ; mental : Mental.t
