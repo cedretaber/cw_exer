@@ -1,7 +1,7 @@
 ﻿namespace CardWirthEngine.GameMasters.Branch
 
 open CardWirthEngine.Data
-open CardWirthEngine.Data.Types
+open CardWirthEngine.Data.Type
 open CardWirthEngine.Cards
 open CardWirthEngine.GameMasters
 
@@ -12,9 +12,9 @@ module Adventurer =
 
   let inline level target level (state : State.t) =
     match target with
-      Types.Party ->
+      Target.Party ->
         Party.average_level state.party >= level
-    | Types.Selected ->
+    | Target.Selected ->
         (State.get_selected_pc state).property.level >= level
     | _ -> raise <| InvalidTargetException target
 

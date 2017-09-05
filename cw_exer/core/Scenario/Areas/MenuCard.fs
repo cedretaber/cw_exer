@@ -1,7 +1,7 @@
 ﻿namespace CardWirthEngine.Scenario.Areas
 
 open CardWirthEngine.Data
-open CardWirthEngine.Data.Types
+open CardWirthEngine.Data.Type
 open CardWirthEngine.Scenario
 
 module MenuCard =

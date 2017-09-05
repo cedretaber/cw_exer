@@ -6,9 +6,9 @@ open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Events
 open CardWirthEngine.Scenario.Events.Content
 open CardWirthEngine.GameMasters
+open CardWirthEngine.GameMasters.Branch
 
 module rec GameMaster =
-  open GameMasters.Branch
 
   let Void = Output.None
 

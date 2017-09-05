@@ -1,7 +1,7 @@
 ﻿namespace CardWirthEngine.Scenario
 
 open CardWirthEngine.Data
-open CardWirthEngine.Data.Types
+open CardWirthEngine.Data.Type
 open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Areas
 

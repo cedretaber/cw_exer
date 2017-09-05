@@ -1,5 +1,6 @@
 ﻿namespace CardWirthEngine.Cards
 
+open CardWirthEngine.Data.Type
 open CardWirthEngine.Data.Types
 open CardWirthEngine.Data.Casts
 
@@ -36,13 +37,6 @@ module Cast =
       ; weakness : Weakness
       }
 
-  type Enhance =
-    { action : int
-    ; avoid : int
-    ; resist : int
-    ; defense : int
-    }
-
   module Ability =
     type Physical =
       { intelligence : int
@@ -63,7 +57,7 @@ module Cast =
     type t =
       { physical : Physical
       ; mental : Mental
-      ; enhance : Enhance
+      ; enhance : Enhance.m
       }
 
   module Status =
@@ -92,7 +86,7 @@ module Cast =
     ; feature : Feature.t
     ; ability : Ability.t
     ; status : Status.t
-    ; enhance : Enhance
+    ; enhance : Enhance.m
     ; coupons : Coupon.t list
     }
 
@@ -128,11 +122,7 @@ module Cast =
     else
       let status = cast.property.status in
       let m = status.mentality in
-      if status.bind > 0 || (m.mentality = Mentality.Sleep && m.duration > 0)
-      then
-        false
-      else
-        true
+      status.bind = 0 && m.mentality <> Mentality.Sleep || m.duration = 0
 
   let is_inactive = not << is_active
 

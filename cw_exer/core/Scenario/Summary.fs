@@ -1,7 +1,7 @@
 ﻿namespace CardWirthEngine.Scenario.Info
 
 open CardWirthEngine.Data
-open CardWirthEngine.Data.Types
+open CardWirthEngine.Data.Type
 
 module Summary =
   type DataVersion = int

@@ -1,7 +1,7 @@
 ﻿namespace CardWirthEngine.GameMasters
 
 open CardWirthEngine.Data
-open CardWirthEngine.Data.Types
+open CardWirthEngine.Data.Type
 open CardWirthEngine.Data.Skills
 open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Events.Contents

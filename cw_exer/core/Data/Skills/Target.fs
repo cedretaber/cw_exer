@@ -1,6 +1,6 @@
 ﻿namespace CardWirthEngine.Data.Skills
 
-open CardWirthEngine.Data.Types
+open CardWirthEngine.Data.Type
 
 module Target =
   type t =

@@ -1,7 +1,7 @@
 ﻿namespace CardWirthEngine.Scenario.Events.Contents
 
 open CardWirthEngine.Data
-open CardWirthEngine.Data.Types
+open CardWirthEngine.Data.Type
 open CardWirthEngine.Data.Skills
 
 module Effect =

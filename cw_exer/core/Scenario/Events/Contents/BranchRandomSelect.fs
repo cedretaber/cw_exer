@@ -1,6 +1,6 @@
 ﻿namespace CardWirthEngine.Scenario.Events.Contents
 
-open CardWirthEngine.Data.Types
+open CardWirthEngine.Data.Type
 
 module BranchRandomSelect =
   type CastRange

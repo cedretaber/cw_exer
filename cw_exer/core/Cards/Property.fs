@@ -1,5 +1,6 @@
 ﻿namespace CardWirthEngine.Cards
 
+open CardWirthEngine.Data.Type
 open CardWirthEngine.Data.Types
 open CardWirthEngine.Data.Skills
 
@@ -17,7 +18,7 @@ module Property =
     ; resist_type : Resist.t
     ; success_rate : int
     ; visual_effect : CardVisual.t
-    ; enhance : Enhance
+    ; enhance : Enhance.m
     ; sound_paths : Path array
     ; key_codes : string list
     ; premium : Premium.t

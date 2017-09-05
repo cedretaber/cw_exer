@@ -33,8 +33,8 @@ module StepOps =
         match source with
           Content.SourceStep.Random ->
             state.random target_length
-        | Content.SourceStep.SelectedAdventurer ->
-            state.selected_adventurer
+        | Content.SourceStep.SelectedPc ->
+            state.get_selected_pc
         | Content.SourceStep.From name ->
             get name state in
       if step <= target_length

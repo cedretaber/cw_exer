@@ -1,6 +1,7 @@
 ﻿namespace CardWirthEngine.GameMasters
 
 open CardWirthEngine.Data
+open CardWirthEngine.Data.Type
 open CardWirthEngine.Data.Types
 open CardWirthEngine.Data.Skills
 open CardWirthEngine.Scenario
@@ -23,7 +24,7 @@ module Standard =
             Option.None
       | idx, (selection, Content.CheckStep (_, name, right, cmp)) ->
           let left = StepOps.get name state in
-          if Types.compare cmp left right
+          if Comparison.compare cmp left right
           then
             Some (idx, selection)
           else

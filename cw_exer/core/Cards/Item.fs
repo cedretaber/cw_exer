@@ -2,13 +2,15 @@
 
 open CardWirthEngine.Data
 open CardWirthEngine.Data.Skills
+open CardWirthEngine.Data.Type
+open CardWirthEngine.Data.Types
 open CardWirthEngine.Scenario
 
 module Item =
   type t =
     { property : Property.t
     ; price : int
-    ; enhance_owner : Enhance.t
+    ; enhance_owner : Enhance.m
     ; hold : bool
     ; motions : Motion.t list
     ; beasts : Beast.t array

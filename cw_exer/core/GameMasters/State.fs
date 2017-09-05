@@ -2,7 +2,7 @@
 
 open CardWirthEngine.Utils
 open CardWirthEngine.Data
-open CardWirthEngine.Data.Types
+open CardWirthEngine.Data.Type
 open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Events
 open CardWirthEngine.Cards
@@ -96,7 +96,7 @@ module State =
             Scenario (scenario, _, _) ->
               scenario.cards
 
-  exception InvalidState
+  exception InvalidStateException
 
   (* flag ops *)
   let inline get_flag name (state: t) =
@@ -118,7 +118,7 @@ module State =
     steps.steps
     |> Array.length
 
-  exception InvalidStepIndex
+  exception InvalidStepIndexException
 
   let inline set_step name value (state: t) =
     let length = get_step_length name state in
@@ -128,7 +128,7 @@ module State =
       let global_state = { state.get_global_state with steps = steps } in
       state.set_global_state global_state
     else
-      raise InvalidStepIndex
+      raise InvalidStepIndexException
 
   (* card info ops *)
   let inline casts (state: t) = state.get_cards.casts
@@ -138,7 +138,7 @@ module State =
 
   (* party ops *)
 
-  exception InvalidSelectedAdventurer
+  exception InvalidSelectedAdventurerException
 
   let inline get_selected_pc (state: t) =
     match state with
@@ -148,7 +148,7 @@ module State =
         then
           advs.[idx]
         else
-          raise InvalidSelectedAdventurer
+          raise InvalidSelectedAdventurerException
 
   let inline set_selected_pc idx (state: t) =
     match state with

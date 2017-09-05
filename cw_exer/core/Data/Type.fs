@@ -1,6 +1,6 @@
 ﻿namespace CardWirthEngine.Data
 
-module Types =
+module Type =
 
   (* ID *)
   type AreaId = int
@@ -30,12 +30,6 @@ module Types =
 
   type Percent = uint8
   
-  type Enhance
-    = Action // 行動
-    | Avoid // 回避
-    | Resist // 抵抗
-    | Defense // 防御
-
   type Target
     = Selected
     | Unselected
@@ -100,15 +94,6 @@ module Types =
     | Blinds // ブラインド式
     | PixelDissolve // ピクセルディゾルブ式
     | Fade // フェード式
-
-  type Comparison = Eq | Ne | Lt | Gt
-
-  let inline compare comp x y =
-    match comp with
-      Eq -> x = y
-    | Ne -> x <> y
-    | Lt -> x < y
-    | Gt -> x > y
 
   type BlendMode
     = Normal // 標準

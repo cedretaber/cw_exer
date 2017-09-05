@@ -1,6 +1,7 @@
 ﻿namespace CardWirthEngine.Scenario.Events
 
 open CardWirthEngine.Data
+open CardWirthEngine.Data.Type
 open CardWirthEngine.Data.Types
 open CardWirthEngine.Scenario.Events.Contents
 
@@ -12,7 +13,7 @@ module rec Content =
   type Steps = (Step.State * t) list
   type AreaIds = (AreaId * t) list
   type BattleIds = (BattleId * t) list
-  type Trios = (Comparison * t) list
+  type Trios = (Comparison.t * t) list
 
   let select : int -> 'a list -> 'a option = List.tryItem
 
@@ -26,7 +27,7 @@ module rec Content =
   module SourceStep =
     type t
       = Random
-      | SelectedAdventurer
+      | SelectedPc
       | From of Step.Name
 
   type 'a NextContent
@@ -67,7 +68,7 @@ module rec Content =
     | SubstituteStep of Nexts * source : SourceStep.t * target : Step.Name
     | BranchMultiStep of Steps * step : Step.Name
     | BranchStepCmp of Trios * left : Step.Name * right : Step.Name
-    | CheckStep of Nexts * step : Step.Name * value : Step.State * cmp : Comparison
+    | CheckStep of Nexts * step : Step.Name * value : Step.State * cmp : Comparison.t
     (* Utility *)
     | BranchSelect of Bools * BranchSelect.t
     | BranchAbility of Bools * BranchAbility.t

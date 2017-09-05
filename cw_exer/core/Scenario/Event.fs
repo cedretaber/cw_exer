@@ -1,6 +1,6 @@
 ﻿namespace CardWirthEngine.Scenario
 
-open CardWirthEngine.Data.Types
+open CardWirthEngine.Data.Type
 open CardWirthEngine.Scenario.Events
 
 module Event =
