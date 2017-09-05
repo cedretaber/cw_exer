@@ -1,6 +1,7 @@
 ﻿namespace CardWirthEngine.Scenario.Events.Contents
 
 open CardWirthEngine.Data.Type
+open CardWirthEngine.Data.Casts
 
 module TalkMessage =
   type ImageType
@@ -10,7 +11,7 @@ module TalkMessage =
     | Unselected // 非選択メンバ
     | Random // ランダムメンバ
     | Card // カード
-    | Valued of (CouponName * int) list // 評価メンバ
+    | Valued of (Coupon.Name * int) list // 評価メンバ
   
   type t =
     { image : ImageType

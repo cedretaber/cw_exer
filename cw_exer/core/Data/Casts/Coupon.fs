@@ -1,7 +1,9 @@
 ﻿namespace CardWirthEngine.Data.Casts
 
 module Coupon =
+  type Name = string
+  type Value = int
   type t =
-    { name : string
-    ; value : int
+    { name : Name
+    ; value : Value
     }

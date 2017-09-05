@@ -1,6 +1,7 @@
 ﻿namespace CardWirthEngine.Scenario.Events.Contents
 
 open CardWirthEngine.Data.Type
+open CardWirthEngine.Data.Casts
 
 module TalkDialog =
   type ImageType
@@ -10,7 +11,7 @@ module TalkDialog =
     | Random
     | Card
   type Dialog =
-    { required_coupons : CouponName list
+    { required_coupons : Coupon.Name list
     ; text : string
     }
 

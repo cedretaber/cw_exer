@@ -3,6 +3,7 @@
 open CardWirthEngine.Data
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Data.Types
+open CardWirthEngine.Data.Casts
 open CardWirthEngine.Scenario.Events.Contents
 
 module rec Content =
@@ -89,7 +90,7 @@ module rec Content =
     | BranchInfo of Bools * info_id : InfoId
     | BranchBeast of Bools * beast_id : BeastId
     | BranchMoney of Bools * value : int
-    | BranchCoupon of Bools * range : Range * value : CouponName
+    | BranchCoupon of Bools * range : Range * value : Coupon.Name
     | BranchMultiCoupon of Texts * target : Target (* Wsn.2 *)
     | BranchCompleteStamp of Bools * value : ScenarioName
     | BranchGossip of Bools * value : GossipName
@@ -101,7 +102,7 @@ module rec Content =
     | GetInfo of Nexts * indo_id : InfoId
     | GetBeast of Nexts * beast_id : BeastId * target : Range * value : int
     | GetMoney of Nexts * value : int
-    | GetCoupon of Nexts * target : Target * point : int * value : CouponName
+    | GetCoupon of Nexts * target : Target * point : int * value : Coupon.Name
     | GetCompleteStamp of Nexts * value : ScenarioName
     | GetGossip of Nexts * value : GossipName
     (* Lost *)
@@ -111,7 +112,7 @@ module rec Content =
     | LoseInfo of Nexts * indo_id : InfoId
     | LoseBeast of Nexts * beast_id : BeastId * target : Range * value : int
     | LoseMoney of Nexts * value : int
-    | LoseCoupon of Nexts * target : Target * value : CouponName
+    | LoseCoupon of Nexts * target : Target * value : Coupon.Name
     | LoseCompeteStamp of Nexts * value : ScenarioName
     | LoseGossip of Nexts * value : GossipName
     (* Visual *)

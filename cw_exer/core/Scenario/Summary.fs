@@ -2,6 +2,7 @@
 
 open CardWirthEngine.Data
 open CardWirthEngine.Data.Type
+open CardWirthEngine.Data.Casts
 
 module Summary =
   type DataVersion = int
@@ -13,7 +14,7 @@ module Summary =
     ; author : AuthorName
     ; description : string
     ; level : Level
-    ; required_coupons : (CouponName * int) list
+    ; required_coupons : (Coupon.Name * int) list
     ; start_area_id : AreaId
     ; tags : string list
     ; scenario_type : string

@@ -19,8 +19,6 @@ module Type =
 
   type KeyCode = string
 
-  type CouponName = string
-
   (* シナリオが終了済みか否か *)
   type IsCompleted = bool
 
