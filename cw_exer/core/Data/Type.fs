@@ -17,6 +17,8 @@ module Type =
   type GossipName = string
   type StartName = string
 
+  type Level = int
+
   type KeyCode = string
 
   (* シナリオが終了済みか否か *)

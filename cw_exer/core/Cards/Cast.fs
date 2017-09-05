@@ -77,11 +77,11 @@ module Cast =
       }
 
   type Property =
-    { id: int
+    { id: CastId
     ; name : string
     ; image : Path
     ; description : string
-    ; level : int
+    ; level : Level
     ; life : Life
     ; feature : Feature.t
     ; ability : Ability.t

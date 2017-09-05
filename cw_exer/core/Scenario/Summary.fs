@@ -6,14 +6,14 @@ open CardWirthEngine.Data.Casts
 
 module Summary =
   type DataVersion = int
-  type Level = { max : int; min : int }
+  type LevelRange = { max : Level; min : Level }
 
   type Property =
     { name : ScenarioName
     ; image_paths : Path list
     ; author : AuthorName
     ; description : string
-    ; level : Level
+    ; level : LevelRange
     ; required_coupons : (Coupon.Name * int) list
     ; start_area_id : AreaId
     ; tags : string list
