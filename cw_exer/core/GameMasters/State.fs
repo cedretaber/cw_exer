@@ -146,7 +146,7 @@ module State =
         let advs = party.adventurers in
         if idx < Array.length advs
         then
-          advs.[idx]
+          idx, advs.[idx]
         else
           raise InvalidSelectedAdventurerException
 
@@ -159,7 +159,7 @@ module State =
     match state with
       Scenario (_, party, _) ->
         let idx = state.random <| Party.party_count party in
-        Party.at idx party
+        idx, Party.at idx party
 
   (* BGM *)
   let inline change_bgm bgm state =

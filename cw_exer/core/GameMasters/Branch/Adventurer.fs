@@ -1,6 +1,6 @@
 ﻿namespace CardWirthEngine.GameMasters.Branch
 
-open CardWirthEngine.Data
+open CardWirthEngine.Utils
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Cards
 open CardWirthEngine.GameMasters
@@ -15,38 +15,38 @@ module Adventurer =
       Target.Party ->
         Party.average_level state.party >= level
     | Target.Selected ->
-        (State.get_selected_pc state).property.level >= level
+        (State.get_selected_pc state |> Pair.second).property.level >= level
     | _ -> raise <| InvalidTargetException target
 
   let inline private judge_status status (cast : Cast.t) =
     match status, cast with
-      Active, Cast.Active -> true
-    | Inactive, Cast.Inactive -> true
-    | Alive, Cast.Alive -> true
-    | Dead, Cast.Dead -> true
-    | Fine, Cast.Fine -> true
-    | Injured, Cast.Injured -> true
-    | HeavyInjured, Cast.HeavyInjured -> true
-    | Unconscious, Cast.Unconscious -> true
-    | Poison, Cast.Poison _ -> true
-    | Sleep, Cast.Sleep _ -> true
-    | Bind, Cast.Bind _ -> true
-    | Paralyze, Cast.Paralyze _ -> true
-    | Confuse, Cast.Confuse _ -> true
-    | Overheat, Cast.Overheat _ -> true
-    | Brave, Cast.Brave _ -> true
-    | Panic, Cast.Panic _ -> true
-    | Silence, Cast.Silence _ -> true
-    | FaceUp, Cast.FaceUp _ -> true
-    | AntiMagic, Cast.AntiMagic _ -> true
-    | UpAction, Cast.UpAction _ -> true
-    | UpAvoid, Cast.UpAvoid _ -> true
-    | UpResist, Cast.UpResist _ -> true
-    | UpDefense, Cast.UpDefense _ -> true
-    | DownAction, Cast.DownAction _ -> true
-    | DownAvoid, Cast.DownAvoid _ -> true
-    | DownResist, Cast.DownResist _ -> true
-    | DownDefense, Cast.DownDefense _ -> true
+      Active, Cast.Active
+    | Inactive, Cast.Inactive
+    | Alive, Cast.Alive
+    | Dead, Cast.Dead
+    | Fine, Cast.Fine
+    | Injured, Cast.Injured
+    | HeavyInjured, Cast.HeavyInjured
+    | Unconscious, Cast.Unconscious
+    | Poison, Cast.Poison _
+    | Sleep, Cast.Sleep _
+    | Bind, Cast.Bind _
+    | Paralyze, Cast.Paralyze _
+    | Confuse, Cast.Confuse _
+    | Overheat, Cast.Overheat _
+    | Brave, Cast.Brave _
+    | Panic, Cast.Panic _
+    | Silence, Cast.Silence _
+    | FaceUp, Cast.FaceUp _
+    | AntiMagic, Cast.AntiMagic _
+    | UpAction, Cast.UpAction _
+    | UpAvoid, Cast.UpAvoid _
+    | UpResist, Cast.UpResist _
+    | UpDefense, Cast.UpDefense _
+    | DownAction, Cast.DownAction _
+    | DownAvoid, Cast.DownAvoid _
+    | DownResist, Cast.DownResist _
+    | DownDefense, Cast.DownDefense _
     | Status.None, _ -> true
     | _ -> false
 
@@ -54,9 +54,11 @@ module Adventurer =
     match target with
       Target.Selected ->
         State.get_selected_pc state
+        |> Pair.second
         |> judge_status status
     | Target.Random ->
         State.get_random_pc state
+        |> Pair.second
         |> judge_status status
     | Target.Party ->
         Array.forall

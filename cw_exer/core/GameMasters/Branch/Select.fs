@@ -1,6 +1,6 @@
 ﻿namespace CardWirthEngine.GameMasters.Branch
 
-open CardWirthEngine.Util
+open CardWirthEngine.Utils
 open CardWirthEngine.Scenario.Events.Contents.BranchSelect
 open CardWirthEngine.Cards
 open CardWirthEngine.GameMasters
@@ -47,7 +47,7 @@ module Select =
           Manual ->
             state,
             Output.SelectPlayerCharactor
-              (List.map first advs_with_index)
+              (List.map Pair.first advs_with_index)
 
         | Random ->
             let length = List.length advs_with_index in
@@ -58,5 +58,5 @@ module Select =
         | Valued (initial, coupons) ->
             advs_with_index
             |> appraise initial coupons
-            |> Array.maxBy second
+            |> Array.maxBy Pair.second
             |> function index, _ -> State.set_selected_pc index state, Output.None
