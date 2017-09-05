@@ -1,6 +1,7 @@
 ﻿namespace CardWirthEngine
 
 open CardWirthEngine.Util
+open CardWirthEngine.Data.Types
 open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Events
 open CardWirthEngine.Scenario.Events.Content
@@ -54,7 +55,7 @@ module rec GameMaster =
           FlagOps.get name state
       | Content.CheckStep (_, name, right, cmp) ->
           let left = StepOps.get name state in
-          Types.compare cmp left right
+          Comparison.compare cmp left right
       | _ -> true
 
     (* Through next contents *)
@@ -237,7 +238,7 @@ module rec GameMaster =
     (* Data *)
     | BranchFlag (bools, name), _ ->
         next_branch'
-          (fun name' -> name' = FlagOps.get name state)
+          (Util.equals <| FlagOps.get name state)
           bools
           
     | SetFlag (_, name, flag), Input.None ->
@@ -261,7 +262,7 @@ module rec GameMaster =
 
     | BranchFlagCmp (bools, left, right), _ ->
         next_branch'
-          (fun b -> b = FlagOps.compare left right state)
+          (Util.equals <| FlagOps.compare left right state)
           bools
 
     (* フラグのチェックは直前のコンテントで行う *)
@@ -271,7 +272,7 @@ module rec GameMaster =
     (* ステップ比較は 以上=true, 未満=false *)
     | BranchStep (bools, name, value), _ ->
         next_branch'
-          (fun b -> b = (StepOps.get name state >= value))
+          (Util.equals <| StepOps.get name state >= value)
           bools
 
     | SetStep (nexts, name, value), _ ->
@@ -296,12 +297,12 @@ module rec GameMaster =
 
     | BranchMultiStep (steps, name), _ ->
         next_branch'
-          (fun step -> step = StepOps.get name state)
+          (Util.equals <| StepOps.get name state)
           steps
 
     | BranchStepCmp (trios, left, right), _ ->
         next_branch'
-          (fun cmp -> Types.compare cmp left right)
+          (fun cmp -> Comparison.compare cmp left right)
           trios
 
     (* CheckFlagに同じ *)
@@ -329,12 +330,12 @@ module rec GameMaster =
 
     | BranchAbility (bools, ability), _ ->
         next_branch'
-          (fun b -> b = Branch.Adventurer.judge ability state)
+          (Util.equals <| Branch.Adventurer.judge ability state)
           bools
 
     | BranchRandom (bools, percent), _ ->
         next_branch'
-          (fun b -> b = Branch.Random.dice (int percent) state)
+          (Util.equals <| Branch.Random.dice (int percent) state)
           bools
 
     | BranchMultiRandom nexts, _ ->
@@ -343,12 +344,12 @@ module rec GameMaster =
           nexts
     | BranchLevel (bools, target, level), _ ->
         next_branch'
-          (fun b -> b = Adventurer.level target level state)
+          (Util.equals <| Adventurer.level target level state)
           bools
 
     | BranchStatus (bools, target, status), _ ->
         next_branch'
-          (fun t -> t = Adventurer.status target status state)
+          (Util.equals <| Adventurer.status target status state)
           bools
     
     
