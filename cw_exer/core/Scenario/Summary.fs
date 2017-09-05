@@ -6,7 +6,6 @@ open CardWirthEngine.Data.Casts
 
 module Summary =
   type DataVersion = int
-  type LevelRange = { max : Level; min : Level }
 
   type Property =
     { name : ScenarioName

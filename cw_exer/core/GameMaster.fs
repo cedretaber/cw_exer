@@ -270,7 +270,7 @@ module rec GameMaster =
     (* ステップ比較は 以上=true, 未満=false *)
     | BranchStep (bools, name, value), _ ->
         next_branch'
-          (Util.equals <| StepOps.get name state >= value)
+          (Util.equals (StepOps.get name state >= value))
           bools
 
     | SetStep (nexts, name, value), _ ->
@@ -340,6 +340,7 @@ module rec GameMaster =
         select_multi
           (Branch.Random.multi nexts state)
           nexts
+
     | BranchLevel (bools, target, level), _ ->
         next_branch'
           (Util.equals <| Adventurer.level target level state)
@@ -349,12 +350,33 @@ module rec GameMaster =
         next_branch'
           (Util.equals <| Adventurer.status target status state)
           bools
-    
-    
-    of Bools * target : Target * status : Status
-        | BranchPartyNumber of Bools * value : int
-        | BranchArea of AreaIds
-        | BranchBattle of BattleIds
-        | BranchIsBattle of Bools
-        | BranchRandomSelect of Bools * BranchRandomSelect.t
-        | BranchRound of Bools * value : int
+
+    | BranchPartyNumber (bools, value), _ ->
+        next_branch'
+          (Util.equals <| Adventurer.party_count value state)
+          bools
+
+    | BranchArea (bools, id), _ ->
+        next_branch'
+          (Util.equals <| AreaOrBattle.is_area_in id state)
+          bools
+
+    | BranchBattle (bools, id), _ ->
+        next_branch'
+          (Util.equals <| AreaOrBattle.is_battle_in id state)
+          bools
+
+    | BranchIsBattle bools, _ ->
+        next_branch'
+          (Util.equals <| AreaOrBattle.is_battle state)
+          bools
+
+    | BranchRandomSelect (bools, condition), _ ->
+        next_branch'
+          (Util.equals <| Adventurer.random_select condition state)
+          bools
+
+    | BranchRound (bools, value, cmp), _ ->
+        next_branch'
+          (Util.equals <| AreaOrBattle.round cmp value state)
+          bools

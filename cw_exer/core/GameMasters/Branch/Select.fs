@@ -50,13 +50,16 @@ module Select =
               (List.map Pair.first advs_with_index)
 
         | Random ->
-            let length = List.length advs_with_index in
-            let i = state.random length in
-            let (index, _) = (List.toArray advs_with_index).[i] in
+            let index, _ =
+              advs_with_index
+              |> List.length
+              |> state.random
+              |> (Array.get <| List.toArray advs_with_index)
             State.set_selected_pc index state, Output.None
 
         | Valued (initial, coupons) ->
-            advs_with_index
-            |> appraise initial coupons
-            |> Array.maxBy Pair.second
-            |> function index, _ -> State.set_selected_pc index state, Output.None
+            let index, _ =
+              advs_with_index
+              |> appraise initial coupons
+              |> Array.maxBy Pair.second in
+            State.set_selected_pc index state, Output.None

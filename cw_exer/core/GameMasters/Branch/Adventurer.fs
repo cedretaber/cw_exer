@@ -3,6 +3,7 @@
 open CardWirthEngine.Utils
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Cards
+open CardWirthEngine.Scenario.Events.Contents.BranchRandomSelect
 open CardWirthEngine.GameMasters
 
 module Adventurer =
@@ -67,3 +68,56 @@ module Adventurer =
     | _ ->
         raise <| InvalidTargetException target
       
+  let inline party_count value (state : State.t) =
+    Party.party_count state.party > value
+
+  (* random_select *)
+  let inline private generate_casts party enemy npc (state : State.t) =
+    seq {
+      if party then
+        for cast in state.party.adventurers -> cast
+      if enemy then
+        let enemies =
+          Option.fold
+            (fun _ enemies -> enemies)
+            Array.empty
+            state.enemies
+        for cast in enemies -> cast
+      if npc then 
+        for cast in state.companions -> cast
+    }
+
+  let inline private level_filter level (casts : Cast.t seq) =
+    match level with
+      Option.None ->
+        casts
+    | Some { max = max; min = min } ->
+        Seq.filter
+          (function
+            { property = { level = level } } ->
+              min <= level && level <= max)
+          casts
+
+  let inline private status_filter status casts =
+    match status with
+      Option.None ->
+        casts
+    | Some status ->
+        Seq.filter
+          (fun cast -> judge_status status cast)
+          casts
+
+  let random_select condition (state : State.t) =
+    let
+      { range = { party = party
+                ; enemy = enemy
+                ; npc = npc
+                }
+      ; level = level
+      ; status = status
+      } = condition in
+    generate_casts party enemy npc state
+    |> level_filter level
+    |> status_filter status
+    |> Seq.tryHead
+    |> Option.isSome

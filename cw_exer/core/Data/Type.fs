@@ -19,6 +19,9 @@ module Type =
   type StartName = string
 
   type Level = int
+  type LevelRange = { max : Level; min : Level }
+
+  type Round = int
 
   type KeyCode = string
 

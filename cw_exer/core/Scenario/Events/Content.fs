@@ -78,11 +78,11 @@ module rec Content =
     | BranchLevel of Bools * target : Target * level : int
     | BranchStatus of Bools * target : Target * status : Status
     | BranchPartyNumber of Bools * value : int
-    | BranchArea of AreaIds
-    | BranchBattle of BattleIds
+    | BranchArea of Bools * id : AreaId
+    | BranchBattle of Bools * id : BattleId
     | BranchIsBattle of Bools
     | BranchRandomSelect of Bools * BranchRandomSelect.t
-    | BranchRound of Bools * value : int
+    | BranchRound of Bools * value : int * cmp : Comparison.t
     (* Branch *)
     | BranchCast of Bools * cast_id : CastId
     | BranchItem of Bools * item_id : ItemId
