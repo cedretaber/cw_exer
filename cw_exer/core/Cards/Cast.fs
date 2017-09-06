@@ -1,10 +1,23 @@
 ﻿namespace CardWirthEngine.Cards
 
+open CardWirthEngine.Utils
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Data.Types
 open CardWirthEngine.Data.Casts
 
 module Cast =
+  let max_skill_item level =
+    let max = int (ceil (float level / 2.0)) + 2 in
+    if max > 10 then 10 else max
+
+  let max_beast level =
+    let max = int (float (level + 2) / 4.0) in
+    if max > 5 then 5 else max
+
+  let max_hand level =
+    let max = int (ceil (float level / 2.0)) + 3 in
+    if max > 11 then 11 else max
+
   type Life =
     { max : int
     ; current : int
@@ -92,9 +105,9 @@ module Cast =
 
   type t =
     { property : Property
-    ; skills : Skill.t list
-    ; items : Item.t list
-    ; beasts : Beast.t list
+    ; skill : Skill.t list
+    ; item : Item.t list
+    ; beast : Beast.t list
     }
     with
       member this.life = this.property.life.current
@@ -188,3 +201,62 @@ module Cast =
       d when d > 0 -> UpDefense d
     | d when d < 0 -> DownDefense d
     | _ -> NormalDefense
+
+  let inline add_card max count card cards =
+    let max_len = max - List.length cards in
+    let adding = List.replicate
+                   (if max_len < count then max_len else count)
+                   card in
+    if List.isEmpty adding
+    then cards
+    else cards @ adding
+
+  let inline remove_card count equals card cards =
+    cards
+    |> List.fold
+         (fun (n, acm) c ->
+           if n > 0 && equals c card
+           then n - 1, acm
+           else n, c :: acm)
+         (count, [])
+    |> Pair.second
+    |> List.rev
+
+  let inline add_skill count skill cast =
+    { cast with skill = add_card
+                          (max_skill_item cast.property.level)
+                          count
+                          skill
+                          cast.skill }
+  let inline remove_skill count skill cast =
+    { cast with skill = remove_card
+                          count
+                          Skill.equals
+                          skill
+                          cast.skill }
+
+  let inline add_item count item cast =
+    { cast with item = add_card
+                         (max_skill_item cast.property.level)
+                         count
+                         item
+                         cast.item }
+  let inline remove_item count item cast =
+    { cast with item = remove_card
+                         count
+                         Item.equals
+                         item
+                         cast.item }
+
+  let inline add_beast count beast cast =
+    { cast with beast = add_card
+                          (max_beast cast.property.level)
+                          count
+                          beast
+                          cast.beast }
+  let inline remove_beast count beast cast =
+    { cast with beast = remove_card
+                          count
+                          Beast.equals
+                          beast
+                          cast.beast }

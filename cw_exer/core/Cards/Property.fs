@@ -25,3 +25,8 @@ module Property =
     ; use_limit : int
     ; materials : Path
     }
+
+  let inline equals left right =
+    let { name = ln; author = la; description = ld } = left in
+    let { name = rn; author = ra; description = rd } = right in
+    ln = rn && la = ra && ld = rd

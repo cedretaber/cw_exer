@@ -15,3 +15,6 @@ module Item =
     ; beasts : Beast.t array
     ; events : Event.t list
     }
+
+  let equals left right =
+    Property.equals left.property right.property
