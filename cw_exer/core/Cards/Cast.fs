@@ -203,24 +203,15 @@ module Cast =
     | _ -> NormalDefense
 
   let inline add_card max count card cards =
-    let max_len = max - List.length cards in
-    let adding = List.replicate
-                   (if max_len < count then max_len else count)
-                   card in
-    if List.isEmpty adding
-    then cards
-    else cards @ adding
+    let free_space = max - List.length cards in
+    let add_count = if free_space < count then free_space else count in
+    ListUtil.multi_cons add_count card cards
 
   let inline remove_card count equals card cards =
-    cards
-    |> List.fold
-         (fun (n, acm) c ->
-           if n > 0 && equals c card
-           then n - 1, acm
-           else n, c :: acm)
-         (count, [])
-    |> Pair.second
-    |> List.rev
+    ListUtil.filter_limit
+      count
+      (fun c -> equals c card)
+      cards
 
   let inline add_skill count skill cast =
     { cast with skill = add_card
