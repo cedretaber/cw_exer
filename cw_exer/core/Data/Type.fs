@@ -2,6 +2,8 @@
 
 module Type =
 
+  type size_t = int
+
   (* ID *)
   type AreaId = int
   type BattleId = int
@@ -20,6 +22,8 @@ module Type =
 
   type Level = int
   type LevelRange = { max : Level; min : Level }
+
+  type Money = int
 
   type Round = int
 
