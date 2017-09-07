@@ -60,8 +60,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="core\Utils\Maybe.fs" />
     <Compile Include="core\Utils\ArrayUtil.fs" />
-    <Compile Include="core\Utils\ListUtil.fs" /> 
-    <Compile Include="core\Utils\MapUtil.fs" />
+    <Compile Include="core\Utils\ListUtil.fs" />
     <Compile Include="core\Utils\Pair.fs" />
     <Compile Include="core\Utils\Triplet.fs" />
     <Compile Include="core\Util.fs" />
@@ -103,6 +102,8 @@
     <Compile Include="core\Cards\Skill.fs" />
     <Compile Include="core\Cards\Cast.fs" />
     <Compile Include="core\Cards\Info.fs" />
+    <Compile Include="core\GameMasters\Cards\Adventurers.fs" />
+    <Compile Include="core\GameMasters\Cards\Enemies.fs" />
     <Compile Include="core\GameMasters\Party.fs" />
     <Compile Include="core\GameMasters\State.fs" />
     <Compile Include="core\GameMasters\FlagOps.fs" />

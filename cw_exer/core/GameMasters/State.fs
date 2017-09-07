@@ -6,6 +6,7 @@ open CardWirthEngine.Data.Type
 open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Events
 open CardWirthEngine.Cards
+open CardWirthEngine.GameMasters.Cards
 
 module State =
   type GlobalData =
@@ -15,7 +16,7 @@ module State =
 
   type Area
     = Area of AreaId
-    | Battle of BattleId * Round * Cast.t array
+    | Battle of BattleId * round : Round * enemies : Enemies.t
 
   type Event
     = Content of Event.t * Content.t
@@ -56,7 +57,7 @@ module State =
     ; global_state : GlobalState
     ; eventStack : Event list
     ; selected : SelectedCast
-    ; companions : Cast.t array
+    ; companions : Adventurers.t
     ; bgm : Bgm
     }
 
@@ -77,6 +78,9 @@ module State =
           Scenario (_, party, _, _) -> party
       member this.adventurers =
         this.party.adventurers
+      member this.global_data =
+        match this with
+          Scenario (_, _, global_data, _) -> global_data
 
       (* Scenario *)
       member private this.scenario =
@@ -86,6 +90,8 @@ module State =
         | _ -> raise OutOfScenarioException
       member this.summary =
         this.scenario.summary
+      member this.cards =
+        this.scenario.cards
       member this.area =
         this.scenario.current_area
       member this.enemies =
@@ -96,25 +102,27 @@ module State =
         match this.scenario.current_area with
           Battle (_, round, _) -> Some round
         | _ -> Option.None
-      member this.cards =
-        this.scenario.cards
       member this.global_state =
         this.scenario.global_state
       member this.companions =
         this.scenario.companions
       member this.selected =
         match this.scenario.selected with
-          PC idx -> Some this.adventurers.[idx]
-        | Enemy idx -> Option.map (fun enemies -> Array.get enemies idx) this.enemies
-        | Companion idx -> Some this.companions.[idx]
+          PC idx -> Some (Adventurers.get_by_index idx this.adventurers)
+        | Enemy idx -> Option.bind (Enemies.get idx) this.enemies
+        | Companion idx -> Some (Adventurers.get_by_index idx this.companions)
 
   (* global data ops *)
-  let inline set_gossip f (state : t) =
+  let inline set_global_data global_data (state : t) =
     match state with
-      Scenario (scenario, party, global_data, random) ->
-        let new_data =
-          { global_data with gossips = f global_data.gossips } in
-        Scenario (scenario, party, new_data, random)
+      Scenario (scenario, party, _, random) ->
+        Scenario (scenario, party, global_data, random)
+
+  let inline set_gossip f (state : t) =
+    let global_data = state.global_data in
+    let new_data =
+      { global_data with gossips = f global_data.gossips } in
+    set_global_data new_data state
   let inline get_gossip gossip (state : t) =
     set_gossip (Set.add gossip) state
   let inline lose_gossip gossip (state : t) =
@@ -124,13 +132,11 @@ module State =
       Scenario (_, _, global_data, _) ->
         Set.contains gossip global_data.gossips
 
-  (* global data ops *)
   let inline set_completed f (state : t) =
-    match state with
-      Scenario (scenario, party, global_data, random) ->
-        let new_data =
-          { global_data with completed_scenarii = f global_data.completed_scenarii } in
-        Scenario (scenario, party, new_data, random)
+    let global_data = state.global_data in
+    let new_data =
+      { global_data with completed_scenarii = f global_data.completed_scenarii } in
+    set_global_data new_data state
   let inline get_completed scenario (state : t) =
     set_gossip (Set.add scenario) state
   let inline lose_completed scenario (state : t) =
@@ -140,13 +146,18 @@ module State =
       Scenario (_, _, global_data, _) ->
         Set.contains scenario global_data.completed_scenarii
 
-  (* global state ops *)
-  let inline set_global_state global_state (state : t) =
+  (* scenario ops *)
+  let inline update_scenarion f (state : t) =
     match state with
       Scenario (scenario, party, global_data, random) ->
-        let new_scenario = { scenario with global_state = global_state } in
-        Scenario (new_scenario, party, global_data, random)
+        Scenario (f scenario, party, global_data, random)
     | _ -> raise OutOfScenarioException
+
+  (* global state ops *)
+  let inline set_global_state global_state (state : t) =
+    update_scenarion
+      (fun scenario -> { scenario with global_state = global_state })
+      state
 
   exception InvalidStateException
 
@@ -155,7 +166,7 @@ module State =
     state.global_state.flags |> Map.find name
 
   let inline set_flag name value (state: t) =
-    let flags = MapUtil.updated name value state.global_state.flags in
+    let flags = Map.add name value state.global_state.flags in
     let global_state = { state.global_state with flags =  flags } in
     set_global_state global_state state
 
@@ -176,7 +187,7 @@ module State =
     let length = get_step_length name state in
     if value >= 0 && value < length
     then
-      let steps = MapUtil.updated name value state.global_state.steps in
+      let steps = Map.add name value state.global_state.steps in
       let global_state = { state.global_state with steps = steps } in
       set_global_state global_state state
     else
@@ -190,7 +201,6 @@ module State =
   let inline infos (state: t) = state.cards.infos
 
   (* party ops *)
-
   exception InvalidSelectedAdventurerException
 
   let inline get_random_pc (state: t) =
@@ -200,9 +210,9 @@ module State =
         idx, Party.at idx party
 
   let inline set_selected selected (state: t) =
-    match state with
-      Scenario (scenario, party, global_data, random) ->
-        Scenario ({ scenario with selected = selected }, party, global_data, random)
+    update_scenarion
+      (fun scenario -> { scenario with selected = selected } )
+      state
 
   let inline get_selected_or_random (state: t) =
     match state.selected with
@@ -215,17 +225,26 @@ module State =
 
   (* Enemy Ops *)
   let inline enemy_at index (state : t) =
-    Option.bind
-      (fun enemies ->
-        if index >= Array.length enemies
-        then
-          Option.None
-        else
-          Some enemies.[index])
-      state.enemies
+    Option.bind (Map.tryFind index) state.enemies
+
+  (* Companions ops *)
+  let inline add_companion companion (state : t) =
+    let companions = state.companions in
+    update_scenarion
+      (fun scenario ->
+        let companions = Adventurers.add companion scenario.companions in
+        { scenario with companions = companions })
+      state
+  let inline remove_companion pos (state : t) =
+    update_scenarion
+      (fun scenario ->
+        let companions = Adventurers.remove pos scenario.companions in
+        { scenario with companions = companions })
+      state
+          
 
   (* BGM *)
   let inline change_bgm bgm state =
-    match state with
-      Scenario (scenario, party, global_data, random) ->
-        Scenario ({ scenario with bgm = bgm }, party, global_data, random)
+    update_scenarion
+      (fun scenario -> { scenario with bgm = bgm })
+      state

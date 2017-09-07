@@ -3,11 +3,9 @@
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Utils
 open CardWirthEngine.Cards
+open CardWirthEngine.GameMasters.Cards
 
 module Party =
-
-  type Adventurers = Cast.t array
-
   type Goods
     = Skill of Skill.t
     | Item of Item.t
@@ -21,18 +19,19 @@ module Party =
     | _ -> false
 
   type t =
-    { adventurers : Adventurers
+    { adventurers : Adventurers.t
     ; money : Money
     ; bag : Goods list
     }
 
   let inline party_count party =
-    Array.length party.adventurers
+    Adventurers.length party.adventurers
 
   let inline average_level party =
     let sum = 
       party.adventurers
-      |> Array.sumBy
+      |> Adventurers.to_list
+      |> List.sumBy
         (fun (cast : Cast.t) -> cast.property.level) in
     sum / party_count party
 
@@ -43,7 +42,7 @@ module Party =
     then
       raise <| InvalidPartyIndexException (index, party_count party)
     else
-      party.adventurers.[index]
+      Adventurers.get_by_index index party.adventurers
 
   let add_goods count good party =
     let goods = ListUtil.multi_cons count good party.bag

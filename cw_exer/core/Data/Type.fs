@@ -15,6 +15,8 @@ module Type =
   type BeastId = int
   type InfoId = int
 
+  type EnemyId = int
+
   type ScenarioName = string
   type AuthorName = string
   type GossipName = string
