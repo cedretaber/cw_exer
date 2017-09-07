@@ -193,12 +193,35 @@ module State =
     else
       raise InvalidStepIndexException
 
+  
+
   (* card info ops *)
+  exception InvalidCardIdException of int * string
+
+  let inline private get_card id cards typ =
+    match Map.tryFind id cards with
+      Some card -> card
+    | Option.None -> raise <| InvalidCardIdException (id, typ)
+
   let inline casts (state: t) = state.cards.casts
+  let inline get_cast id (state : t) =
+    get_card id <| casts state
+
   let inline skills (state: t) = state.cards.skills
+  let inline get_skilll id (state : t) =
+    get_card id <| skills state
+
   let inline items (state: t) = state.cards.items
+  let inline get_item id (state : t) =
+    get_card id <| items state
+
   let inline beasts (state: t) = state.cards.beasts
+  let inline get_beast id (state : t) =
+    get_card id <| beasts state
+
   let inline infos (state: t) = state.cards.infos
+  let inline get_info id (state : t) =
+    get_card id <| infos state
 
   (* party ops *)
   exception InvalidSelectedAdventurerException
