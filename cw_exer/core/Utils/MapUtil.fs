@@ -8,6 +8,9 @@ module MapUtil =
     : ('K, 'V) Map
     = map.Add (key, value)
 
-  let removed(key: 'K)(map: ('K, 'V) Map): ('K, 'V) Map =
-    map.Remove key
+  let inline removed
+    (key: 'K)
+    (map: ('K, 'V) Map)
+    : ('K, 'V) Map
+    = map.Remove key
 
