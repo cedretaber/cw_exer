@@ -192,9 +192,7 @@ module State =
       set_global_state global_state state
     else
       raise InvalidStepIndexException
-
-  
-
+      
   (* card info ops *)
   exception InvalidCardIdException of int * string
 

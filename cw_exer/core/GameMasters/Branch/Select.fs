@@ -6,6 +6,7 @@ open CardWirthEngine.Cards
 open CardWirthEngine.GameMasters
 
 module Select =
+  open CardWirthEngine.GameMasters.Cards
 
   let inline set_selected_pc index state =
     State.set_selected (State.PC index) state
@@ -13,8 +14,7 @@ module Select =
   let inline private filter target adventurers =
     let advs =
       adventurers
-      |> Array.indexed
-      |> Array.toList in
+      |> Adventurers.indexed
     match target with
       Active ->
         List.filter
