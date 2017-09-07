@@ -9,3 +9,4 @@ module Enemies =
   let get = Map.tryFind
   let add = Map.add
   let remove = Map.remove
+  let to_list = Map.toList

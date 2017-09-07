@@ -96,3 +96,10 @@ module Adventurers =
         | Fourth -> a1, a2, a3, a5, a6, None
         | Fifth  -> a1, a2, a3, a4, a6, None
         | Sixth  -> a1, a2, a3, a4, a5, None
+
+  let forall : (Cast.t -> bool) -> t -> bool =
+    fun f ->
+      to_list >> List.forall f
+
+  let indexed : t -> (int * Cast.t) list =
+    to_list >> List.indexed

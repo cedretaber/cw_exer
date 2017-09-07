@@ -7,6 +7,7 @@ open CardWirthEngine.Cards
 open CardWirthEngine.Scenario.Events.Contents.BranchAbility
 open CardWirthEngine.Scenario.Events.Contents.BranchRandomSelect
 open CardWirthEngine.GameMasters
+open CardWirthEngine.GameMasters.Cards
 
 module Adventurer =
 
@@ -34,7 +35,7 @@ module Adventurer =
           (judge_ability level sleep physical mental cast)
     | Target.Party ->
         state,
-        Array.forall
+        Adventurers.forall
           (judge_ability level sleep physical mental)
           state.adventurers
     | _ ->
@@ -95,7 +96,7 @@ module Adventurer =
         judge_status status cast
     | Target.Party ->
         state,
-        Array.forall
+        Adventurers.forall
           (judge_status status)
           state.adventurers
     | _ ->
@@ -109,18 +110,18 @@ module Adventurer =
     seq {
       if party then
         for idx, cast
-          in Array.indexed state.party.adventurers ->
+          in Adventurers.indexed state.party.adventurers ->
             State.set_selected (State.PC idx) state, cast
       if enemy then
         let enemies =
           Option.fold
-            (fun _ enemies -> enemies)
-            Array.empty
+            (fun _ es -> Enemies.to_list es)
+            List.Empty
             state.enemies
-        for cast in enemies ->
+        for _, cast in enemies ->
           state, cast
       if npc then 
-        for cast in state.companions ->
+        for cast in Adventurers.to_list state.companions ->
           state, cast
     }
 
