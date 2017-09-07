@@ -116,6 +116,7 @@
     <Compile Include="core\GameMasters\Branch\Adventurer.fs" />
     <Compile Include="core\GameMasters\Branch\Random.fs" />
     <Compile Include="core\GameMasters\Branch\AreaOrBattle.fs" />
+    <Compile Include="core\GameMasters\CardOps.fs" />
     <Compile Include="core\GameMaster.fs" />
     <Compile Include="Script.fsx" />
   </ItemGroup>

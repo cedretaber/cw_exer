@@ -53,6 +53,7 @@ module CardOps =
     | PartyAndBackpack ->
         let rest = count - count_all_adventurers.Force ()
         state, rest <= 0 || rest - count_backpack.Force () <= 0
+    | Field ->
 
   let add id (state : State.t) =
     let companion =
