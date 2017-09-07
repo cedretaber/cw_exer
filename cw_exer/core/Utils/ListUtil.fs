@@ -14,3 +14,5 @@ module ListUtil =
     if count = 0
     then list
     else multi_cons (count - 1) elem (elem :: list)
+
+  let inline count_by f = List.sumBy (fun e -> if f e then 1 else 0)

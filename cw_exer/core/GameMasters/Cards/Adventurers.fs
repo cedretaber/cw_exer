@@ -59,6 +59,9 @@ module Adventurers =
               yield Option.get ma
         ]
 
+  let to_seq =
+    to_list >> List.toSeq
+
   let inline get pos advs =
     match pos, advs with
       First,  (Some adv, _, _, _, _, _) -> adv
@@ -112,14 +115,29 @@ module Adventurers =
     | _, _, _, _, _, Some a when a.property.id = id ->
         remove_by_id id (a1, a2, a3, a4 ,a5, None)
     | _ -> advs
-
+  
+  let fold : ('a -> Cast.t -> 'a) -> 'a -> t -> 'a =
+    fun f a ->
+      to_list >> List.fold f a
+      
   let forall : (Cast.t -> bool) -> t -> bool =
     fun f ->
-      to_list >> List.forall f
+      to_seq >> Seq.forall f
 
   let indexed : t -> (int * Cast.t) list =
     to_list >> List.indexed
 
+  let try_find : (Cast.t -> bool) -> t -> Cast.t option =
+    fun f ->
+      to_seq >> Seq.tryFind f
+
+  let try_find_with_position : (Cast.t -> bool) -> t -> (Position * Cast.t) option =
+    fun f ->
+      to_seq
+      >> Seq.indexed
+      >> Seq.map (function idx, cast -> int_to_pos idx, cast )
+      >> Seq.tryFind (function _, cast -> f cast)
+
   let contains_by : (Cast.t -> bool) -> t -> bool =
     fun f -> 
-      to_list >> List.tryFind f >> Option.isSome
+      try_find f >> Option.isSome

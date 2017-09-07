@@ -45,9 +45,9 @@ module State =
     }
   
   type SelectedCast
-    = PC of int
+    = PC of Adventurers.Position
     | Enemy of int
-    | Companion of int
+    | Companion of Adventurers.Position
 
   type Scenario =
     { summary : Info.Summary.t
@@ -108,9 +108,9 @@ module State =
         this.scenario.companions
       member this.selected =
         match this.scenario.selected with
-          PC idx -> Some (Adventurers.get_by_index idx this.adventurers)
+          PC pos -> Some (Adventurers.get pos this.adventurers)
         | Enemy idx -> Option.bind (Enemies.get idx) this.enemies
-        | Companion idx -> Some (Adventurers.get_by_index idx this.companions)
+        | Companion pos -> Some (Adventurers.get pos this.companions)
 
   (* global data ops *)
   let inline set_global_data global_data (state : t) =
@@ -228,7 +228,7 @@ module State =
     match state with
       Scenario (_, party, _, _) ->
         let idx = state.random <| Party.party_count party in
-        idx, Party.at idx party
+        Adventurers.int_to_pos idx, Party.at idx party
 
   let inline set_selected selected (state: t) =
     update_scenarion

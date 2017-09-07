@@ -205,67 +205,64 @@ module Cast =
   let inline add_card max count card cards =
     let free_space = max - List.length cards in
     let add_count = if free_space < count then free_space else count in
-    ListUtil.multi_cons add_count card cards
+    count - add_count, ListUtil.multi_cons add_count card cards
 
-  let inline remove_card count equals card cards =
+  let inline remove_card count equals cards =
     ListUtil.filter_limit
       count
-      (fun c -> equals c card)
+      equals
       cards
 
-  let inline has_card count equals card cards =
-    let rec hc_go count cards =
-      match count, cards with
-        0, _ ->
-          true
-      | _, c :: cs when equals c card ->
-          hc_go (count - 1) cs
-      | _, c :: cs ->
-          hc_go count cs
-      | _ -> false in
-    hc_go count cards
-
   let inline add_skill count skill cast =
-    { cast with skill = add_card
-                          (max_skill_item cast.property.level)
-                          count
-                          skill
-                          cast.skill }
+    let diff, skills =
+      add_card
+        (max_skill_item cast.property.level)
+        count
+        skill
+        cast.skill in
+    diff, { cast with skill = skills }
   let inline remove_skill count skill cast =
     { cast with skill = remove_card
                           count
-                          Skill.equals
-                          skill
+                          (Skill.equals skill)
                           cast.skill }
-  let inline has_skill count skill cast =
-    has_card count skill cast.skill
+  let inline count_skill skill cast =
+    ListUtil.count_by
+      (Skill.equals skill)
+      cast.skill
 
   let inline add_item count item cast =
-    { cast with item = add_card
-                         (max_skill_item cast.property.level)
-                         count
-                         item
-                         cast.item }
+    let diff, items =
+      add_card
+        (max_skill_item cast.property.level)
+        count
+        item
+        cast.item in
+    diff, { cast with item = items }
   let inline remove_item count item cast =
     { cast with item = remove_card
                          count
-                         Item.equals
-                         item
+                         (Item.equals item)
                          cast.item }
-  let inline has_item count item cast =
-    has_card count item cast.item
+  let inline item_count item cast =
+    ListUtil.count_by
+      (Item.equals item)
+      cast.item
 
   let inline add_beast count beast cast =
-    { cast with beast = add_card
-                          (max_beast cast.property.level)
-                          count
-                          beast
-                          cast.beast }
+    let diff, beasts =
+      add_card
+        (max_beast cast.property.level)
+        count
+        beast
+        cast.beast in
+    diff, { cast with beast = beasts }
   let inline remove_beast count beast cast =
     { cast with beast = remove_card
                           count
-                          Beast.equals
-                          beast
+                          (Beast.equals beast)
                           cast.beast }
-  let inline has_beast count beast cast =
-    has_card count beast cast.beast
+  let inline beast_count beast cast =
+    ListUtil.count_by
+      (Beast.equals beast)
+      cast.beast

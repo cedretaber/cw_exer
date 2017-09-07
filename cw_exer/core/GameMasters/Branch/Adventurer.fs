@@ -111,7 +111,7 @@ module Adventurer =
       if party then
         for idx, cast
           in Adventurers.indexed state.party.adventurers ->
-            State.set_selected (State.PC idx) state, cast
+            State.set_selected (State.PC (Adventurers.int_to_pos idx)) state, cast
       if enemy then
         let enemies =
           Option.fold

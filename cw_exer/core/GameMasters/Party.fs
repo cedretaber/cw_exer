@@ -55,3 +55,32 @@ module Party =
         (fun g -> good_equals g good)
         party.bag in
     { party with bag = goods }
+
+  (* Card Ops *)
+  let inline add count card party =
+    let rec bag cards =
+      function
+        0 -> cards
+      | count -> bag (card :: cards) (count - 1) in
+    { party with bag = bag party.bag count }
+
+  let inline remove count card party =
+    ListUtil.filter_limit
+      count
+      (fun c ->
+        match c, card with
+          Skill left, Skill right -> Skill.equals left right
+        | Item left, Item right -> Item.equals left right
+        | Beast left, Beast right -> Beast.equals left right
+        | _ -> false)
+      party.bag
+
+  let inline count_card card party =
+    ListUtil.count_by
+      (fun c ->
+        match c, card with
+          Skill left, Skill right -> Skill.equals left right
+        | Item left, Item right -> Item.equals left right
+        | Beast left, Beast right -> Beast.equals left right
+        | _ -> false)
+      party.bag
