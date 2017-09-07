@@ -255,10 +255,10 @@ module State =
         let companions = Adventurers.add companion scenario.companions in
         { scenario with companions = companions })
       state
-  let inline remove_companion pos (state : t) =
+  let inline remove_companion id (state : t) =
     update_scenarion
       (fun scenario ->
-        let companions = Adventurers.remove pos scenario.companions in
+        let companions = Adventurers.remove_by_id id scenario.companions in
         { scenario with companions = companions })
       state
   let inline has_companion id (state : t) =

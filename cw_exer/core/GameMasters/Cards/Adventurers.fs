@@ -1,6 +1,5 @@
 namespace CardWirthEngine.GameMasters.Cards
 
-open CardWirthEngine.Utils
 open CardWirthEngine.Cards
 
 module Adventurers =
@@ -96,6 +95,23 @@ module Adventurers =
         | Fourth -> a1, a2, a3, a5, a6, None
         | Fifth  -> a1, a2, a3, a4, a6, None
         | Sixth  -> a1, a2, a3, a4, a5, None
+
+  let rec inline remove_by_id id (advs : t) =
+    let a1, a2, a3, a4, a5, a6 = advs in
+    match advs with
+      Some a, _, _, _, _, _ when a.property.id = id ->
+        remove_by_id id (a2, a3, a4, a5 ,a6, None)
+    | _, Some a, _, _, _, _ when a.property.id = id ->
+        remove_by_id id (a1, a3, a4, a5 ,a6, None)
+    | _, _, Some a, _, _, _ when a.property.id = id ->
+        remove_by_id id (a1, a2, a4, a5 ,a6, None)
+    | _, _, _, Some a, _, _ when a.property.id = id ->
+        remove_by_id id (a1, a2, a3, a5 ,a6, None)
+    | _, _, _, _, Some a, _ when a.property.id = id ->
+        remove_by_id id (a1, a2, a3, a4 ,a6, None)
+    | _, _, _, _, _, Some a when a.property.id = id ->
+        remove_by_id id (a1, a2, a3, a4 ,a5, None)
+    | _ -> advs
 
   let forall : (Cast.t -> bool) -> t -> bool =
     fun f ->

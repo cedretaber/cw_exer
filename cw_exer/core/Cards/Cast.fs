@@ -213,6 +213,18 @@ module Cast =
       (fun c -> equals c card)
       cards
 
+  let inline has_card count equals card cards =
+    let rec hc_go count cards =
+      match count, cards with
+        0, _ ->
+          true
+      | _, c :: cs when equals c card ->
+          hc_go (count - 1) cs
+      | _, c :: cs ->
+          hc_go count cs
+      | _ -> false in
+    hc_go count cards
+
   let inline add_skill count skill cast =
     { cast with skill = add_card
                           (max_skill_item cast.property.level)
@@ -225,6 +237,8 @@ module Cast =
                           Skill.equals
                           skill
                           cast.skill }
+  let inline has_skill count skill cast =
+    has_card count skill cast.skill
 
   let inline add_item count item cast =
     { cast with item = add_card
@@ -238,6 +252,8 @@ module Cast =
                          Item.equals
                          item
                          cast.item }
+  let inline has_item count item cast =
+    has_card count item cast.item
 
   let inline add_beast count beast cast =
     { cast with beast = add_card
@@ -251,3 +267,5 @@ module Cast =
                           Beast.equals
                           beast
                           cast.beast }
+  let inline has_beast count beast cast =
+    has_card count beast cast.beast
