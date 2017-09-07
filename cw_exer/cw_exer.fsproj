@@ -60,10 +60,10 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="core\Utils\Maybe.fs" />
     <Compile Include="core\Utils\ArrayUtil.fs" />
+    <Compile Include="core\Utils\ListUtil.fs" /> 
     <Compile Include="core\Utils\MapUtil.fs" />
     <Compile Include="core\Utils\Pair.fs" />
     <Compile Include="core\Utils\Triplet.fs" />
-    <Compile Include="core\Utils\ListUtil.fs" />
     <Compile Include="core\Util.fs" />
     <Compile Include="core\Data\Types\Enhance.fs" />
     <Compile Include="core\Data\Types\Comparison.fs" />

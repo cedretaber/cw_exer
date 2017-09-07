@@ -1,5 +1,6 @@
 ﻿namespace CardWirthEngine.GameMasters
 
+open CardWirthEngine.Data.Type
 open CardWirthEngine.Utils
 open CardWirthEngine.Cards
 
@@ -21,6 +22,7 @@ module Party =
 
   type t =
     { adventurers : Adventurers
+    ; money : Money
     ; bag : Goods list
     }
 
