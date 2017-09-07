@@ -103,3 +103,7 @@ module Adventurers =
 
   let indexed : t -> (int * Cast.t) list =
     to_list >> List.indexed
+
+  let contains_by : (Cast.t -> bool) -> t -> bool =
+    fun f -> 
+      to_list >> List.tryFind f >> Option.isSome

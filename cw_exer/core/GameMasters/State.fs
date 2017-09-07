@@ -145,6 +145,34 @@ module State =
     match state with
       Scenario (_, _, global_data, _) ->
         Set.contains scenario global_data.completed_scenarii
+      
+  (* card info ops *)
+  exception InvalidCardIdException of int * string
+
+  let inline private get_card id typ cards =
+    match Map.tryFind id cards with
+      Some card -> card
+    | Option.None -> raise <| InvalidCardIdException (id, typ)
+
+  let inline casts (state: t) = state.cards.casts
+  let inline get_cast id (state : t) =
+    get_card id "Cast" <| casts state
+
+  let inline skills (state: t) = state.cards.skills
+  let inline get_skilll id (state : t) =
+    get_card id "Skill" <| skills state
+
+  let inline items (state: t) = state.cards.items
+  let inline get_item id (state : t) =
+    get_card id "Item" <| items state
+
+  let inline beasts (state: t) = state.cards.beasts
+  let inline get_beast id (state : t) =
+    get_card id "Beast" <| beasts state
+
+  let inline infos (state: t) = state.cards.infos
+  let inline get_info id (state : t) =
+    get_card id "Info" <| infos state
 
   (* scenario ops *)
   let inline update_scenarion f (state : t) =
@@ -192,34 +220,6 @@ module State =
       set_global_state global_state state
     else
       raise InvalidStepIndexException
-      
-  (* card info ops *)
-  exception InvalidCardIdException of int * string
-
-  let inline private get_card id typ cards =
-    match Map.tryFind id cards with
-      Some card -> card
-    | Option.None -> raise <| InvalidCardIdException (id, typ)
-
-  let inline casts (state: t) = state.cards.casts
-  let inline get_cast id (state : t) =
-    get_card id "Cast" <| casts state
-
-  let inline skills (state: t) = state.cards.skills
-  let inline get_skilll id (state : t) =
-    get_card id "Skill" <| skills state
-
-  let inline items (state: t) = state.cards.items
-  let inline get_item id (state : t) =
-    get_card id "Item" <| items state
-
-  let inline beasts (state: t) = state.cards.beasts
-  let inline get_beast id (state : t) =
-    get_card id "Beast" <| beasts state
-
-  let inline infos (state: t) = state.cards.infos
-  let inline get_info id (state : t) =
-    get_card id "Info" <| infos state
 
   (* party ops *)
   exception InvalidSelectedAdventurerException
@@ -250,7 +250,6 @@ module State =
 
   (* Companions ops *)
   let inline add_companion companion (state : t) =
-    let companions = state.companions in
     update_scenarion
       (fun scenario ->
         let companions = Adventurers.add companion scenario.companions in
@@ -262,6 +261,10 @@ module State =
         let companions = Adventurers.remove pos scenario.companions in
         { scenario with companions = companions })
       state
+  let inline has_companion id (state : t) =
+    Adventurers.contains_by
+      (fun { property = { id = id' } } -> id' = id)
+      state.companions
           
 
   (* BGM *)
