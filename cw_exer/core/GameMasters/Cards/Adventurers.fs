@@ -11,6 +11,15 @@ module Adventurers =
     | Fifth
     | Sixth
 
+  let potisions =
+    [ First
+    ; Second
+    ; Third
+    ; Fourth
+    ; Fifth
+    ; Sixth
+    ]
+
   type t
     = Cast.t option
     * Cast.t option
@@ -60,7 +69,13 @@ module Adventurers =
         ]
 
   let to_seq =
-    to_list >> List.toSeq
+    function
+      a1, a2, a3, a4, a5, a6 ->
+        seq {
+          for ma in [a1; a2; a3; a4; a5; a6] do
+            if Option.isSome ma then
+              yield Option.get ma
+        }
 
   let inline get pos advs =
     match pos, advs with

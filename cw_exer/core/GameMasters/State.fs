@@ -46,7 +46,7 @@ module State =
   
   type SelectedCast
     = PC of Adventurers.Position
-    | Enemy of int
+    | Enemy of EnemyId
     | Companion of Adventurers.Position
 
   type Scenario =
