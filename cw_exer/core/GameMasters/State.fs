@@ -120,6 +120,11 @@ module State =
       Scenario (scenario, _, global_data, random) ->
         Scenario (scenario, party, global_data, random)
 
+  let inline set_adventurer_at pos cast (state : t) =
+    let party =
+      Party.updated_adventurers pos (Adventurers.Exist cast) state.party in
+    set_party party state
+
   (* global data ops *)
   let inline set_global_data global_data (state : t) =
     match state with
@@ -153,34 +158,29 @@ module State =
     match state with
       Scenario (_, _, global_data, _) ->
         Set.contains scenario global_data.completed_scenarii
-      
-  (* card info ops *)
-  exception InvalidCardIdException of int * string
 
-  let inline private get_card id typ cards =
-    match Map.tryFind id cards with
-      Some card -> card
-    | Option.None -> raise <| InvalidCardIdException (id, typ)
+  let inline private get_card id cards =
+    Map.tryFind id cards
 
   let inline casts (state: t) = state.cards.casts
   let inline get_cast id (state : t) =
-    get_card id "Cast" <| casts state
+    get_card id <| casts state
 
   let inline skills (state: t) = state.cards.skills
   let inline get_skilll id (state : t) =
-    get_card id "Skill" <| skills state
+    get_card id <| skills state
 
   let inline items (state: t) = state.cards.items
   let inline get_item id (state : t) =
-    get_card id "Item" <| items state
+    get_card id <| items state
 
   let inline beasts (state: t) = state.cards.beasts
   let inline get_beast id (state : t) =
-    get_card id "Beast" <| beasts state
+    get_card id <| beasts state
 
   let inline infos (state: t) = state.cards.infos
   let inline get_info id (state : t) =
-    get_card id "Info" <| infos state
+    get_card id <| infos state
 
   (* scenario ops *)
   let inline update_scenarion f (state : t) =
@@ -188,6 +188,11 @@ module State =
       Scenario (scenario, party, global_data, random) ->
         Scenario (f scenario, party, global_data, random)
     | _ -> raise OutOfScenarioException
+
+  let inline set_current_area current_area (state : t) =
+    update_scenarion
+      (fun scenarion -> { scenarion with current_area = current_area })
+      state
 
   (* global state ops *)
   let inline set_global_state global_state (state : t) =
@@ -253,8 +258,24 @@ module State =
         
 
   (* Enemy Ops *)
-  let inline enemy_at index (state : t) =
-    Option.bind (Map.tryFind index) state.enemies
+  let inline enemy_at id (state : t) =
+    Option.bind (Enemies.get id) state.enemies
+
+  let inline set_enemy id enemy (state : t) =
+    match state.area with
+      Battle (battle_id, round, enemies) ->
+        set_current_area
+          (Battle (battle_id, round, Enemies.updated id enemy enemies))
+          state
+    | _ -> state
+
+  let inline update_enemy f enemy_id (state : t) =
+    Maybe.c {
+      let! enemies = state.enemies
+      let! enemy = Enemies.get enemy_id enemies
+      return (set_enemy enemy_id (f enemy) state)
+    } |> Option.fold (fun _ state -> state) state
+   
 
   (* Companions ops *)
   let inline add_companion companion (state : t) =
@@ -273,11 +294,26 @@ module State =
     Adventurers.contains_by
       (fun { property = { id = id' } } -> id' = id)
       state.companions
+  let inline set_companion pos companion (state : t) =
+    update_scenarion
+      (fun scenario ->
+        let companions = Adventurers.updated pos companion scenario.companions in
+        { scenario with companions = companions })
+      state
+  let inline update_companion f pos (state : t) =
+    let companions = Adventurers.updated pos f state.companions in
+    update_scenarion
+      (fun scenario -> { scenario with companions = companions })
+      state
 
 
   (* card ops *)
   let inline add_to_bag count goods (state : t) =
     let party = Party.add_goods count goods state.party in
+    set_party party state
+
+  let inline remove_from_bag all count goods (state : t) =
+    let party = Party.remove_goods all count goods state.party in
     set_party party state
          
 

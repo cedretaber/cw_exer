@@ -207,9 +207,10 @@ module Cast =
     let add_count = if free_space < count then free_space else count in
     count - add_count, ListUtil.multi_cons add_count card cards
 
-  let inline remove_card count equals cards =
-    ListUtil.filter_limit
-      count
+  let inline remove_card all count equals cards =
+    (if all
+    then List.filter
+    else ListUtil.filter_limit count)
       equals
       cards
 
@@ -223,6 +224,7 @@ module Cast =
     diff, { cast with skill = skills }
   let inline remove_skill count skill cast =
     { cast with skill = remove_card
+                          (count = 0)
                           count
                           (Skill.equals skill)
                           cast.skill }
@@ -241,6 +243,7 @@ module Cast =
     diff, { cast with item = items }
   let inline remove_item count item cast =
     { cast with item = remove_card
+                         (count = 0)
                          count
                          (Item.equals item)
                          cast.item }
@@ -259,6 +262,7 @@ module Cast =
     diff, { cast with beast = beasts }
   let inline remove_beast count beast cast =
     { cast with beast = remove_card
+                          (count = 0)
                           count
                           (Beast.equals beast)
                           cast.beast }

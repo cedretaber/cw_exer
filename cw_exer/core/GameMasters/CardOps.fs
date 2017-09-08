@@ -1,20 +1,23 @@
 ﻿namespace CardWirthEngine.GameMasters.Branch
 
+open CardWirthEngine.Utils
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Cards
 open CardWirthEngine.GameMasters
 open CardWirthEngine.GameMasters.Cards
+open CardWirthEngine.GameMasters.Cards.Adventurers
+open CardWirthEngine.GameMasters.Party
 
 module CardOps =
-  open CardWirthEngine.GameMasters.Cards.Adventurers
-  open CardWirthEngine.GameMasters.Party
 
   let companion_exists = State.has_companion
 
   let add_companion id (state : State.t) =
-    let companion =
-      State.get_cast id state in
-    State.add_companion companion state
+    State.get_cast id state
+    |> Option.fold
+      (fun _ companion ->
+        State.add_companion companion state)
+      state
   
   let remove_companion = State.remove_companion
 
@@ -108,22 +111,26 @@ module CardOps =
             (state, false)
     | _ -> state, false
 
+
   let inline private add add_card goods count (state : State.t) =
 
     let inline update_cast pos cast (state : State.t) =
       let rest, cast' = add_card cast count in
-      let party = Party.updated_adventurers pos cast' state.party in
-      let state' = State.set_party party state in
-      State.add_to_bag rest goods state'
+      State.set_adventurer_at pos cast' state
+      |> State.add_to_bag rest goods
+
+    let update_npc = fun cast -> add_card cast count |> Pair.second
 
     let add_all_advs = lazy(
       Adventurers.fold_with_pos
        (fun (state' : State.t, rest) (pos, cast) ->
           let rest', cast' = add_card cast count in
-          let party = Party.updated_adventurers pos cast' state'.party in
-          State.set_party party state', rest + rest')
+          ( State.set_adventurer_at pos cast' state'
+          , rest + rest'
+          ))
         (state, 0)
-        state.adventurers)
+        state.adventurers
+      )
 
     function
       Range.Selected ->
@@ -132,7 +139,10 @@ module CardOps =
         match state.selected_pos with
           State.PC pos ->
             update_cast pos cast state'
-        | _ -> raise <| FatalError "Invalid selected PC."
+        | State.Enemy id ->
+            State.update_enemy update_npc id state
+        | State.Companion pos ->
+            State.update_companion update_npc pos state
     | Range.Random ->
         let pos, cast = State.get_random_pc state in
         update_cast pos cast state
@@ -148,4 +158,73 @@ module CardOps =
     | Range.Field ->
         State.add_to_bag count goods state
     | _ -> state
+
+
+  let inline private remove remove_from_cast goods all count (state : State.t) =
+
+    let update_npc = fun cast -> remove_from_cast all count cast
+
+    let update_cast pos cast (state : State.t) =
+      let cast' = update_npc cast in
+      State.set_adventurer_at pos cast' state
+
+    let remove_all_adv = lazy(
+      Adventurers.foldl_with_pos
+        (fun (state : State.t) (pos, cast) ->
+          update_cast pos cast state)
+        state
+        state.adventurers
+      )
+
+    function
+      Range.Selected ->
+        let state', cast =
+          State.get_selected_or_random state in
+        match state.selected_pos with
+          State.PC pos ->
+            update_cast pos cast state'
+        | State.Companion pos ->
+            State.update_companion update_npc pos state
+        | State.Enemy id -> 
+          State.update_enemy update_npc id state
+    | Range.Random ->
+        let pos, cast = State.get_random_pc state in
+        update_cast pos cast state
+    | Range.Party ->
+        remove_all_adv.Force ()
+    | Range.Backpack ->
+        State.add_to_bag count goods state
+    | Range.PartyAndBackpack ->
+        remove_all_adv.Force ()
+        |> State.remove_from_bag all count goods
+    (* 古いシステム。 *)
+    | Range.Field ->
+        State.add_to_bag count goods state
+    | _ -> state
   
+  
+  (* Items *)
+  let item_exists id count target (state : State.t) =
+    State.get_item id state
+    |> Option.fold
+      (fun _ item ->
+        exists
+          (Cast.item_count item)
+          (Party.Item item)
+          count
+          state
+          target)
+      (state, false)
+
+  let add_item id count target (state : State.t) =
+    State.get_item id state
+    |> Option.fold
+      (fun _ item ->
+        add
+          (fun cast count ->
+            Cast.add_item count item cast)
+          (Party.Item item)
+          count
+          state
+          target)
+      state

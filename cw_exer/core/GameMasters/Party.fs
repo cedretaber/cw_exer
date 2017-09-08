@@ -52,10 +52,11 @@ module Party =
     let goods = ListUtil.multi_cons count good party.bag
     { party with bag = goods }
 
-  let remove_goods count good party =
+  let remove_goods all count good party =
     let goods =
-      ListUtil.filter_limit
-        count
+      (if all
+      then List.filter
+      else ListUtil.filter_limit count)
         (fun g -> good_equals g good)
         party.bag in
     { party with bag = goods }

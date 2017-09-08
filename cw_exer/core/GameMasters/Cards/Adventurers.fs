@@ -167,7 +167,7 @@ module Adventurers =
         remove_by_id id (a1, a2, a3, a4 ,a5, Nothing)
     | advs -> advs
 
-  let inline updated pos a =
+  let inline set pos a =
     function
       a1, a2, a3, a4, a5, a6 ->
         match pos with
@@ -177,6 +177,35 @@ module Adventurers =
         | Fourth -> a1, a2, a3, a, a5, a6
         | Fifth  -> a1, a2, a3, a4, a, a6
         | Sixth  -> a1, a2, a3, a4, a5, a
+
+
+  let inline updated pos f advs =
+    match pos, advs with
+      First, (Exist a, a2, a3, a4, a5, a6) ->
+        Exist (f a), a2, a3, a4, a5, a6
+    | Second, (a1, Exist a, a3, a4, a5, a6) ->
+        a1, Exist (f a), a3, a4, a5, a6
+    | Third,  (a1, a2, Exist a, a4, a5, a6) ->
+        a1, a2, Exist (f a), a4, a5, a6
+    | Fourth, (a1, a2, a3, Exist a, a5, a6) ->
+        a1, a2, a3, Exist (f a), a5, a6
+    | Fifth, (a1, a2, a3, a4, Exist a, a6) ->
+        a1, a2, a3, a4, Exist (f a), a6
+    | Sixth, (a1, a2, a3, a4, a5, Exist a) ->
+        a1, a2, a3, a4, a5, Exist (f a)
+    | First, (Flipped a, a2, a3, a4, a5, a6) ->
+        Flipped (f a), a2, a3, a4, a5, a6
+    | Second, (a1, Flipped a, a3, a4, a5, a6) ->
+        a1, Flipped (f a), a3, a4, a5, a6
+    | Third, (a1, a2, Flipped a, a4, a5, a6) ->
+        a1, a2, Flipped (f a), a4, a5, a6
+    | Fourth, (a1, a2, a3, Flipped a, a5, a6) ->
+        a1, a2, a3, Flipped (f a), a5, a6
+    | Fifth, (a1, a2, a3, a4, Flipped a, a6) ->
+        a1, a2, a3, a4, Flipped (f a), a6
+    | Sixth, (a1, a2, a3, a4, a5, Flipped a) ->
+        a1, a2, a3, a4, a5, Flipped (f a)
+    | _, advs -> advs
 
   let foldl : ('a -> Cast.t -> 'a) -> 'a -> t -> 'a =
     fun f a ->

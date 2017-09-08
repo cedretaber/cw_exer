@@ -2,7 +2,8 @@
 
 module Maybe =
   type Maybe internal () =
-    member this.Bind (m, f) = Option.bind m f
+    member this.Zero () = None
+    member this.Bind (m, f) = Option.bind f m
     member this.Return v = Some v
 
-  let maybe = new Maybe ()
+  let c = new Maybe ()
