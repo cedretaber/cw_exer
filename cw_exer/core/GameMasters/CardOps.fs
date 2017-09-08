@@ -74,14 +74,16 @@ module CardOps =
             count
             state.adventurers
         let rest = count - of_advs
-        state,
-          rest <= 0
-          || rest - count_backpack.Force () <= 0
+        ( state
+        , rest <= 0 || rest - count_backpack.Force () <= 0
+        )
     | Range.Field ->
         let targets =
           seq {
             for p, c
-              in Seq.zip Adventurers.potisions (Adventurers.to_seq state.adventurers)
+              in Seq.zip
+                   Adventurers.potisions
+                   (Adventurers.to_seq state.adventurers)
                 -> PC (p, c)
             if Option.isSome state.enemies then
               let enemies = Option.get state.enemies in

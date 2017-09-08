@@ -265,7 +265,7 @@ module State =
     Adventurers.contains_by
       (fun { property = { id = id' } } -> id' = id)
       state.companions
-          
+         
 
   (* BGM *)
   let inline change_bgm bgm state =
