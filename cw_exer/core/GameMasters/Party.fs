@@ -35,6 +35,10 @@ module Party =
         (fun (cast : Cast.t) -> cast.property.level) in
     sum / party_count party
 
+  let inline updated_adventurers pos cast party =
+    let adventurers = Adventurers.updated pos cast party.adventurers in
+    { party with adventurers = adventurers }
+
   exception InvalidPartyIndexException of int * int
 
   let inline at index party =

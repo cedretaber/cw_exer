@@ -170,3 +170,5 @@ module Type =
     { width : int
     ; height : int
     }
+
+  exception FatalError of string

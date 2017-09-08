@@ -3,6 +3,8 @@ namespace CardWirthEngine.GameMasters.Cards
 open CardWirthEngine.Cards
 
 module Adventurers =
+  open System.Security.Cryptography
+
   type Position
     = First
     | Second
@@ -11,7 +13,7 @@ module Adventurers =
     | Fifth
     | Sixth
 
-  let potisions =
+  let positions =
     [ First
     ; Second
     ; Third
@@ -92,6 +94,8 @@ module Adventurers =
   let to_seq = to_seq'' false
   let to_seq' = to_seq'' true
 
+  let to_seq_with_pos = to_seq >> Seq.zip positions
+
   let inline get pos advs =
     match pos, advs with
       First,  (Exist adv, _, _, _, _, _) -> adv
@@ -135,38 +139,56 @@ module Adventurers =
         | Fifth  -> a1, a2, a3, a4, a6, Nothing
         | Sixth  -> a1, a2, a3, a4, a5, Nothing
 
-  let rec inline remove_by_id id (advs : t) =
-    let a1, a2, a3, a4, a5, a6 = advs in
-    match advs with
-      Exist a, _, _, _, _, _ when a.property.id = id ->
+  let rec inline remove_by_id id =
+    function
+      Exist a, a2, a3, a4, a5, a6 when a.property.id = id ->
         remove_by_id id (a2, a3, a4, a5 ,a6, Nothing)
-    | _, Exist a, _, _, _, _ when a.property.id = id ->
+    | a1, Exist a, a3, a4, a5, a6 when a.property.id = id ->
         remove_by_id id (a1, a3, a4, a5 ,a6, Nothing)
-    | _, _, Exist a, _, _, _ when a.property.id = id ->
+    | a1, a2, Exist a, a4, a5, a6 when a.property.id = id ->
         remove_by_id id (a1, a2, a4, a5 ,a6, Nothing)
-    | _, _, _, Exist a, _, _ when a.property.id = id ->
+    | a1, a2, a3, Exist a, a5, a6 when a.property.id = id ->
         remove_by_id id (a1, a2, a3, a5 ,a6, Nothing)
-    | _, _, _, _, Exist a, _ when a.property.id = id ->
+    | a1, a2, a3, a4, Exist a, a6 when a.property.id = id ->
         remove_by_id id (a1, a2, a3, a4 ,a6, Nothing)
-    | _, _, _, _, _, Exist a when a.property.id = id ->
+    | a1, a2, a3, a4, a5, Exist a when a.property.id = id ->
         remove_by_id id (a1, a2, a3, a4 ,a5, Nothing)
-    | Flipped a, _, _, _, _, _ when a.property.id = id ->
+    | Flipped a, a2, a3, a4, a5, a6 when a.property.id = id ->
         remove_by_id id (a2, a3, a4, a5 ,a6, Nothing)
-    | _, Flipped a, _, _, _, _ when a.property.id = id ->
+    | a1, Flipped a, a3, a4, a5, a6 when a.property.id = id ->
         remove_by_id id (a1, a3, a4, a5 ,a6, Nothing)
-    | _, _, Flipped a, _, _, _ when a.property.id = id ->
+    | a1, a2, Flipped a, a4, a5, a6 when a.property.id = id ->
         remove_by_id id (a1, a2, a4, a5 ,a6, Nothing)
-    | _, _, _, Flipped a, _, _ when a.property.id = id ->
+    | a1, a2, a3, Flipped a, a5, a6 when a.property.id = id ->
         remove_by_id id (a1, a2, a3, a5 ,a6, Nothing)
-    | _, _, _, _, Flipped a, _ when a.property.id = id ->
+    | a1, a2, a3, a4, Flipped a, a6 when a.property.id = id ->
         remove_by_id id (a1, a2, a3, a4 ,a6, Nothing)
-    | _, _, _, _, _, Flipped a when a.property.id = id ->
+    | a1, a2, a3, a4, a5, Flipped a when a.property.id = id ->
         remove_by_id id (a1, a2, a3, a4 ,a5, Nothing)
-    | _ -> advs
-  
-  let fold : ('a -> Cast.t -> 'a) -> 'a -> t -> 'a =
+    | advs -> advs
+
+  let inline updated pos a =
+    function
+      a1, a2, a3, a4, a5, a6 ->
+        match pos with
+          First  -> a, a2, a3, a4, a5, a6
+        | Second -> a1, a, a3, a4, a5, a6
+        | Third  -> a1, a2, a, a4, a5, a6
+        | Fourth -> a1, a2, a3, a, a5, a6
+        | Fifth  -> a1, a2, a3, a4, a, a6
+        | Sixth  -> a1, a2, a3, a4, a5, a
+
+  let foldl : ('a -> Cast.t -> 'a) -> 'a -> t -> 'a =
     fun f a ->
       to_list >> List.fold f a
+  
+  let fold = foldl
+
+  let foldl_with_pos : ('a -> (Position * Cast.t) -> 'a) -> 'a -> t -> 'a =
+    fun f a ->
+      to_list >> List.zip positions >> List.fold f a
+
+  let fold_with_pos = foldl_with_pos
       
   let forall : (Cast.t -> bool) -> t -> bool =
     fun f ->

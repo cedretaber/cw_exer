@@ -106,11 +106,19 @@ module State =
         this.scenario.global_state
       member this.companions =
         this.scenario.companions
+      member this.selected_pos =
+        this.scenario.selected
       member this.selected =
         match this.scenario.selected with
           PC pos -> Some (Adventurers.get pos this.adventurers)
         | Enemy idx -> Option.bind (Enemies.get idx) this.enemies
         | Companion pos -> Some (Adventurers.get pos this.companions)
+
+  (* party ops *)
+  let inline set_party party (state : t) =
+    match state with
+      Scenario (scenario, _, global_data, random) ->
+        Scenario (scenario, party, global_data, random)
 
   (* global data ops *)
   let inline set_global_data global_data (state : t) =
@@ -265,6 +273,12 @@ module State =
     Adventurers.contains_by
       (fun { property = { id = id' } } -> id' = id)
       state.companions
+
+
+  (* card ops *)
+  let inline add_to_bag count goods (state : t) =
+    let party = Party.add_goods count goods state.party in
+    set_party party state
          
 
   (* BGM *)
