@@ -160,7 +160,7 @@
     <ProjectReference Include="..\core\core.fsproj">
       <Name>core</Name>
       <Project>{1d762cec-e67e-4536-99e2-389f9b9b8b06}</Project>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" />
