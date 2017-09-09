@@ -5,8 +5,3 @@ cache:
 
 before_build:
   - ps: nuget restore
-
-test:
-  assemblies:
-    only:
-      - '**\test.dll'
