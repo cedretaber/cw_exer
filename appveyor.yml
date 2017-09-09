@@ -3,5 +3,10 @@ version: 1.0.{build}
 cache:
   - packages -> **\packages.config
 
+test:
+  assemblies:
+    only:
+      - test.dll
+
 before_build:
   - ps: nuget restore
