@@ -10,6 +10,9 @@ before_build:
   - choco install opencover.portable
   # - choco install codecov
 
+before_test:
+  - ps: chcp 65001
+
 test_script:
   - OpenCover.Console.exe -register:user -target:C:\Tools\NUnit3\nunit3-console.exe -targetargs:test\bin\Debug\test.dll -filter:"+[core*]* -[test*]*" -output:.\result.xml
 
