@@ -1,8 +1,8 @@
-﻿namespace cw_exer
+﻿namespace core.AssemblyInfo
 open System.Reflection
 open System.Runtime.CompilerServices
 
-[<assembly: AssemblyTitle("cw_exer")>]
+[<assembly: AssemblyTitle("core")>]
 [<assembly: AssemblyDescription("")>]
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("")>]

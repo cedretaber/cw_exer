@@ -1,10 +1,10 @@
-﻿namespace CardWirthEngine
+﻿namespace CardWirthEngineTest
 
 open NUnit.Framework
 open FsCheck.NUnit
 
 module UtilTest =
-  open Util
+  open CardWirthEngine.Util
 
   module ``const'`` =
 

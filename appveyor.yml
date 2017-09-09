@@ -2,11 +2,16 @@ version: 1.0.{build}
 
 cache:
   - packages -> **\packages.config
-
-test:
-  assemblies:
-    only:
-      - test.dll
+  - C:\ProgramData\chocolatey\bin -> appveyor.yml
+  - C:\ProgramData\chocolatey\lib -> appveyor.yml
 
 before_build:
   - ps: nuget restore
+  - choco install opencover.portable
+  # - choco install codecov
+
+test_script:
+  - OpenCover.Console.exe -register:user -target:C:\Tools\NUnit3\nunit3-console.exe -targetargs:test\bin\Debug\test.dll -filter:"+[core*]* -[test*]*" -output:.\result.xml
+
+after_test:
+  # - codecov -f "result.xml"
