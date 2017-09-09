@@ -1,7 +1,4 @@
 version: 1.0.{build}
 
-build_script:
-  - ps: dotnet --info
-  - ps: dotnet restore
-  - ps: dotnet build -c Release
-  - ps: dotnet test -c Release test\test.fsproj
+before_build:
+  - ps: nuget restore

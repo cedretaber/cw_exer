@@ -53,9 +53,6 @@
       <PropertyGroup Condition=" '$(FSharpTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets') ">
         <FSharpTargetsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
       </PropertyGroup>
-      <PropertyGroup Condition=" '$(FSharpTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\FSharp\Microsoft.FSharp.Targets') ">
-        <FSharpTargetsPath>$(MSBuildExtensionsPath32)\FSharp\Microsoft.FSharp.Targets</FSharpTargetsPath>
-      </PropertyGroup>
     </Otherwise>
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
@@ -176,13 +173,14 @@
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
+  <!-- 
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.runner.visualstudio.2.2.0\build\net20\xunit.runner.visualstudio.props'))" />
   </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
