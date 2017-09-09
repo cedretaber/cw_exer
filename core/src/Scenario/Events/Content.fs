@@ -6,18 +6,9 @@ open CardWirthEngine.Data.Types
 open CardWirthEngine.Data.Casts
 open CardWirthEngine.Scenario.Events.Contents
 
-module rec Content =
-    
-  type Nexts = t list
-  type Texts = (string * t) list
-  type Bools = (bool * t) list
-  type Steps = (Step.State * t) list
-  type AreaIds = (AreaId * t) list
-  type BattleIds = (BattleId * t) list
-  type Trios = (Comparison.t * t) list
+module Content =
 
   let select : int -> 'a list -> 'a option = List.tryItem
-
   let next : ('a -> 'b option) -> 'a list -> 'b option = List.tryPick
 
   module SourceFlag =
@@ -30,12 +21,20 @@ module rec Content =
       = Random
       | SelectedPc
       | From of Step.Name
+      
+  type Nexts = t list
+  and Texts = (string * t) list
+  and Bools = (bool * t) list
+  and Steps = (Step.State * t) list
+  and AreaIds = (AreaId * t) list
+  and BattleIds = (BattleId * t) list
+  and Trios = (Comparison.t * t) list
 
-  type 'a NextContent
+  and 'a NextContent
     = Nexts of Nexts
     | List of ('a * t) list
   
-  type t
+  and t
     (* Terminal *)
     = Start of Nexts * name : StartName
     | StartBattle of battle_id : BattleId
