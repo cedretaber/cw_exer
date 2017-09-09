@@ -139,7 +139,7 @@ module Adventurers =
         | Fifth  -> a1, a2, a3, a4, a6, Nothing
         | Sixth  -> a1, a2, a3, a4, a5, Nothing
 
-  let rec inline remove_by_id id =
+  let rec remove_by_id id =
     function
       Exist a, a2, a3, a4, a5, a6 when a.property.id = id ->
         remove_by_id id (a2, a3, a4, a5 ,a6, Nothing)

@@ -8,18 +8,18 @@ open CardWirthEngine.Scenario.Events.Content
 open CardWirthEngine.GameMasters
 open CardWirthEngine.GameMasters.Branch
 
-module rec GameMaster =
+module GameMaster =
   let Void = Output.None
 
-  let run : State.t -> Input.t -> Output.t =
+  let rec run : State.t -> Input.t -> Output.t =
     fun state input ->
       match state with
         State.Scenario ({ eventStack = [] }, _, _, _) ->
           state, Void
       | State.Scenario ({ eventStack = contents }, _, _, _) ->
           read state contents input
-      
-  let rec read : State.t -> State.Event list -> Input.t -> Output.t =
+
+  and read : State.t -> State.Event list -> Input.t -> Output.t =
     fun state contents input ->
       match contents with
         [] ->
@@ -29,7 +29,7 @@ module rec GameMaster =
       | State.Action :: rest ->
           read state rest input
 
-  and inline private read_content state event content rest input =
+  and private read_content state event content rest input =
     (* Step next contens *)
     let inline next_line state next =
       read state (State.Content (event, next) :: rest) Input.None
