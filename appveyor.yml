@@ -7,14 +7,12 @@ cache:
 
 before_build:
   - ps: nuget restore
-  - choco install opencover.portable
+  # - choco install opencover.portable
   # - choco install codecov
 
 before_test:
   - ps: chcp 65001
-
-test_script:
-  - OpenCover.Console.exe -register:user -target:C:\Tools\NUnit3\nunit3-console.exe -targetargs:test\bin\Debug\test.dll -filter:"+[core*]* -[test*]*" -output:.\result.xml
-
+  
 after_test:
+  # - OpenCover.Console.exe -register:user -target:C:\Tools\NUnit3\nunit3-console.exe -targetargs:test\bin\Debug\test.dll -filter:"+[core*]* -[test*]*" -output:.\result.xml
   # - codecov -f "result.xml"
