@@ -1,6 +1,6 @@
 ﻿namespace CardWirthEngine.GameMasters
 
-namespace CardWirthEngine.GameMasters.Cards
+open CardWirthEngine.GameMasters.Cards
 
 module Input =
   type t

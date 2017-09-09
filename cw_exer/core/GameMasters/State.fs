@@ -252,7 +252,7 @@ module State =
       state
 
   let inline get_selected_or_random (state: t) =
-    match state.selected with
+    match state.selected_cast with
       Some cast ->
         state, cast
     | Option.None ->

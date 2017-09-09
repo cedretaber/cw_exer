@@ -52,7 +52,7 @@ module CardOps =
         state, Option.fold
           (fun _ -> check_card)
           false
-          state.selected
+          state.selected_cast
     | Range.Random ->
         match
           Adventurers.try_find_with_position
@@ -143,6 +143,8 @@ module CardOps =
             State.update_enemy update_npc id state
         | State.Companion pos ->
             State.update_companion update_npc pos state
+        | State.None ->
+            state
     | Range.Random ->
         let pos, cast = State.get_random_pc state in
         update_cast pos cast state
@@ -186,7 +188,8 @@ module CardOps =
         | State.Companion pos ->
             State.update_companion update_npc pos state
         | State.Enemy id -> 
-          State.update_enemy update_npc id state
+            State.update_enemy update_npc id state
+        | State.None -> state
     | Range.Random ->
         let pos, cast = State.get_random_pc state in
         update_cast pos cast state
