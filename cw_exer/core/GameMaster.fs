@@ -9,7 +9,6 @@ open CardWirthEngine.GameMasters
 open CardWirthEngine.GameMasters.Branch
 
 module rec GameMaster =
-
   let Void = Output.None
 
   let run : State.t -> Input.t -> Output.t =

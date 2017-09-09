@@ -5,6 +5,7 @@ open CardWirthEngine.Data.Type
 open CardWirthEngine.Data.Skills
 open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Events.Contents
+open CardWirthEngine.GameMasters.Cards
 
 module Output =
 
@@ -35,7 +36,7 @@ module Output =
     | Sound of Sound * Play.t
     | Effect of target : FieldCard.t * visual :  CardVisual.t * sound : Sound
     | Flag of Flag.Name * Flag.State
-    | SelectPlayerCharactor of int list
+    | SelectPlayerCharactor of Adventurers.Position list
     | PartyDown
     | PartyUp
     | Break

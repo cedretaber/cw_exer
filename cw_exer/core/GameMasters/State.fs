@@ -1,5 +1,6 @@
 ﻿namespace CardWirthEngine.GameMasters
 
+open CardWirthEngine.Util
 open CardWirthEngine.Utils
 open CardWirthEngine.Data
 open CardWirthEngine.Data.Type
@@ -48,6 +49,7 @@ module State =
     = PC of Adventurers.Position
     | Enemy of EnemyId
     | Companion of Adventurers.Position
+    | None
 
   type Scenario =
     { summary : Info.Summary.t
@@ -108,11 +110,12 @@ module State =
         this.scenario.companions
       member this.selected_pos =
         this.scenario.selected
-      member this.selected =
+      member this.selected_cast =
         match this.scenario.selected with
           PC pos -> Some (Adventurers.get pos this.adventurers)
         | Enemy idx -> Option.bind (Enemies.get idx) this.enemies
         | Companion pos -> Some (Adventurers.get pos this.companions)
+        | None -> Option.None
 
   (* party ops *)
   let inline set_party party (state : t) =
@@ -122,7 +125,7 @@ module State =
 
   let inline set_adventurer_at pos cast (state : t) =
     let party =
-      Party.updated_adventurers pos (Adventurers.Exist cast) state.party in
+      Party.updated_adventurers pos (const' cast) state.party in
     set_party party state
 
   (* global data ops *)
@@ -253,10 +256,9 @@ module State =
       Some cast ->
         state, cast
     | Option.None ->
-      let idx, selected = get_random_pc state in
-      set_selected (PC idx) state, selected
+        let idx, selected = get_random_pc state in
+        set_selected (PC idx) state, selected
         
-
   (* Enemy Ops *)
   let inline enemy_at id (state : t) =
     Option.bind (Enemies.get id) state.enemies

@@ -14,10 +14,10 @@ module Select =
   let inline private filter target adventurers =
     let advs =
       adventurers
-      |> Adventurers.indexed
+      |> Adventurers.to_seq_with_pos
     match target with
       Active ->
-        List.filter
+        Seq.filter
           (function _, adv -> Cast.is_active adv)
           advs
     | Party ->
@@ -25,8 +25,8 @@ module Select =
 
   let inline private appraise initial coupons advs =
     let go =
-      fun idx adv -> async {
-        return idx, List.fold
+      fun pos adv -> async {
+        return pos, List.fold
           (fun acm coupon ->
               acm +
                 if Cast.has_coupon adv coupon
@@ -35,31 +35,30 @@ module Select =
           initial
           coupons
       } in
-    [ for idx, adv in advs -> go idx adv ]
+    [ for pos, adv in advs -> go pos adv ]
     |> Async.Parallel 
     |> Async.RunSynchronously
 
   let select selection (state: State.t) =
     match selection with
       { target = target; method = method } ->
-        let advs_with_index = filter target state.party.adventurers in
         match method with
           Manual ->
-            state,
-            Output.SelectPlayerCharactor
-              (List.map Pair.first advs_with_index)
+            let filtered =
+              filter target state.party.adventurers
+              |> Seq.map Pair.first in
+            ( state
+            , Output.SelectPlayerCharactor
+                (Seq.toList filtered)
+            )
 
         | Random ->
-            let index, _ =
-              advs_with_index
-              |> List.length
-              |> state.random
-              |> (Array.get <| List.toArray advs_with_index)
-            State.set_selected (State.PC index) state, Output.None
+            let pos, _ = State.get_random_pc state
+            State.set_selected (State.PC pos) state, Output.None
 
         | Valued (initial, coupons) ->
-            let index, _ =
-              advs_with_index
+            let pos, _ =
+              Adventurers.to_seq_with_pos state.adventurers
               |> appraise initial coupons
               |> Array.maxBy Pair.second in
-            State.set_selected (State.PC index) state, Output.None
+            State.set_selected (State.PC pos) state, Output.None

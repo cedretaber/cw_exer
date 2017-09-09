@@ -1,12 +1,11 @@
 ﻿namespace CardWirthEngine.GameMasters
 
-open CardWirthEngine.Utils
 open CardWirthEngine.Data
 open CardWirthEngine.Scenario.Events
 open CardWirthEngine.GameMasters
+open CardWirthEngine.GameMasters.Cards
 
 module StepOps =
-  open State
 
   let get : Step.Name -> State.t -> Step.State =
     State.get_step
@@ -34,10 +33,12 @@ module StepOps =
           Content.SourceStep.Random ->
             state.random target_length
         | Content.SourceStep.SelectedPc ->
-            state.get_selected_pc
+            match state.selected_pos with
+              State.PC pos -> Adventurers.pos_to_int pos
+            | _ -> -1
         | Content.SourceStep.From name ->
             get name state in
-      if step <= target_length
+      if step >= 0 && step <= target_length
       then
         set target step state
       else

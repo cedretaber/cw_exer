@@ -1,6 +1,6 @@
 ﻿namespace CardWirthEngine.GameMasters
 
-open CardWirthEngine.Data.Types
+namespace CardWirthEngine.GameMasters.Cards
 
 module Input =
   type t
@@ -8,7 +8,7 @@ module Input =
     = NextMessage of int
     | Loaded
     | LoadFailed of string
-    | SelectPlayerCharactor of int 
+    | SelectPlayerCharactor of Adventurers.Position 
     | Cancel
     | Void
     | None
