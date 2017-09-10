@@ -64,6 +64,7 @@
     <Compile Include="test\UtilTest.fs" />
     <Compile Include="test\Utils\ListUtilTest.fs" />
     <Compile Include="test\GameMasterTestUtil.fs" />
+    <Compile Include="test\GameMasters\Cards\AdventurersTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FsCheck">
