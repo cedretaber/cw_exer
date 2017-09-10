@@ -3,7 +3,6 @@ namespace CardWirthEngine.GameMasters.Cards
 open CardWirthEngine.Cards
 
 module Adventurers =
-  open System.Security.Cryptography
 
   type Position
     = First

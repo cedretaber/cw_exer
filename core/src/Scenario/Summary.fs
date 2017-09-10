@@ -13,7 +13,7 @@ module Summary =
     ; author : AuthorName
     ; description : string
     ; level : LevelRange
-    ; required_coupons : (Coupon.Name * int) list
+    ; required_coupons : Coupon.t list
     ; start_area_id : AreaId
     ; tags : string list
     ; scenario_type : string
