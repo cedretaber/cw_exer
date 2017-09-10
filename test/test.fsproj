@@ -60,7 +60,9 @@
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
+    <Compile Include="test\TestUtils.fs" />
     <Compile Include="test\UtilTest.fs" />
+    <Compile Include="test\Utils\ListUtilTest.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FsCheck">

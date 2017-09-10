@@ -2,6 +2,7 @@
 
 open NUnit.Framework
 open FsCheck.NUnit
+open CardWirthEngineTest.TestUtils
 
 module UtilTest =
   open CardWirthEngine.Util
@@ -15,20 +16,20 @@ module UtilTest =
   module is_true =
     [<Test>]
     let ``trueの場合`` () =
-      Assert.IsTrue (is_true true)
+      assert' <| is_true true
 
     [<Test>]
     let ``falseの場合`` () =
-      Assert.IsFalse (is_true false)
+      assert_not <| is_true false
   
   module is_false =
     [<Test>]
     let ``trueの場合`` () =
-      Assert.IsFalse (is_false true)
+      assert_not <| is_false true
 
     [<Test>]
     let ``falseの場合`` () =
-      Assert.IsTrue (is_false false)
+      assert' <| is_false false
 
   module equals =
     [<Property(Verbose = true)>]
