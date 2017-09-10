@@ -1,4 +1,4 @@
-﻿namespace CardWirthEngineTest.Cards
+﻿namespace CardWirthEngineTest.GameMasters.Cards
 
 open NUnit.Framework
 

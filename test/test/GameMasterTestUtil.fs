@@ -5,6 +5,7 @@ open CardWirthEngine.Data.Casts
 open CardWirthEngine.Scenario.Info.Summary
 open CardWirthEngine.Cards
 open CardWirthEngine.Cards.Cast.Feature
+open CardWirthEngine.GameMasters
 open CardWirthEngine.GameMasters.Cards
 open CardWirthEngine.GameMasters.State
 
@@ -125,6 +126,27 @@ module GameMasterTestUtil =
       }
     ; eventStack = []
     ; selected = SelectedCast.None
-    ; companions = one_adventurer // 冒険者は1人
+    ; companions = no_adventurers
     ; bgm = Bgm.Stop
     }
+
+  let minimal_party : Party.t =
+    { adventurers = one_adventurer
+    ; money = 0
+    ; bag = []
+    }
+
+  let empty_global_data =
+    { gossips = Set.empty
+    ; completed_scenarii = Set.empty
+    }
+
+  let state_random = new System.Random ()
+
+  let empty_scenario_state : State.t =
+    Scenario
+      ( empty_scenario
+      , minimal_party
+      , empty_global_data
+      , state_random
+      )
