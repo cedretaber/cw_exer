@@ -162,9 +162,9 @@ module CardOps =
     | _ -> state
 
 
-  let inline private remove remove_from_cast goods all count (state : State.t) =
+  let inline private remove remove_from_cast goods count (state : State.t) =
 
-    let update_npc = fun cast -> remove_from_cast all count cast
+    let update_npc = fun cast -> remove_from_cast count cast
 
     let update_cast pos cast (state : State.t) =
       let cast' = update_npc cast in
@@ -196,13 +196,13 @@ module CardOps =
     | Range.Party ->
         remove_all_adv.Force ()
     | Range.Backpack ->
-        State.add_to_bag count goods state
+        State.remove_from_bag count goods state
     | Range.PartyAndBackpack ->
         remove_all_adv.Force ()
-        |> State.remove_from_bag all count goods
+        |> State.remove_from_bag count goods
     (* 古いシステム。 *)
     | Range.Field ->
-        State.add_to_bag count goods state
+        State.remove_from_bag count goods state
     | _ -> state
   
   
@@ -226,6 +226,19 @@ module CardOps =
         add
           (fun cast count ->
             Cast.add_item count item cast)
+          (Party.Item item)
+          count
+          state
+          target)
+      state
+
+  let remove_item id count target (state : State.t) =
+    State.get_item id state
+    |> Option.fold
+      (fun _ item ->
+        remove
+          (fun count cast ->
+            Cast.remove_item count item cast)
           (Party.Item item)
           count
           state

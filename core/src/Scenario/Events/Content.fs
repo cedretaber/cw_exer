@@ -11,6 +11,10 @@ module Content =
   let select : int -> 'a list -> 'a option = List.tryItem
   let next : ('a -> 'b option) -> 'a list -> 'b option = List.tryPick
 
+  type RemoveCount
+    = All
+    | Count of int
+
   module SourceFlag =
     type t
       = Random
@@ -106,10 +110,10 @@ module Content =
     | GetGossip of Nexts * value : GossipName
     (* Lost *)
     | LoseCast of Nexts * cast_id : CastId
-    | LoseItem of Nexts * item_id : ItemId * target : Range * value : int
-    | LoseSkill of Nexts * skill_id : SkillId * target : Range * value : int
+    | LoseItem of Nexts * item_id : ItemId * target : Range * value : RemoveCount
+    | LoseSkill of Nexts * skill_id : SkillId * target : Range * value : RemoveCount
     | LoseInfo of Nexts * indo_id : InfoId
-    | LoseBeast of Nexts * beast_id : BeastId * target : Range * value : int
+    | LoseBeast of Nexts * beast_id : BeastId * target : Range * value : RemoveCount
     | LoseMoney of Nexts * value : int
     | LoseCoupon of Nexts * target : Target * value : Coupon.Name
     | LoseCompeteStamp of Nexts * value : ScenarioName

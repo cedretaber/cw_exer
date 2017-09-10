@@ -9,6 +9,8 @@ open CardWirthEngine.GameMasters
 open CardWirthEngine.GameMasters.Branch
 
 module GameMaster =
+  open System.Linq.Expressions
+
   let Void = Output.None
 
   let rec run : State.t -> Input.t -> Output.t =
@@ -388,3 +390,24 @@ module GameMaster =
         next_branch'
           (Util.equals <| Branch.AreaOrBattle.round cmp value state)
           bools
+
+    (* Branch *)
+    | BranchCast (bools, id), _ ->
+        next_branch'
+          (Util.equals <| CardOps.companion_exists id state)
+          bools
+    
+    
+    (*
+    of Bools * cast_id : CastId
+    | BranchItem of Bools * item_id : ItemId
+    | BranchSkill of Bools * skill_id : SkillId
+    | BranchInfo of Bools * info_id : InfoId
+    | BranchBeast of Bools * beast_id : BeastId
+    | BranchMoney of Bools * value : int
+    | BranchCoupon of Bools * range : Range * value : Coupon.Name
+    | BranchMultiCoupon of Texts * target : Target (* Wsn.2 *)
+    | BranchCompleteStamp of Bools * value : ScenarioName
+    | BranchGossip of Bools * value : GossipName
+    | BranchKeyCode of Bools * BranchKeyCode.t
+    *)

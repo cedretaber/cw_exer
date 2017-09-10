@@ -1,5 +1,6 @@
 ﻿namespace CardWirthEngine.GameMasters
 
+open CardWirthEngine.Scenario.Events.Content
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Utils
 open CardWirthEngine.Cards
@@ -52,13 +53,15 @@ module Party =
     let goods = ListUtil.multi_cons count good party.bag
     { party with bag = goods }
 
-  let remove_goods all count good party =
+  let remove_goods remove_count good party =
+    let f =
+      match remove_count with
+        RemoveCount.All
+          -> List.filter
+      | RemoveCount.Count count
+          -> ListUtil.filter_limit count in
     let goods =
-      (if all
-      then List.filter
-      else ListUtil.filter_limit count)
-        (fun g -> good_equals g good)
-        party.bag in
+      f (fun g -> good_equals g good) party.bag in
     { party with bag = goods }
 
   (* Card Ops *)

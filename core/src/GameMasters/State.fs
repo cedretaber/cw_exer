@@ -314,8 +314,8 @@ module State =
     let party = Party.add_goods count goods state.party in
     set_party party state
 
-  let inline remove_from_bag all count goods (state : t) =
-    let party = Party.remove_goods all count goods state.party in
+  let inline remove_from_bag count goods (state : t) =
+    let party = Party.remove_goods count goods state.party in
     set_party party state
          
 

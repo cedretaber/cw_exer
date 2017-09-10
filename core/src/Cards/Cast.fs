@@ -4,6 +4,7 @@ open CardWirthEngine.Utils
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Data.Types
 open CardWirthEngine.Data.Casts
+open CardWirthEngine.Scenario.Events.Content
 
 module Cast =
   let max_skill_item level =
@@ -207,12 +208,14 @@ module Cast =
     let add_count = if free_space < count then free_space else count in
     count - add_count, ListUtil.multi_cons add_count card cards
 
-  let inline remove_card all count equals cards =
-    (if all
-    then List.filter
-    else ListUtil.filter_limit count)
-      equals
-      cards
+  let inline remove_card remove_count equals cards =
+    let f =
+      match remove_count with
+        RemoveCount.All ->
+          List.filter
+      | RemoveCount.Count count ->
+          ListUtil.filter_limit count in
+    f equals cards
 
   let inline add_skill count skill cast =
     let diff, skills =
@@ -222,10 +225,9 @@ module Cast =
         skill
         cast.skill in
     diff, { cast with skill = skills }
-  let inline remove_skill count skill cast =
+  let inline remove_skill remove_count skill cast =
     { cast with skill = remove_card
-                          (count = 0)
-                          count
+                          remove_count
                           (Skill.equals skill)
                           cast.skill }
   let inline count_skill skill cast =
@@ -241,10 +243,9 @@ module Cast =
         item
         cast.item in
     diff, { cast with item = items }
-  let inline remove_item count item cast =
+  let inline remove_item remove_count item cast =
     { cast with item = remove_card
-                         (count = 0)
-                         count
+                         remove_count
                          (Item.equals item)
                          cast.item }
   let inline item_count item cast =
@@ -260,10 +261,9 @@ module Cast =
         beast
         cast.beast in
     diff, { cast with beast = beasts }
-  let inline remove_beast count beast cast =
+  let inline remove_beast remove_count beast cast =
     { cast with beast = remove_card
-                          (count = 0)
-                          count
+                          remove_count
                           (Beast.equals beast)
                           cast.beast }
   let inline beast_count beast cast =
