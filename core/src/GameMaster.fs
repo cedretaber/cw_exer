@@ -9,8 +9,6 @@ open CardWirthEngine.GameMasters
 open CardWirthEngine.GameMasters.Branch
 
 module GameMaster =
-  open System.Linq.Expressions
-
   let Void = Output.None
 
   let rec run : State.t -> Input.t -> Output.t =

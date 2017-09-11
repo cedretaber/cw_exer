@@ -2,6 +2,7 @@
 
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Data.Casts
+open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Info.Summary
 open CardWirthEngine.Cards
 open CardWirthEngine.Cards.Cast.Feature
@@ -143,10 +144,18 @@ module GameMasterTestUtil =
 
   let state_random = new System.Random ()
 
-  let empty_scenario_state : State.t =
+  let make_empty_state scenario =
     Scenario
-      ( empty_scenario
+      ( scenario
       , minimal_party
       , empty_global_data
       , state_random
       )
+
+  let empty_scenario_state : State.t =
+    make_empty_state empty_scenario
+
+  let empty_event : Event.t =
+    { ignitions = { number = 0; key_codes = Set.empty }
+    ; lines = Map.empty
+    }
