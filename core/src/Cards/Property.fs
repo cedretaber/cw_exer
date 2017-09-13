@@ -16,13 +16,13 @@ module Property =
     ; target : Target.t
     ; effect_type : EffectType.t
     ; resist_type : Resist.t
-    ; success_rate : int
+    ; success_rate : SuccessRate
     ; visual_effect : CardVisual.t
     ; enhance : Enhance.m
     ; sound_paths : Path array
-    ; key_codes : string list
+    ; key_codes : KeyCode list
     ; premium : Premium.t
-    ; use_limit : int
+    ; use_limit : UseLimit
     ; materials : Path
     }
 

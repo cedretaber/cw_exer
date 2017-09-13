@@ -29,6 +29,10 @@ module Type =
 
   type Round = int
 
+  type SuccessRate = int
+
+  type UseLimit = int
+
   type KeyCode = string
 
   (* シナリオが終了済みか否か *)
@@ -36,9 +40,9 @@ module Type =
 
   type Path = string
 
-  type Decisecond = uint32
+  type Decisecond = int
 
-  type Percent = uint8
+  type Percent = int
   
   type Target
     = Selected

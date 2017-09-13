@@ -88,11 +88,11 @@ module Content =
     | BranchRound of Bools * value : int * cmp : Comparison.t
     (* Branch *)
     | BranchCast of Bools * cast_id : CastId
-    | BranchItem of Bools * item_id : ItemId
-    | BranchSkill of Bools * skill_id : SkillId
+    | BranchItem of Bools * item_id : ItemId * count : int * range : Range
+    | BranchSkill of Bools * skill_id : SkillId * count : int * range : Range
     | BranchInfo of Bools * info_id : InfoId
-    | BranchBeast of Bools * beast_id : BeastId
-    | BranchMoney of Bools * value : int
+    | BranchBeast of Bools * beast_id : BeastId * count : int * range : Range
+    | BranchMoney of Bools * value : Money
     | BranchCoupon of Bools * range : Range * value : Coupon.Name
     | BranchMultiCoupon of Texts * target : Target (* Wsn.2 *)
     | BranchCompleteStamp of Bools * value : ScenarioName

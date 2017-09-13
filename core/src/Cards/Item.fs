@@ -8,7 +8,7 @@ open CardWirthEngine.Scenario
 module Item =
   type t =
     { property : ItemId Property.t
-    ; price : int
+    ; price : Money
     ; enhance_owner : Enhance.m
     ; hold : bool
     ; motions : Motion.t list

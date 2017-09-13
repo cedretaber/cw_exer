@@ -1,10 +1,15 @@
 ﻿namespace CardWirthEngineTest
 
+open CardWirthEngine.Data
 open CardWirthEngine.Data.Type
+open CardWirthEngine.Data.Types.Enhance
 open CardWirthEngine.Data.Casts
+open CardWirthEngine.Data.Skills
+open CardWirthEngine.Data.Skills.EffectType
 open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Info.Summary
 open CardWirthEngine.Cards
+open CardWirthEngine.Cards.Property
 open CardWirthEngine.Cards.Cast.Feature
 open CardWirthEngine.GameMasters
 open CardWirthEngine.GameMasters.Cards
@@ -91,6 +96,53 @@ module GameMasterTestUtil =
     ; skill = []
     ; item  = []
     ; beast = []
+    }
+
+  let empty_enhance =
+    { action = 0
+    ; avoid = 0
+    ; resist = 0
+    ; defense = 0
+    }
+
+  let empty_property id name =
+    { id = id
+    ; name = name
+    ; image = empty_path
+    ; description = ""
+    ; scenario = ""
+    ; author = ""
+    ; ability =
+      { mental = Mental.Aggressive
+      ; physical = Physical.Agility
+      }
+    ; target =
+      { ct = CardTarget.Enemy
+      ; all_range = false
+      }
+    ; effect_type =
+      { t = EffectType.Physic
+      ; spell = false
+      }
+    ; resist_type = Resist.Avoid
+    ; success_rate = 5
+    ; visual_effect = CardVisual.None
+    ; enhance = empty_enhance
+    ; sound_paths = [|empty_path|]
+    ; key_codes = []
+    ; premium = Premium.Normal
+    ; use_limit = 0
+    ; materials = empty_path
+    }
+
+  let empty_item : Item.t =
+    { property = empty_property 1 "item1"
+    ; price = 0
+    ; enhance_owner = empty_enhance
+    ; hold = false
+    ; motions = []
+    ; beasts = [||]
+    ; events = []
     }
 
   let one_adventurer : Adventurers.t =

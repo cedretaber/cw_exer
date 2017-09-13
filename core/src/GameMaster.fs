@@ -394,11 +394,17 @@ module GameMaster =
         next_branch'
           (Util.equals <| CardOps.companion_exists id state)
           bools
+
+    | BranchItem (bools, id, count, range), _ ->
+        let state', bool = CardOps.item_exists id count range state in
+        next_branch
+          state'
+          (Util.equals bool)
+          bools
     
     
     (*
-    of Bools * cast_id : CastId
-    | BranchItem of Bools * item_id : ItemId
+     of Bools * item_id : ItemId
     | BranchSkill of Bools * skill_id : SkillId
     | BranchInfo of Bools * info_id : InfoId
     | BranchBeast of Bools * beast_id : BeastId
