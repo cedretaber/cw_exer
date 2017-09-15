@@ -31,7 +31,7 @@ module Adventurer =
     | Target.Random ->
         let idx, cast = State.get_random_pc state in
         Pair.t
-          (State.set_selected (State.PC idx) state)
+          (State.set_selected (Scenario.PC idx) state)
           (judge_ability level sleep physical mental cast)
     | Target.Party ->
         state,
@@ -92,7 +92,7 @@ module Adventurer =
     | Target.Random ->
         let idx, cast =
           State.get_random_pc state in
-        State.set_selected (State.PC idx) state,
+        State.set_selected (Scenario.PC idx) state,
         judge_status status cast
     | Target.Party ->
         state,
@@ -111,17 +111,18 @@ module Adventurer =
       if party then
         for idx, cast
           in Adventurers.indexed state.party.adventurers ->
-            State.set_selected (State.PC (Adventurers.int_to_pos idx)) state, cast
+            State.set_selected (Scenario.PC (Adventurers.int_to_pos idx)) state, cast
+      let scenario = State.get_scenario_unsafe state in
       if enemy then
         let enemies =
           Option.fold
             (fun _ es -> Enemies.to_list es)
             List.Empty
-            state.enemies
+            (Scenario.enemies scenario)
         for _, cast in enemies ->
           state, cast
       if npc then 
-        for cast in Adventurers.to_list state.companions ->
+        for cast in Adventurers.to_list scenario.companions ->
           state, cast
     }
 
