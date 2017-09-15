@@ -9,17 +9,21 @@ open CardWirthEngine.GameMasters.Cards.Adventurers
 open CardWirthEngine.GameMasters.Party
 
 module CardOps =
-
-  let companion_exists = State.has_companion
+  
+  let inline companion_exists id =
+    State.get_scenario_unsafe >> Scenario.has_companion id
 
   let add_companion id (state : State.t) =
-    State.get_cast id state
-    |> Option.fold
-      (fun _ companion ->
-        State.add_companion companion state)
-      state
+    State.update_scenarion
+      (fun scenario ->
+        Scenario.get_cast id scenario
+        |> Option.fold
+          (fun _ companion ->
+            Scenario.add_companion companion scenario)
+          scenario)
   
-  let remove_companion = State.remove_companion
+  let remove_companion id =
+    State.update_scenarion <| Scenario.remove_companion id
 
   type PcOrEnemy
     = PC of Adventurers.Position * Cast.t
@@ -60,10 +64,10 @@ module CardOps =
             state.adventurers with
           Option.None -> state, false
         | Some (pos, _) ->
-            State.set_selected (State.PC pos) state, true
+            State.set_selected (Scenario.PC pos) state, true
     | Range.Party ->
         let pos, _ = State.get_random_pc state in
-        ( State.set_selected (State.PC pos) state
+        ( State.set_selected (Scenario.PC pos) state
         , Adventurers.forall check_card state.adventurers
         )
     | Range.Backpack ->
@@ -87,8 +91,10 @@ module CardOps =
             for p, c
               in Adventurers.to_seq_with_pos state.adventurers
                 -> PC (p, c)
-            if Option.isSome state.enemies then
-              let enemies = Option.get state.enemies in
+            let scenario = State.get_scenario_unsafe state in
+            let maybe_enemies = Scenario.enemies scenario
+            if Option.isSome maybe_enemies then
+              let enemies = Option.get maybe_enemies in
               for i, c in Map.toSeq enemies
                 -> Enemy (i, c)
           } in
@@ -100,11 +106,11 @@ module CardOps =
             targets in
         match maybe_cast with
           Some (PC (pos, _)) ->
-            ( State.set_selected (State.PC pos) state
+            ( State.set_selected (Scenario.PC pos) state
             , true
             )
         | Some (Enemy (idx, _)) ->
-            ( State.set_selected (State.Enemy idx) state
+            ( State.set_selected (Scenario.Enemy idx) state
             , true
             )
         | Option.None ->
@@ -112,7 +118,7 @@ module CardOps =
     | _ -> state, false
 
 
-  let inline private add add_card goods count (state : State.t) =
+  let inline private add add_card goods count state =
 
     let inline update_cast pos cast (state : State.t) =
       let rest, cast' = add_card cast count in
@@ -136,14 +142,19 @@ module CardOps =
       Range.Selected ->
         let state', cast =
           State.get_selected_or_random state in
-        match state.selected_pos with
-          State.PC pos ->
+        let scenario = State.get_scenario_unsafe state'
+        match scenario.selected with
+          Scenario.PC pos ->
             update_cast pos cast state'
-        | State.Enemy id ->
-            State.update_enemy update_npc id state
-        | State.Companion pos ->
-            State.update_companion update_npc pos state
-        | State.None ->
+        | Scenario.Enemy id ->
+            State.update_scenarion
+              (Scenario.update_enemy update_npc id)
+              state
+        | Scenario.Companion pos ->
+            State.update_scenarion
+              (Scenario.update_companion update_npc pos)
+              state
+        | Scenario.None ->
             state
     | Range.Random ->
         let pos, cast = State.get_random_pc state in
@@ -162,7 +173,7 @@ module CardOps =
     | _ -> state
 
 
-  let inline private remove remove_from_cast goods count (state : State.t) =
+  let inline private remove remove_from_cast goods count state =
 
     let update_npc = fun cast -> remove_from_cast count cast
 
@@ -182,14 +193,19 @@ module CardOps =
       Range.Selected ->
         let state', cast =
           State.get_selected_or_random state in
-        match state.selected_pos with
-          State.PC pos ->
+        let scenario = State.get_scenario_unsafe state'
+        match scenario.selected with
+          Scenario.PC pos ->
             update_cast pos cast state'
-        | State.Companion pos ->
-            State.update_companion update_npc pos state
-        | State.Enemy id -> 
-            State.update_enemy update_npc id state
-        | State.None -> state
+        | Scenario.Companion pos ->
+            State.update_scenarion
+              (Scenario.update_companion update_npc pos)
+              state
+        | Scenario.Enemy id -> 
+            State.update_scenarion
+              (Scenario.update_enemy update_npc id)
+              state
+        | Scenario.None -> state
     | Range.Random ->
         let pos, cast = State.get_random_pc state in
         update_cast pos cast state
@@ -207,8 +223,10 @@ module CardOps =
   
   
   (* Items *)
-  let item_exists id count target (state : State.t) =
-    State.get_item id state
+  let item_exists id count target state =
+    state
+    |> State.get_scenario_unsafe
+    |> Scenario.get_item id
     |> Option.fold
       (fun _ item ->
         exists
@@ -219,8 +237,10 @@ module CardOps =
           target)
       (state, false)
 
-  let add_item id count target (state : State.t) =
-    State.get_item id state
+  let add_item id count target state =
+    state
+    |> State.get_scenario_unsafe
+    |> Scenario.get_item id
     |> Option.fold
       (fun _ item ->
         add
@@ -232,8 +252,10 @@ module CardOps =
           target)
       state
 
-  let remove_item id count target (state : State.t) =
-    State.get_item id state
+  let remove_item id count target state =
+    state
+    |> State.get_scenario_unsafe
+    |> Scenario.get_item id
     |> Option.fold
       (fun _ item ->
         remove
