@@ -99,9 +99,9 @@ module GameMasterTestUtil =
     }
 
   let empty_enhance =
-    { action = 0
-    ; avoid = 0
-    ; resist = 0
+    { action  = 0
+    ; avoid   = 0
+    ; resist  = 0
     ; defense = 0
     }
 

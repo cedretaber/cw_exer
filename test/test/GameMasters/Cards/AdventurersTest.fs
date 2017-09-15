@@ -27,7 +27,9 @@ module AdventurersTest =
     [<Test>]
     let ``冒険者が6人の場合、元のパーティがそのまま返ること`` () =
       let last_adv =
-        { empty_cast with property = { empty_cast.property with  name = "last adventurer"  } } in
+        { empty_cast with 
+            property = { empty_cast.property with
+                           name = "last adventurer"  } } in
       let advs =
         empty_adv, empty_adv, empty_adv, empty_adv, empty_adv, Exist last_adv in
       let _, _, _, _, _, result = add empty_cast advs in

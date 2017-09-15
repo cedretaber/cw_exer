@@ -17,7 +17,9 @@ module GameMasterEventTest =
   module BranchTest =
 
     let flag_name = "test_flag" 
-    let check_flag_state = { empty_scenario.global_state with flags = Map.ofList [flag_name, false] }
+    let check_flag_state =
+      { empty_scenario.global_state with
+          flags = Map.ofList [flag_name, false] }
 
     module BranchCastTest =
       [<Test>]
@@ -52,8 +54,8 @@ module GameMasterEventTest =
         let scenario =
           { empty_scenario with
               global_state = check_flag_state;
-              cards =
-                { empty_scenario.cards with items = Map.ofList [item_id, empty_item] }} in
+              cards = { empty_scenario.cards with
+                          items = Map.ofList [item_id, empty_item] }} in
         let state =
           make_empty_state scenario |> State.set_party party in
         let contents =
