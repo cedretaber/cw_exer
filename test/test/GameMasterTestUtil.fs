@@ -145,6 +145,15 @@ module GameMasterTestUtil =
     ; events = []
     }
 
+  let empty_skill : Skill.t =
+    { property = empty_property 1 "skill1"
+    ; level = 1
+    ; hold = false
+    ; motions = []
+    ; beasts = [||]
+    ; events = []
+    }
+
   let one_adventurer : Adventurers.t =
     Adventurers.add empty_cast no_adventurers
 

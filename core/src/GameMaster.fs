@@ -401,11 +401,17 @@ module GameMaster =
           state'
           (Util.equals bool)
           bools
+
+    | BranchSkill (bools, id, count, range), _ ->
+        let state', bool = CardOps.skill_exists id count range state in
+        next_branch
+          state'
+          (Util.equals bool)
+          bools
     
     
     (*
-     of Bools * item_id : ItemId
-    | BranchSkill of Bools * skill_id : SkillId
+     of Bools * skill_id : SkillId
     | BranchInfo of Bools * info_id : InfoId
     | BranchBeast of Bools * beast_id : BeastId
     | BranchMoney of Bools * value : int

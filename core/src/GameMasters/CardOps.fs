@@ -268,3 +268,18 @@ module CardOps =
           state
           target)
       state
+
+  (* Skill *)
+  let skill_exists id count target state =
+    state
+    |> State.get_scenario_unsafe
+    |> Scenario.get_skilll id
+    |> Option.fold
+      (fun _ skill ->
+        exists
+          (Cast.count_skill skill)
+          (Party.Skill skill)
+          count
+          state
+          target)
+      (state, false)
