@@ -9,7 +9,7 @@ module Select =
   open CardWirthEngine.GameMasters.Cards
 
   let inline set_selected_pc index state =
-    State.set_selected (State.PC index) state
+    State.set_selected (Scenario.PC index) state
 
   let inline private filter target adventurers =
     let advs =
@@ -54,11 +54,11 @@ module Select =
 
         | Random ->
             let pos, _ = State.get_random_pc state
-            State.set_selected (State.PC pos) state, Output.None
+            State.set_selected (Scenario.PC pos) state, Output.None
 
         | Valued (initial, coupons) ->
             let pos, _ =
               Adventurers.to_seq_with_pos state.adventurers
               |> appraise initial coupons
               |> Array.maxBy Pair.second in
-            State.set_selected (State.PC pos) state, Output.None
+            State.set_selected (Scenario.PC pos) state, Output.None

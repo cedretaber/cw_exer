@@ -1,16 +1,15 @@
 ﻿namespace CardWirthEngine.GameMasters
 
-open CardWirthEngine.Utils
 open CardWirthEngine.Data
 open CardWirthEngine.Scenario.Events
 open CardWirthEngine.GameMasters
 
 module FlagOps =
-  let get : Flag.Name -> State.t -> Flag.State =
-    State.get_flag
+  let get name =
+    State.get_scenario_unsafe >> Scenario.get_flag name
 
-  let set : Flag.Name -> Flag.State -> State.t -> State.t =
-    State.set_flag
+  let set name value =
+    State.update_scenarion <| Scenario.set_flag name value
 
   let flip : Flag.Name -> State.t -> State.t * bool =
     fun name state ->
