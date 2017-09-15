@@ -10,17 +10,19 @@ open CardWirthEngine.GameMasters.Party
 
 module CardOps =
   
-  let inline companion_exists id =
-    State.get_scenario_unsafe >> Scenario.has_companion id
+  let companion_exists : CastId -> State.t -> bool =
+    fun id ->
+      State.get_scenario_unsafe >> Scenario.has_companion id
 
-  let add_companion id (state : State.t) =
-    State.update_scenarion
-      (fun scenario ->
-        Scenario.get_cast id scenario
-        |> Option.fold
-          (fun _ companion ->
-            Scenario.add_companion companion scenario)
-          scenario)
+  let add_companion : CastId -> State.t -> State.t = 
+    fun id ->
+      State.update_scenarion
+        (fun scenario ->
+          Scenario.get_cast id scenario
+          |> Option.fold
+            (fun _ companion ->
+              Scenario.add_companion companion scenario)
+            scenario)
   
   let remove_companion id =
     State.update_scenarion <| Scenario.remove_companion id

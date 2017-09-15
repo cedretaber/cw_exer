@@ -19,20 +19,20 @@ module GameMaster =
       | State.Scenario ({ eventStack = contents }, _, _, _) ->
           read state contents input
 
-  and read : State.t -> State.Event list -> Input.t -> Output.t =
+  and read : State.t -> Scenario.Event list -> Input.t -> Output.t =
     fun state contents input ->
       match contents with
         [] ->
           Output.t state Output.EventEnd
-      | State.Content (event, content) :: rest ->
+      | Scenario.Content (event, content) :: rest ->
           read_content state event content rest input
-      | State.Action :: rest ->
+      | Scenario.Action :: rest ->
           read state rest input
 
   and private read_content state event content rest input =
     (* Step next contens *)
     let inline next_line state next =
-      read state (State.Content (event, next) :: rest) Input.None
+      read state (Scenario.Content (event, next) :: rest) Input.None
     let inline next_line' next =
       next_line state next
 
@@ -84,7 +84,7 @@ module GameMaster =
 
     let inline call_start nexts start_name =
       let callback =
-        State.Content
+        Scenario.Content
           ( event
           , Content.CallStart (nexts, start_name, true)
           ) in
@@ -92,7 +92,7 @@ module GameMaster =
         Some next ->
           read
             state
-            (State.Content (event, next) :: callback :: rest)
+            (Scenario.Content (event, next) :: callback :: rest)
             Input.None
       | None ->
           read state (callback :: rest) Input.None
@@ -110,7 +110,7 @@ module GameMaster =
 
     let inline call_package nexts package_id =
       let callback =
-        State.Content
+        Scenario.Content
           ( event
           , Content.CallPackage (nexts, package_id, true)
           ) in
