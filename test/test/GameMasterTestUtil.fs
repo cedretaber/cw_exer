@@ -1,18 +1,18 @@
 ﻿namespace CardWirthEngineTest
 
-open CardWirthEngine.Data
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Data.Types.Enhance
 open CardWirthEngine.Data.Casts
 open CardWirthEngine.Data.Skills
 open CardWirthEngine.Data.Skills.EffectType
 open CardWirthEngine.Scenario
-open CardWirthEngine.Scenario.Info.Summary
+open CardWirthEngine.Scenario.Summary
 open CardWirthEngine.Cards
 open CardWirthEngine.Cards.Property
 open CardWirthEngine.Cards.Cast.Feature
 open CardWirthEngine.GameMasters
 open CardWirthEngine.GameMasters.Cards
+open CardWirthEngine.GameMasters.Scenario
 open CardWirthEngine.GameMasters.State
 
 module GameMasterTestUtil =
@@ -148,7 +148,7 @@ module GameMasterTestUtil =
   let one_adventurer : Adventurers.t =
     Adventurers.add empty_cast no_adventurers
 
-  let empty_scenario : Scenario =
+  let empty_scenario : Scenario.t =
     { summary =
       { data_version = 0
       ; property =

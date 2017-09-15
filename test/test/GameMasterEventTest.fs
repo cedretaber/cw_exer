@@ -8,6 +8,7 @@ open CardWirthEngineTest.GameMasterTestUtil
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Scenario.Events.Content
 open CardWirthEngine.GameMasters
+open CardWirthEngine.GameMasters.Scenario
 open CardWirthEngine.GameMasters.State
 open CardWirthEngine.GameMaster
 open CardWirthEngine.GameMasters.Cards
@@ -35,7 +36,8 @@ module GameMasterEventTest =
             ) in
         let state', _ =
           read state [Content (empty_event, contents)] Input.None in
-        get_flag flag_name state' === true
+        let scenario' = State.get_scenario_unsafe state' in
+        get_flag flag_name scenario' === true
 
     module BranchItemTest =
 
@@ -64,4 +66,5 @@ module GameMasterEventTest =
             , Range.Random
             ) in
         let state', _ = read state [Content (empty_event, contents)] Input.None in
-        get_flag flag_name state' === true
+        let scenario' = State.get_scenario_unsafe state' in
+        get_flag flag_name scenario' === true
