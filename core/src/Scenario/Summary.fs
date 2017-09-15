@@ -1,4 +1,4 @@
-﻿namespace CardWirthEngine.Scenario.Info
+﻿namespace CardWirthEngine.Scenario
 
 open CardWirthEngine.Data
 open CardWirthEngine.Data.Type
