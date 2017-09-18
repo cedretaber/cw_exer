@@ -93,3 +93,8 @@ module Party =
         | Beast left, Beast right -> Beast.equals left right
         | _ -> false)
       party.bag
+
+  let inline has_money amount =
+    function
+      { money = money } ->
+        amount >= money

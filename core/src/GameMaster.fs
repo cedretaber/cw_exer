@@ -420,9 +420,13 @@ module GameMaster =
           state'
           ((=) bool)
           bools
+
+    | BranchMoney (bools, value), _ ->
+        next_branch'
+          ((=) <| Party.has_money value state.party)
+          bools
     
     (*
-    | BranchMoney of Bools * value : int
     | BranchCoupon of Bools * range : Range * value : Coupon.Name
     | BranchMultiCoupon of Texts * target : Target (* Wsn.2 *)
     | BranchCompleteStamp of Bools * value : ScenarioName
