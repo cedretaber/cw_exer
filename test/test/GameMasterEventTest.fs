@@ -123,3 +123,33 @@ module GameMasterEventTest =
         let state', _ = read state [Content (empty_event, contents)] Input.None in
         let scenario' = State.get_scenario_unsafe state' in
         get_flag flag_name scenario' === true
+
+    module BranchBeastTest =
+
+      [<Test>]
+      let ``キャストの保有する召喚獣の存在を正しく識別できること`` () =
+        let beast_id = empty_beast.property.id in
+        let cast1 =
+          { empty_cast with beast = [empty_beast] } in
+        let party =
+          { minimal_party with
+              adventurers = Adventurers.add cast1 no_adventurers } in
+        let scenario =
+          { empty_scenario with
+              global_state = check_flag_state;
+              cards = { empty_scenario.cards with
+                          beasts = Map.ofList [beast_id, empty_beast] }} in
+        let state =
+          make_empty_state scenario |> State.set_party party in
+        let contents =
+          BranchBeast
+            ( [ true, SetFlag ([], flag_name, true)
+              ; false, SetFlag ([], flag_name, false)
+              ]
+            , beast_id
+            , 1
+            , Range.Random
+            ) in
+        let state', _ = read state [Content (empty_event, contents)] Input.None in
+        let scenario' = State.get_scenario_unsafe state' in
+        get_flag flag_name scenario' === true

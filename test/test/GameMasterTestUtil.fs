@@ -154,6 +154,13 @@ module GameMasterTestUtil =
     ; events = []
     }
 
+  let empty_beast : Beast.t =
+    { property = empty_property 1 "beast1"
+    ; motions = []
+    ; beasts = [||]
+    ; events = []
+    }
+
   let empty_info : Info.t =
     { id = 1
     ; name = "info1"

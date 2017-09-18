@@ -7,7 +7,7 @@ open CardWirthEngine.Scenario
 module Beast =
   type t =
     { property : BeastId Property.t
-    ; motions : Motion.t
+    ; motions : Motion.t list
     ; beasts : t array
     ; events : Event.t list
     }
