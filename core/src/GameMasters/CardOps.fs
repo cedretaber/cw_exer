@@ -283,3 +283,8 @@ module CardOps =
           state
           target)
       (state, false)
+
+  (* Info *)
+  let info_exists id state =
+    State.get_scenario_unsafe state
+    |> Scenario.has_info id

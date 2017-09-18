@@ -408,11 +408,14 @@ module GameMaster =
           state'
           (Util.equals bool)
           bools
+
+    | BranchInfo (bools, id), _ ->
+        next_branch'
+          (Util.equals <| CardOps.info_exists id state)
+          bools
     
     
     (*
-     of Bools * skill_id : SkillId
-    | BranchInfo of Bools * info_id : InfoId
     | BranchBeast of Bools * beast_id : BeastId
     | BranchMoney of Bools * value : int
     | BranchCoupon of Bools * range : Range * value : Coupon.Name
