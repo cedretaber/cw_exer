@@ -97,4 +97,4 @@ module Party =
   let inline has_money amount =
     function
       { money = money } ->
-        amount >= money
+        amount <= money
