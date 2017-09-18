@@ -422,7 +422,6 @@ module GameMaster =
           bools
     
     (*
-    | BranchBeast of Bools * beast_id : BeastId
     | BranchMoney of Bools * value : int
     | BranchCoupon of Bools * range : Range * value : Coupon.Name
     | BranchMultiCoupon of Texts * target : Target (* Wsn.2 *)

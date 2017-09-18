@@ -23,6 +23,7 @@ module Party =
     { adventurers : Adventurers.t
     ; money : Money
     ; bag : Goods list
+    ; name : string
     }
 
   let inline party_count party =

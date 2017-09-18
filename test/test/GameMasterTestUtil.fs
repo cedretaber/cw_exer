@@ -210,6 +210,7 @@ module GameMasterTestUtil =
     { adventurers = one_adventurer
     ; money = 0
     ; bag = []
+    ; name = "team1"
     }
 
   let empty_global_data =
