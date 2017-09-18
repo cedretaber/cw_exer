@@ -235,7 +235,7 @@ module GameMaster =
     (* Data *)
     | BranchFlag (bools, name), _ ->
         next_branch'
-          (Util.equals <| FlagOps.get name state)
+          ((=) <| FlagOps.get name state)
           bools
           
     | SetFlag (_, name, flag), Input.None ->
@@ -259,7 +259,7 @@ module GameMaster =
 
     | BranchFlagCmp (bools, left, right), _ ->
         next_branch'
-          (Util.equals <| FlagOps.compare left right state)
+          ((=) <| FlagOps.compare left right state)
           bools
 
     (* フラグのチェックは直前のコンテントで行う *)
@@ -269,7 +269,7 @@ module GameMaster =
     (* ステップ比較は 以上=true, 未満=false *)
     | BranchStep (bools, name, value), _ ->
         next_branch'
-          (Util.equals (StepOps.get name state >= value))
+          ((=) (StepOps.get name state >= value))
           bools
 
     | SetStep (nexts, name, value), _ ->
@@ -294,7 +294,7 @@ module GameMaster =
 
     | BranchMultiStep (steps, name), _ ->
         next_branch'
-          (Util.equals <| StepOps.get name state)
+          ((=) <| StepOps.get name state)
           steps
 
     | BranchStepCmp (trios, left, right), _ ->
@@ -330,12 +330,12 @@ module GameMaster =
           Branch.Adventurer.judge ability state in
         next_branch
           new_state
-          (Util.equals bool)
+          ((=) bool)
           bools
 
     | BranchRandom (bools, percent), _ ->
         next_branch'
-          (Util.equals <| Branch.Random.dice (int percent) state)
+          ((=) <| Branch.Random.dice (int percent) state)
           bools
 
     | BranchMultiRandom nexts, _ ->
@@ -345,7 +345,7 @@ module GameMaster =
 
     | BranchLevel (bools, target, level), _ ->
         next_branch'
-          (Util.equals <| Branch.Adventurer.level target level state)
+          ((=) <| Branch.Adventurer.level target level state)
           bools
 
     | BranchStatus (bools, target, status), _ ->
@@ -353,27 +353,27 @@ module GameMaster =
           Branch.Adventurer.status target status state in
         next_branch
           new_state
-          (Util.equals bool)
+          ((=) bool)
           bools
 
     | BranchPartyNumber (bools, value), _ ->
         next_branch'
-          (Util.equals <| Branch.Adventurer.party_count value state)
+          ((=) <| Branch.Adventurer.party_count value state)
           bools
 
     | BranchArea (bools, id), _ ->
         next_branch'
-          (Util.equals <| Branch.AreaOrBattle.is_area_in id state)
+          ((=) <| Branch.AreaOrBattle.is_area_in id state)
           bools
 
     | BranchBattle (bools, id), _ ->
         next_branch'
-          (Util.equals <| Branch.AreaOrBattle.is_battle_in id state)
+          ((=) <| Branch.AreaOrBattle.is_battle_in id state)
           bools
 
     | BranchIsBattle bools, _ ->
         next_branch'
-          (Util.equals <| Branch.AreaOrBattle.is_battle state)
+          ((=) <| Branch.AreaOrBattle.is_battle state)
           bools
 
     | BranchRandomSelect (bools, condition), _ ->
@@ -381,44 +381,44 @@ module GameMaster =
           Branch.Adventurer.random_select condition state in
         next_branch
           new_state
-          (Util.equals bool)
+          ((=) bool)
           bools
 
     | BranchRound (bools, value, cmp), _ ->
         next_branch'
-          (Util.equals <| Branch.AreaOrBattle.round cmp value state)
+          ((=) <| Branch.AreaOrBattle.round cmp value state)
           bools
 
     (* Branch *)
     | BranchCast (bools, id), _ ->
         next_branch'
-          (Util.equals <| CardOps.companion_exists id state)
+          ((=) <| CardOps.companion_exists id state)
           bools
 
     | BranchItem (bools, id, count, range), _ ->
         let state', bool = CardOps.item_exists id count range state in
         next_branch
           state'
-          (Util.equals bool)
+          ((=) bool)
           bools
 
     | BranchSkill (bools, id, count, range), _ ->
         let state', bool = CardOps.skill_exists id count range state in
         next_branch
           state'
-          (Util.equals bool)
+          ((=) bool)
           bools
 
     | BranchInfo (bools, id), _ ->
         next_branch'
-          (Util.equals <| CardOps.info_exists id state)
+          ((=) <| CardOps.info_exists id state)
           bools
 
     | BranchBeast (bools, id, count, range), _ ->
         let state', bool = CardOps.beast_exists id count range state in
         next_branch
           state'
-          (Util.equals bool)
+          ((=) bool)
           bools
     
     (*
