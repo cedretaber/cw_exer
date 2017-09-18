@@ -414,7 +414,6 @@ module GameMaster =
           (Util.equals <| CardOps.info_exists id state)
           bools
     
-    
     (*
     | BranchBeast of Bools * beast_id : BeastId
     | BranchMoney of Bools * value : int

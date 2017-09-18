@@ -154,6 +154,12 @@ module GameMasterTestUtil =
     ; events = []
     }
 
+  let empty_info : Info.t =
+    { id = 1
+    ; name = "info1"
+    ; description = "info1 description."
+    }
+
   let one_adventurer : Adventurers.t =
     Adventurers.add empty_cast no_adventurers
 
@@ -185,6 +191,7 @@ module GameMasterTestUtil =
     ; global_state =
       { flags = Map.empty
       ; steps = Map.empty
+      ; infos = Set.empty
       }
     ; eventStack = []
     ; selected = SelectedCast.None

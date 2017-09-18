@@ -100,3 +100,26 @@ module GameMasterEventTest =
         let state', _ = read state [Content (empty_event, contents)] Input.None in
         let scenario' = State.get_scenario_unsafe state' in
         get_flag flag_name scenario' === true
+
+    module BranchInfoTest =
+
+      [<Test>]
+      let ``情報カードの保有で正しく分岐できること`` () =
+        let info_id = empty_info.id in
+        let global_state =
+          { empty_scenario.global_state with
+              infos = Set.ofList [info_id] } in
+        let scenario =
+          { empty_scenario with
+              global_state = global_state } in
+        let state = make_empty_state scenario in
+        let contents =
+          BranchInfo
+            ( [ true, SetFlag ([], flag_name, true)
+              ; false, SetFlag ([], flag_name, false)
+              ]
+            , info_id
+            ) in
+        let state', _ = read state [Content (empty_event, contents)] Input.None in
+        let scenario' = State.get_scenario_unsafe state' in
+        get_flag flag_name scenario' === true
