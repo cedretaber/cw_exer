@@ -284,6 +284,21 @@ module CardOps =
           target)
       (state, false)
 
+  (* Beast *)
+  let beast_exists id count target state =
+    state
+    |> State.get_scenario_unsafe
+    |> Scenario.get_beast id
+    |> Option.fold
+      (fun _ beast ->
+        exists
+          (Cast.beast_count beast)
+          (Party.Beast beast)
+          count
+          state
+          target)
+      (state, false)
+
   (* Info *)
   let info_exists id state =
     State.get_scenario_unsafe state
