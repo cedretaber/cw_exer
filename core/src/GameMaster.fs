@@ -425,9 +425,16 @@ module GameMaster =
         next_branch'
           ((=) <| Party.has_money value state.party)
           bools
+
+    | BranchCoupon (bools, range, matching_type, values), _ ->
+        let state', bool =
+          Adventurer.has_coupon range matching_type values state in
+        next_branch
+          state'
+          ((=) <| bool)
+          bools
     
     (*
-    | BranchCoupon of Bools * range : Range * value : Coupon.Name
     | BranchMultiCoupon of Texts * target : Target (* Wsn.2 *)
     | BranchCompleteStamp of Bools * value : ScenarioName
     | BranchGossip of Bools * value : GossipName

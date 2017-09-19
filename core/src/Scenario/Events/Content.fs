@@ -93,7 +93,7 @@ module Content =
     | BranchInfo of Bools * info_id : InfoId
     | BranchBeast of Bools * beast_id : BeastId * count : int * range : Range
     | BranchMoney of Bools * value : Money
-    | BranchCoupon of Bools * range : Range * value : Coupon.Name
+    | BranchCoupon of Bools * range : Range * matching_type : MatchingType * values : Coupon.Name list
     | BranchMultiCoupon of Texts * target : Target (* Wsn.2 *)
     | BranchCompleteStamp of Bools * value : ScenarioName
     | BranchGossip of Bools * value : GossipName

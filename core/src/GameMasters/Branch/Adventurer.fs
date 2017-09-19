@@ -3,6 +3,7 @@
 open CardWirthEngine
 open CardWirthEngine.Utils
 open CardWirthEngine.Data.Type
+open CardWirthEngine.Data.Casts
 open CardWirthEngine.Cards
 open CardWirthEngine.Scenario.Events.Contents.BranchAbility
 open CardWirthEngine.Scenario.Events.Contents.BranchRandomSelect
@@ -162,3 +163,40 @@ module Adventurer =
     |> Option.fold
       (Util.const' <| function state, _ -> state, true)
       (state, false)
+
+  let inline has_coupon range matching_type values (state : State.t) =
+    let f f =
+      match matching_type with
+        And -> List.forall f values
+      | Or -> List.exists f values in
+    let g (cast : Cast.t) =
+      let had_coupons =
+        Set.ofList cast.property.coupons in
+      f
+        (fun coupon ->
+          Set.exists
+            (fun ({ name = name } : Coupon.t) ->
+              name = coupon) had_coupons) in
+    match range with
+      Selected ->
+        state.selected_cast
+        |> Option.fold
+          (fun _ cast -> state, g cast)
+          (state, false)
+    | Random ->
+        match Adventurers.try_find_with_position g state.adventurers with
+          Some (pos, _) ->
+            (State.set_selected (Scenario.PC pos) state), true
+        | _ ->
+          state, false
+    | Range.Party ->
+        state, Adventurers.forall g state.adventurers
+    | _ ->
+      state, false
+
+
+
+
+
+
+      
