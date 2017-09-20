@@ -445,8 +445,12 @@ module GameMaster =
         next_branch'
           ((=) <| State.is_completed value state)
           bools
+
+    | BranchGossip (bools, value), _ ->
+        next_branch'
+          ((=) <| State.has_gossip value state)
+          bools
     
     (*
-    | BranchGossip of Bools * value : GossipName
     | BranchKeyCode of Bools * BranchKeyCode.t
     *)
