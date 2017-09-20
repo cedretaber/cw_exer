@@ -1,12 +1,20 @@
 namespace CardWirthEngine.GameMasters.Cards
 
-open CardWirthEngine.Data.Type
 open CardWirthEngine.Cards
 
 module Enemies =
-  type t = (EnemyId, Cast.t) Map
+  type t = Cast.t array
 
-  let get = Map.tryFind
-  let updated = Map.add
-  let removed = Map.remove
-  let to_list = Map.toList
+  let get = Array.tryItem
+ 
+  let inline updated idx e es =
+    let es' = Array.copy es in
+    es'.[idx] <- e
+    es'
+ 
+  let removed i (es : t array) =
+    Array.append es.[..i] es.[i+1..]
+
+  let to_list = Array.toList
+
+  let indexed = Array.indexed

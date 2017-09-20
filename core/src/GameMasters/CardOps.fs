@@ -99,7 +99,7 @@ module CardOps =
             let maybe_enemies = Scenario.enemies scenario in
             if Option.isSome maybe_enemies then
               let enemies = Option.get maybe_enemies in
-              for i, c in Map.toSeq enemies
+              for i, c in Enemies.indexed enemies
                 -> Enemy (i, c)
           } in
         let maybe_cast =

@@ -119,7 +119,7 @@ module Adventurer =
             (fun _ es -> Enemies.to_list es)
             List.Empty
             (Scenario.enemies scenario)
-        for _, cast in enemies ->
+        for cast in enemies ->
           state, cast
       if npc then 
         for cast in Adventurers.to_list scenario.companions ->
