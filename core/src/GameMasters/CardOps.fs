@@ -50,8 +50,10 @@ module CardOps =
   *)
   let inline private exists count_card card_in_bag count (state : State.t) =
 
-    let check_card = fun card -> count_card card >= count in
-    let count_backpack = lazy(Party.count_card card_in_bag state.party)
+    let check_card =
+      fun card -> count_card card >= count in
+    let count_backpack =
+      lazy(Party.count_card card_in_bag state.party) in
 
     function
       Range.Selected ->
@@ -82,8 +84,8 @@ module CardOps =
               then 0
               else count - count_card cast)
             count
-            state.adventurers
-        let rest = count - of_advs
+            state.adventurers in
+        let rest = count - of_advs in
         ( state
         , rest <= 0 || rest - count_backpack.Force () <= 0
         )
@@ -94,7 +96,7 @@ module CardOps =
               in Adventurers.to_seq_with_pos state.adventurers
                 -> PC (p, c)
             let scenario = State.get_scenario_unsafe state in
-            let maybe_enemies = Scenario.enemies scenario
+            let maybe_enemies = Scenario.enemies scenario in
             if Option.isSome maybe_enemies then
               let enemies = Option.get maybe_enemies in
               for i, c in Map.toSeq enemies
@@ -127,7 +129,8 @@ module CardOps =
       State.set_adventurer_at pos cast' state
       |> State.add_to_bag rest goods
 
-    let update_npc = fun cast -> add_card cast count |> Pair.second
+    let update_npc =
+      fun cast -> add_card cast count |> Pair.second in
 
     let add_all_advs = lazy(
       Adventurers.fold_with_pos
@@ -138,13 +141,13 @@ module CardOps =
           ))
         (state, 0)
         state.adventurers
-      )
+      ) in
 
     function
       Range.Selected ->
         let state', cast =
           State.get_selected_or_random state in
-        let scenario = State.get_scenario_unsafe state'
+        let scenario = State.get_scenario_unsafe state' in
         match scenario.selected with
           Scenario.PC pos ->
             update_cast pos cast state'
@@ -177,9 +180,10 @@ module CardOps =
 
   let inline private remove remove_from_cast goods count state =
 
-    let update_npc = fun cast -> remove_from_cast count cast
+    let update_npc =
+      fun cast -> remove_from_cast count cast in
 
-    let update_cast pos cast (state : State.t) =
+    let inline update_cast pos cast (state : State.t) =
       let cast' = update_npc cast in
       State.set_adventurer_at pos cast' state
 
@@ -189,13 +193,13 @@ module CardOps =
           update_cast pos cast state)
         state
         state.adventurers
-      )
+      ) in
 
     function
       Range.Selected ->
         let state', cast =
           State.get_selected_or_random state in
-        let scenario = State.get_scenario_unsafe state'
+        let scenario = State.get_scenario_unsafe state' in
         match scenario.selected with
           Scenario.PC pos ->
             update_cast pos cast state'

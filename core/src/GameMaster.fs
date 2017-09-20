@@ -110,13 +110,13 @@ module GameMaster =
         Output.t state <| Output.LoadPackage package_id
 
     let inline call_package nexts package_id =
-      let callback =
-        Scenario.Content
-          ( event
-          , Content.CallPackage (nexts, package_id, true)
-          ) in
       if Terminal.is_loaded state package_id
       then
+        let callback =
+          Scenario.Content
+            ( event
+            , Content.CallPackage (nexts, package_id, true)
+            ) in
         read
           state
           (callback :: rest)
@@ -143,6 +143,7 @@ module GameMaster =
       match Content.select selected nexts with
         Some (_, next) -> next_line' next
       | None -> end_line'
+
     (* Multi selection *)
     let inline select_multi selected nexts =
       match Content.select selected nexts with
@@ -446,7 +447,6 @@ module GameMaster =
           bools
     
     (*
-    | BranchCompleteStamp of Bools * value : ScenarioName
     | BranchGossip of Bools * value : GossipName
     | BranchKeyCode of Bools * BranchKeyCode.t
     *)

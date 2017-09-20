@@ -37,7 +37,7 @@ module Party =
         (fun (cast : Cast.t) -> cast.property.level) in
     sum / party_count party
 
-  let inline updated_adventurers pos cast party =
+  let inline set_adventurer pos cast party =
     let adventurers = Adventurers.updated pos cast party.adventurers in
     { party with adventurers = adventurers }
 
@@ -51,7 +51,7 @@ module Party =
       Adventurers.get_by_index index party.adventurers
 
   let add_goods count good party =
-    let goods = ListUtil.multi_cons count good party.bag
+    let goods = ListUtil.multi_cons count good party.bag in
     { party with bag = goods }
 
   let remove_goods remove_count good party =

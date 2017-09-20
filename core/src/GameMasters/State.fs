@@ -56,7 +56,7 @@ module State =
 
   let inline set_adventurer_at pos cast (state : t) =
     let party =
-      Party.updated_adventurers pos (const' cast) state.party in
+      Party.set_adventurer pos (const' cast) state.party in
     set_party party state
 
   (* global data ops *)

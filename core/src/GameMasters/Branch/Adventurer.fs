@@ -18,7 +18,6 @@ module Adventurer =
     | true, Cast.Sleep _ -> false
     | _ -> true
       
-
   let inline judge ability (state : State.t) =
     let { level = level
         ; target = { target = target; sleep = sleep }
@@ -168,7 +167,7 @@ module Adventurer =
     let f f =
       match matching_type with
         And -> List.forall f values
-      | Or -> List.exists f values in
+      | Or -> List.exists f values
     let g (cast : Cast.t) =
       let had_coupons =
         Set.ofList cast.property.coupons in
@@ -176,7 +175,8 @@ module Adventurer =
         (fun coupon ->
           Set.exists
             (fun ({ name = name } : Coupon.t) ->
-              name = coupon) had_coupons) in
+              name = coupon)
+            had_coupons)
     match range with
       Selected ->
         state.selected_cast
