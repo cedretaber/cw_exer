@@ -200,3 +200,23 @@ module GameMasterEventTest =
         let state', _ = read state [Content (empty_event, contents)] Input.None in
         let scenario' = State.get_scenario_unsafe state' in
         get_flag flag_name scenario' === false
+
+    module BranchCompleteStampTest =
+
+      [<Test>]
+      let ``済印の存在を正しく識別できること`` () =
+        let completed_scenario_name = "scenario1" in
+        let global_data =
+          { empty_global_data with completed_scenarii = Set.ofList [completed_scenario_name] }
+        let state =
+          State.Scenario (empty_scenario, minimal_party, global_data, state_random) in
+        let contents =
+          BranchCompleteStamp
+            ( [ true, SetFlag ([], flag_name, true)
+              ; false, SetFlag ([], flag_name, false)
+              ]
+            , completed_scenario_name
+            ) in
+        let state', _ = read state [Content (empty_event, contents)] Input.None in
+        let scenario' = State.get_scenario_unsafe state' in
+        get_flag flag_name scenario' === true
