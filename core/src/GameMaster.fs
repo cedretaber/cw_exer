@@ -439,6 +439,11 @@ module GameMaster =
     | BranchMultiCoupon (texts, _), _ ->
         let nexts = List.map Pair.second texts
         through state <| Nexts nexts
+
+    | BranchCompleteStamp (bools, value), _ ->
+        next_branch'
+          ((=) <| State.is_completed value state)
+          bools
     
     (*
     | BranchCompleteStamp of Bools * value : ScenarioName
