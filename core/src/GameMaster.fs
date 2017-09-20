@@ -1,6 +1,7 @@
 ﻿namespace CardWirthEngine
 
 open CardWirthEngine.Util
+open CardWirthEngine.Utils
 open CardWirthEngine.Data.Types
 open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Events
@@ -433,9 +434,13 @@ module GameMaster =
           state'
           ((=) <| bool)
           bools
+
+    (* 未実装 *)
+    | BranchMultiCoupon (texts, _), _ ->
+        let nexts = List.map Pair.second texts
+        through state <| Nexts nexts
     
     (*
-    | BranchMultiCoupon of Texts * target : Target (* Wsn.2 *)
     | BranchCompleteStamp of Bools * value : ScenarioName
     | BranchGossip of Bools * value : GossipName
     | BranchKeyCode of Bools * BranchKeyCode.t
