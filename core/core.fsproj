@@ -65,6 +65,18 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
+    <Reference Include="FSharp.Core">
+      <HintPath>..\packages\FSharp.Core.4.2.3\lib\net45\FSharp.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="packages.config" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="src\Utils\Maybe.fs" />
@@ -127,19 +139,8 @@
     <Compile Include="src\GameMasters\Branch\Adventurer.fs" />
     <Compile Include="src\GameMasters\Branch\Random.fs" />
     <Compile Include="src\GameMasters\Branch\AreaOrBattle.fs" />
+    <Compile Include="src\GameMasters\Branch\KeyCode.fs" />
     <Compile Include="src\GameMasters\CardOps.fs" />
     <Compile Include="src\GameMaster.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="FSharp.Core">
-      <HintPath>..\packages\FSharp.Core.4.2.3\lib\net45\FSharp.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="mscorlib" />
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.ValueTuple">
-      <HintPath>..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
-    </Reference>
   </ItemGroup>
 </Project>

@@ -436,7 +436,7 @@ module GameMaster =
           ((=) <| bool)
           bools
 
-    (* 未実装 *)
+    // TODO: 未実装
     | BranchMultiCoupon (texts, _), _ ->
         let nexts = List.map Pair.second texts
         through state <| Nexts nexts
@@ -450,7 +450,15 @@ module GameMaster =
         next_branch'
           ((=) <| State.has_gossip value state)
           bools
-    
-    (*
-    | BranchKeyCode of Bools * BranchKeyCode.t
-    *)
+
+
+    | BranchKeyCode (bools, { range = range
+                            ; card_type = card_type
+                            ; key_code = key_code
+                            }), _ ->
+        let state', bool =
+          KeyCode.has_key_code range card_type key_code state in
+        next_branch
+          state'
+          ((=) <| bool)
+          bools

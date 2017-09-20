@@ -172,9 +172,7 @@ module CardOps =
     | Range.PartyAndBackpack ->
         let state', rest = add_all_advs.Force () in
         State.add_to_bag (count + rest) goods state'
-    (* 古いシステム。 *)
-    | Range.Field ->
-        State.add_to_bag count goods state
+    (* 取得・消失では「フィールド全体」は無効 *)
     | _ -> state
 
 
@@ -222,9 +220,7 @@ module CardOps =
     | Range.PartyAndBackpack ->
         remove_all_adv.Force ()
         |> State.remove_from_bag count goods
-    (* 古いシステム。 *)
-    | Range.Field ->
-        State.remove_from_bag count goods state
+    (* 取得・消失では「フィールド全体」は無効 *)
     | _ -> state
   
   
