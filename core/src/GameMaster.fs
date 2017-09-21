@@ -236,9 +236,7 @@ module GameMaster =
 
     (* Data *)
     | BranchFlag (bools, name), _ ->
-        next_branch'
-          ((=) <| FlagOps.get name state)
-          bools
+        next_branch' ((=) <| FlagOps.get name state) bools
           
     | SetFlag (_, name, flag), Input.None ->
         flag_change
@@ -248,14 +246,14 @@ module GameMaster =
         through' <| Nexts nexts
         
     | ReverseFlag (_, name), Input.None ->
-        let new_state, flag = FlagOps.flip name state in
-        flag_change new_state name flag
+        let state', flag = FlagOps.flip name state in
+        flag_change state' name flag
     | ReverseFlag (nexts, _), _ ->
         through' <| Nexts nexts
         
     | SubstituteFlag (_, source, target), Input.None ->
-        let new_state, flag = FlagOps.substitute source target state in
-        flag_change new_state target flag
+        let state', flag = FlagOps.substitute source target state in
+        flag_change state' target flag
     | SubstituteFlag (nexts, _, _), _ ->
         through' <| Nexts nexts
 
@@ -315,9 +313,7 @@ module GameMaster =
           (is_true)
           bools
     | BranchSelect (bools, _), Input.Cancel ->
-        next_branch'
-          (is_false)
-          bools
+        next_branch' is_false bools
     | BranchSelect (bools, select), _ ->
         match Branch.Select.select select state with
           _, (Output.SelectPlayerCharactor _ as out) ->
@@ -328,12 +324,8 @@ module GameMaster =
             next_branch' (is_true) bools
 
     | BranchAbility (bools, ability), _ ->
-        let new_state, bool =
-          Branch.Adventurer.judge ability state in
-        next_branch
-          new_state
-          ((=) bool)
-          bools
+        let state', bool = Branch.Adventurer.judge ability state in
+        next_branch state' ((=) bool) bools
 
     | BranchRandom (bools, percent), _ ->
         next_branch'
@@ -351,12 +343,8 @@ module GameMaster =
           bools
 
     | BranchStatus (bools, target, status), _ ->
-        let new_state, bool =
-          Branch.Adventurer.status target status state in
-        next_branch
-          new_state
-          ((=) bool)
-          bools
+        let new_state, bool = Branch.Adventurer.status target status state in
+        next_branch new_state ((=) bool) bools
 
     | BranchPartyNumber (bools, value), _ ->
         next_branch'
@@ -379,12 +367,8 @@ module GameMaster =
           bools
 
     | BranchRandomSelect (bools, condition), _ ->
-        let new_state, bool =
-          Branch.Adventurer.random_select condition state in
-        next_branch
-          new_state
-          ((=) bool)
-          bools
+        let state', bool = Branch.Adventurer.random_select condition state in
+        next_branch state' ((=) bool) bools
 
     | BranchRound (bools, value, cmp), _ ->
         next_branch'
@@ -399,17 +383,11 @@ module GameMaster =
 
     | BranchItem (bools, id, count, range), _ ->
         let state', bool = CardOps.item_exists id count range state in
-        next_branch
-          state'
-          ((=) bool)
-          bools
+        next_branch state' ((=) bool) bools
 
     | BranchSkill (bools, id, count, range), _ ->
         let state', bool = CardOps.skill_exists id count range state in
-        next_branch
-          state'
-          ((=) bool)
-          bools
+        next_branch state' ((=) bool) bools
 
     | BranchInfo (bools, id), _ ->
         next_branch'
@@ -429,8 +407,7 @@ module GameMaster =
           bools
 
     | BranchCoupon (bools, range, matching_type, values), _ ->
-        let state', bool =
-          Adventurer.has_coupon range matching_type values state in
+        let state', bool = Adventurer.has_coupon range matching_type values state in
         next_branch
           state'
           ((=) <| bool)
@@ -473,7 +450,6 @@ module GameMaster =
         next_content state nexts
 
     (*
-    | GetItem of Nexts * item_id : ItemId * target : Range * value : int
     | GetSkill of Nexts * skill_id : SkillId * target : Range * value : int
     | GetInfo of Nexts * indo_id : InfoId
     | GetBeast of Nexts * beast_id : BeastId * target : Range * value : int
