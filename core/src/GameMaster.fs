@@ -447,7 +447,7 @@ module GameMaster =
 
     | GetItem (nexts, id, target, value), _ ->
         let state' = CardOps.add_item id value target state in
-        next_content state nexts
+        next_content state' nexts
 
     (*
     | GetSkill of Nexts * skill_id : SkillId * target : Range * value : int

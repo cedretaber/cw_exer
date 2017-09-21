@@ -238,6 +238,18 @@ module GameMasterEventTest =
               cards = { empty_scenario.cards with casts = Map.ofList [id, cast] } } in
         let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
         let state', _ = read state [Content (empty_event, contents)] Input.None in
-        printf "%A" state'
         let (cast', _, _, _, _, _) = (State.get_scenario_unsafe state').companions in
         cast' === Adventurers.Exist cast
+
+    module GetItemTest =
+      [<Test>]
+      let ``正しくアイテムを荷物袋に追加できること`` () =
+        let item = empty_item in
+        let id = item.property.id in
+        let contents = GetItem ([], id, Range.Backpack, 1) in
+        let scenario =
+          { empty_scenario with
+              cards = { empty_scenario.cards with items = Map.ofList [id, item] } } in
+        let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
+        let state', _ = read state [Content (empty_event, contents)] Input.None in
+        state'.party.bag === [Party.Item item]

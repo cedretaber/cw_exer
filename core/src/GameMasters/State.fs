@@ -59,40 +59,43 @@ module State =
       Party.set_adventurer pos (const' cast) state.party in
     set_party party state
 
+  let inline update_party f (state: t) =
+    set_party (f state.party) state
+
   (* global data ops *)
   let inline set_global_data global_data (state : t) =
     match state with
       Scenario (scenario, party, _, random) ->
         Scenario (scenario, party, global_data, random)
 
-  let inline set_gossip f (state : t) =
+  let inline update_gossips f (state : t) =
     let global_data = state.global_data in
     let new_data =
       { global_data with gossips = f global_data.gossips } in
     set_global_data new_data state
 
   let inline get_gossip gossip (state : t) =
-    set_gossip (Set.add gossip) state
+    update_gossips (Set.add gossip) state
 
   let inline lose_gossip gossip (state : t) =
-    set_gossip (Set.remove gossip) state
+    update_gossips (Set.remove gossip) state
 
   let inline has_gossip gossip (state : t) =
     match state with
       Scenario (_, _, global_data, _) ->
         Set.contains gossip global_data.gossips
 
-  let inline set_completed f (state : t) =
+  let inline update_completed f (state : t) =
     let global_data = state.global_data in
     let new_data =
       { global_data with completed_scenarii = f global_data.completed_scenarii } in
     set_global_data new_data state
 
   let inline get_completed scenario (state : t) =
-    set_gossip (Set.add scenario) state
+    update_completed (Set.add scenario) state
 
   let inline lose_completed scenario (state : t) =
-    set_gossip (Set.remove scenario) state
+    update_completed (Set.remove scenario) state
 
   let inline is_completed scenario (state : t) =
     match state with
@@ -113,7 +116,6 @@ module State =
       Scenario (scenario, _, _, _) -> scenario
     | _ -> raise InvalidStateException
   
-  (* party ops *)
   exception InvalidSelectedAdventurerException
 
   let inline get_random_pc (state: t) =
@@ -135,15 +137,12 @@ module State =
         let idx, selected = get_random_pc state in
         set_selected (Scenario.PC idx) state, selected
 
-
   (* card ops *)
-  let inline add_to_bag count goods (state : t) =
-    let party = Party.add_goods count goods state.party in
-    set_party party state
+  let inline add_to_bag count goods =
+    update_party (Party.add_goods count goods)
 
-  let inline remove_from_bag count goods (state : t) =
-    let party = Party.remove_goods count goods state.party in
-    set_party party state
+  let inline remove_from_bag count goods =
+    update_party (Party.remove_goods count goods)
 
 
   (* companion ops *)
