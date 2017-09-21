@@ -1,0 +1,8 @@
+language: csharp
+solution: cw_exer.sln
+install:
+  - nuget restore cw_exer.sln
+  - nuget install NUnit.Runners -Version 3.7.0 -OutputDirectory testrunner
+script:
+  - msbuild /p:Configuration=Release cw_exer.sln
+  - mono ./testrunner/NUnit.Runners.3.7.0/tools/nunit3-console.exe ./test/bin/Release/test.dll
