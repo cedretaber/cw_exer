@@ -238,8 +238,8 @@ module GameMasterEventTest =
               cards = { empty_scenario.cards with casts = Map.ofList [id, cast] } } in
         let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
         let state', _ = read state [Content (empty_event, contents)] Input.None in
-        let (cast', _, _, _, _, _) = (State.get_scenario_unsafe state').companions in
-        cast' === Adventurers.Exist cast
+        let (Adventurers.Exist cast', _, _, _, _, _) = (State.get_scenario_unsafe state').companions in
+        cast' === cast
 
     module GetItemTest =
       [<Test>]
@@ -252,4 +252,5 @@ module GameMasterEventTest =
               cards = { empty_scenario.cards with items = Map.ofList [id, item] } } in
         let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
         let state', _ = read state [Content (empty_event, contents)] Input.None in
-        state'.party.bag === [Party.Item item]
+        let (Party.Item item') :: _ = state'.party.bag in
+        item' === item
