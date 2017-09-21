@@ -468,6 +468,10 @@ module GameMaster =
           (State.add_companion id start_action state)
           nexts
 
+    | GetItem (nexts, id, target, value), _ ->
+        let state' = CardOps.add_item id value target state in
+        next_content state nexts
+
     (*
     | GetItem of Nexts * item_id : ItemId * target : Range * value : int
     | GetSkill of Nexts * skill_id : SkillId * target : Range * value : int
