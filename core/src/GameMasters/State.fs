@@ -147,7 +147,8 @@ module State =
 
 
   (* companion ops *)
-  let inline add_companion id =
+  let inline add_companion id start_action =
+    // TODO: start_action対応
     update_scenarion begin
       fun scenario ->
         match Scenario.get_cast id scenario with

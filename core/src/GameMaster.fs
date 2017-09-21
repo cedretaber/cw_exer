@@ -465,7 +465,7 @@ module GameMaster =
     
     | GetCast (nexts, id, start_action), _ ->
         next_content
-          (State.add_companion id state)
+          (State.add_companion id start_action state)
           nexts
 
     (*

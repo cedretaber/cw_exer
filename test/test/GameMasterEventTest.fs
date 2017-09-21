@@ -21,6 +21,10 @@ module GameMasterEventTest =
     let check_flag_state =
       { empty_scenario.global_state with
           flags = Map.ofList [flag_name, false] }
+    let true_false =
+      [ true, SetFlag ([], flag_name, true)
+      ; false, SetFlag ([], flag_name, false)
+      ]
 
     module BranchCastTest =
       [<Test>]
@@ -32,9 +36,7 @@ module GameMasterEventTest =
         let state = make_empty_state scenario in
         let contents =
           BranchCast
-            ( [ true, SetFlag ([], flag_name, true)
-              ; false, SetFlag ([], flag_name, false)
-              ]
+            ( true_false
             , empty_cast.property.id
             ) in
         let state', _ =
@@ -61,9 +63,7 @@ module GameMasterEventTest =
           make_empty_state scenario |> State.set_party party in
         let contents =
           BranchItem
-            ( [ true, SetFlag ([], flag_name, true)
-              ; false, SetFlag ([], flag_name, false)
-              ]
+            ( true_false
             , item_id
             , 1
             , Range.Random
@@ -91,9 +91,7 @@ module GameMasterEventTest =
           make_empty_state scenario |> State.set_party party in
         let contents =
           BranchSkill
-            ( [ true, SetFlag ([], flag_name, true)
-              ; false, SetFlag ([], flag_name, false)
-              ]
+            ( true_false
             , skill_id
             , 1
             , Range.Random
@@ -116,9 +114,7 @@ module GameMasterEventTest =
         let state = make_empty_state scenario in
         let contents =
           BranchInfo
-            ( [ true, SetFlag ([], flag_name, true)
-              ; false, SetFlag ([], flag_name, false)
-              ]
+            ( true_false
             , info_id
             ) in
         let state', _ = read state [Content (empty_event, contents)] Input.None in
@@ -144,9 +140,7 @@ module GameMasterEventTest =
           make_empty_state scenario |> State.set_party party in
         let contents =
           BranchBeast
-            ( [ true, SetFlag ([], flag_name, true)
-              ; false, SetFlag ([], flag_name, false)
-              ]
+            ( true_false
             , beast_id
             , 1
             , Range.Random
@@ -170,9 +164,7 @@ module GameMasterEventTest =
           else amount
         let contents =
           BranchMoney
-            ( [ true, SetFlag ([], flag_name, true)
-              ; false, SetFlag ([], flag_name, false)
-              ]
+            ( true_false
             , amount'
             ) in
         let state', _ = read state [Content (empty_event, contents)] Input.None in
@@ -192,9 +184,7 @@ module GameMasterEventTest =
           else amount
         let contents =
           BranchMoney
-            ( [ true, SetFlag ([], flag_name, true)
-              ; false, SetFlag ([], flag_name, false)
-              ]
+            ( true_false
             , amount'
             ) in
         let state', _ = read state [Content (empty_event, contents)] Input.None in
@@ -212,9 +202,7 @@ module GameMasterEventTest =
           State.Scenario (empty_scenario, minimal_party, global_data, state_random) in
         let contents =
           BranchCompleteStamp
-            ( [ true, SetFlag ([], flag_name, true)
-              ; false, SetFlag ([], flag_name, false)
-              ]
+            ( true_false
             , completed_scenario_name
             ) in
         let state', _ = read state [Content (empty_event, contents)] Input.None in
@@ -231,11 +219,25 @@ module GameMasterEventTest =
           State.Scenario (empty_scenario, minimal_party, global_data, state_random) in
         let contents =
           BranchGossip
-            ( [ true, SetFlag ([], flag_name, true)
-              ; false, SetFlag ([], flag_name, false)
-              ]
+            ( true_false
             , gossip
             ) in
         let state', _ = read state [Content (empty_event, contents)] Input.None in
         let scenario' = State.get_scenario_unsafe state' in
         get_flag flag_name scenario' === true
+
+    module GetCastTest =
+
+      [<Test>]
+      let ``正しくキャストを追加できること`` () =
+        let cast = empty_cast in
+        let id = cast.property.id in
+        let contents = GetCast ([], id, StartAction.NextRound) in
+        let scenario =
+          { empty_scenario with
+              cards = { empty_scenario.cards with casts = Map.ofList [id, cast] } } in
+        let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
+        let state', _ = read state [Content (empty_event, contents)] Input.None in
+        printf "%A" state'
+        let (cast', _, _, _, _, _) = (State.get_scenario_unsafe state').companions in
+        cast' === Adventurers.Exist cast
