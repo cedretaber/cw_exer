@@ -462,3 +462,19 @@ module GameMaster =
           state'
           ((=) <| bool)
           bools
+    
+    | GetCast (nexts, id, start_action), _ ->
+        next_content
+          (State.add_companion id state)
+          nexts
+
+    (*
+    | GetItem of Nexts * item_id : ItemId * target : Range * value : int
+    | GetSkill of Nexts * skill_id : SkillId * target : Range * value : int
+    | GetInfo of Nexts * indo_id : InfoId
+    | GetBeast of Nexts * beast_id : BeastId * target : Range * value : int
+    | GetMoney of Nexts * value : int
+    | GetCoupon of Nexts * target : Target * point : int * value : Coupon.Name
+    | GetCompleteStamp of Nexts * value : ScenarioName
+    | GetGossip of Nexts * value : GossipName
+    *)

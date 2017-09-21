@@ -122,10 +122,10 @@ module State =
         let idx = state.random <| Party.party_count party in
         Adventurers.int_to_pos idx, Party.at idx party
 
-  let inline set_selected selected (state: t) =
-    update_scenarion
-      (fun scenario -> { scenario with selected = selected } )
-      state
+  let inline set_selected selected =
+    update_scenarion begin
+      fun scenario -> { scenario with selected = selected }
+    end
 
   let inline get_selected_or_random (state: t) =
     match state.selected_cast with
@@ -144,10 +144,22 @@ module State =
   let inline remove_from_bag count goods (state : t) =
     let party = Party.remove_goods count goods state.party in
     set_party party state
+
+
+  (* companion ops *)
+  let inline add_companion id =
+    update_scenarion begin
+      fun scenario ->
+        match Scenario.get_cast id scenario with
+          Option.None ->
+            scenario
+        | Some cast ->
+            Scenario.add_companion cast scenario
+    end
          
 
   (* BGM *)
-  let inline change_bgm bgm state =
-    update_scenarion
-      (fun scenario -> { scenario with bgm = bgm })
-      state
+  let inline change_bgm bgm =
+    update_scenarion begin
+      fun scenario -> { scenario with bgm = bgm }
+    end
