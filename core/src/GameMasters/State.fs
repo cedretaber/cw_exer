@@ -62,6 +62,14 @@ module State =
   let inline update_party f (state: t) =
     set_party (f state.party) state
 
+  (* Money Ops *)
+  let add_money amount (state : t) =
+    let state' =
+      update_party
+        (Party.add_money amount)
+        state in
+    state'.party.money, state'
+
   (* global data ops *)
   let inline set_global_data global_data (state : t) =
     match state with

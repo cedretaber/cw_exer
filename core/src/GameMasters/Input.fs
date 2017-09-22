@@ -10,5 +10,5 @@ module Input =
     | LoadFailed of string
     | SelectPlayerCharactor of Adventurers.Position 
     | Cancel
-    | Void
-    | None
+    | Void // 情報を持たない入力
+    | None // 入力ではない = 前コンテンツからの継続

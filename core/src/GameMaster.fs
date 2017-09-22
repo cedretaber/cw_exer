@@ -154,6 +154,10 @@ module GameMaster =
     let inline flag_change state flag_name flag_state =
       Output.t state <| Output.Flag (flag_name, flag_state)
 
+    (* Money change *)
+    let inline money_change state balance =
+      Output.t state <| Output.Money balance
+
     match content, input with
     (* Terminal *)
       Start (nexts, _), _ ->
@@ -458,9 +462,13 @@ module GameMaster =
           (CardOps.add_beast id value target state)
           nexts
 
+    | GetMoney (_, value), Input.None ->
+        let balance, state' = State.add_money value state in
+        money_change state' balance
+    | GetMoney (nexts, _), _ ->
+        through' <| Nexts nexts
+
     (*
-    | GetBeast of Nexts * beast_id : BeastId * target : Range * value : int
-    | GetMoney of Nexts * value : int
     | GetCoupon of Nexts * target : Target * point : int * value : Coupon.Name
     | GetCompleteStamp of Nexts * value : ScenarioName
     | GetGossip of Nexts * value : GossipName

@@ -94,7 +94,15 @@ module Party =
         | _ -> false end
       party.bag
 
+  (* Money Ops *)
   let inline has_money amount =
     function
       { money = money } ->
         amount <= money
+
+  let inline add_money amount =
+    function
+      { money = money } as party ->
+        let balance' = money + amount in
+        let balance = if balance' < 0 then 0 else balance' in
+        { party with money = balance }
