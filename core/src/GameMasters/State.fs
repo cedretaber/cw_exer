@@ -125,9 +125,8 @@ module State =
         Adventurers.int_to_pos idx, Party.at idx party
 
   let inline set_selected selected =
-    update_scenarion begin
+    update_scenarion <|
       fun scenario -> { scenario with selected = selected }
-    end
 
   let inline get_selected_or_random (state: t) =
     match state.selected_cast with
@@ -147,6 +146,5 @@ module State =
 
   (* BGM *)
   let inline change_bgm bgm =
-    update_scenarion begin
+    update_scenarion <|
       fun scenario -> { scenario with bgm = bgm }
-    end

@@ -18,13 +18,12 @@ module CardOps =
   let add_companion : CastId -> StartAction -> State.t -> State.t = 
     fun id _start_action ->
     // TODO: start_action対応
-      State.update_scenarion begin
+      State.update_scenarion <|
         fun scenario ->
           Scenario.get_cast id scenario
           |> Option.fold
             (fun _ companion -> Scenario.add_companion companion scenario)
             scenario
-      end
   
   let remove_companion : CastId -> State.t -> State.t =
     fun id ->
@@ -56,7 +55,7 @@ module CardOps =
     let check_card =
       fun card -> count_card card >= count in
     let count_backpack =
-      lazy(Party.count_card card_in_bag state.party) in
+      lazy begin Party.count_card card_in_bag state.party end in
 
     match target with
       Range.Selected ->
@@ -138,7 +137,7 @@ module CardOps =
     let update_npc =
       fun cast -> add_card cast count |> Pair.second in
 
-    let add_all_advs = lazy(
+    let add_all_advs = lazy begin
       Adventurers.fold_with_pos
        (fun (state' : State.t, rest) (pos, cast) ->
           let rest', cast' = add_card cast count in
@@ -147,7 +146,7 @@ module CardOps =
           ))
         (state, 0)
         state.adventurers
-      ) in
+      end in
 
     match target with
       Range.Selected ->
@@ -198,13 +197,13 @@ module CardOps =
       let cast' = update_npc cast in
       State.set_adventurer_at pos cast' state
 
-    let remove_all_adv = lazy(
+    let remove_all_adv = lazy begin
       Adventurers.foldl_with_pos
         (fun (state : State.t) (pos, cast) ->
           update_cast pos cast state)
         state
         state.adventurers
-      ) in
+      end in
 
     match target with
       Range.Selected ->
@@ -301,9 +300,18 @@ module CardOps =
         count
         target
 
+  let add_beast : BeastId -> int -> Range -> State.t -> State.t =
+    fun id count target ->
+      maybe_add
+        (Scenario.get_beast id)
+        (fun beast cast count -> Cast.add_beast count beast cast)
+        Party.Beast
+        count
+        target
+
   (* Info *)
   let info_exists : InfoId -> State.t -> bool =
     fun id -> State.get_scenario_unsafe >> Scenario.has_info id
 
   let add_info : InfoId -> State.t -> State.t =
-    fun id -> State.update_scenarion begin Scenario.add_info id end
+    fun id -> State.update_scenarion <| Scenario.add_info id

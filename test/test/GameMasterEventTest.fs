@@ -282,3 +282,17 @@ module GameMasterEventTest =
         let state', _ = read state [Content (empty_event, contents)] Input.None in
         let scenario' = State.get_scenario_unsafe state'
         assert_contains id <| scenario'.global_state.infos
+
+    module GetBeastTest =
+      [<Test>]
+      let ``正しく召喚獣を荷物袋に追加できること`` () =
+        let beast = empty_beast in
+        let id = beast.property.id in
+        let contents = GetBeast ([], id, Range.Backpack, 1) in
+        let scenario =
+          { empty_scenario with
+              cards = { empty_scenario.cards with beasts = Map.ofList [id, beast] } } in
+        let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
+        let state', _ = read state [Content (empty_event, contents)] Input.None in
+        let (Party.Beast beast') :: _ = state'.party.bag in
+        beast' === beast

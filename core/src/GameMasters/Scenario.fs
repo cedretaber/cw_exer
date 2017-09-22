@@ -110,7 +110,7 @@ module Scenario =
 
   let inline set_flag name value scenario =
     let flags = Map.add name value scenario.global_state.flags in
-    { scenario with global_state = { scenario.global_state with flags =  flags } }
+    { scenario with global_state = { scenario.global_state with flags = flags } }
 
 
   (* step ops *)
@@ -122,20 +122,17 @@ module Scenario =
   let inline get_step_length name scenario =
     scenario.summary.steps
     |> Map.tryFind name
-    |> Option.map
-      (fun steps -> Array.length steps.steps)
+    |> Option.map (fun steps -> Array.length steps.steps)
 
   let inline set_step name value scenario =
-    let maybe_new_scenario =
-      Maybe.c {
-        let! length = get_step_length name scenario
-        if value >= 0 && value < length then
-          let steps = Map.add name value scenario.global_state.steps in
-          return { scenario with global_state = { scenario.global_state with steps = steps } }
-      } in
-    match maybe_new_scenario with
-      Some new_scenario -> new_scenario
-    | Option.None -> raise InvalidStepIndexException
+    Maybe.c {
+      let! length = get_step_length name scenario
+      if value >= 0 && value < length then
+        let steps = Map.add name value scenario.global_state.steps in
+        return { scenario with global_state = { scenario.global_state with steps = steps } }
+    } |> function
+           Some new_scenario -> new_scenario
+         | Option.None -> raise InvalidStepIndexException
         
         
   (* Enemy Ops *)

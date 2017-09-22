@@ -453,6 +453,11 @@ module GameMaster =
           (CardOps.add_info id state)
           nexts
 
+    | GetBeast (nexts, id, target, value), _ ->
+        next_content
+          (CardOps.add_beast id value target state)
+          nexts
+
     (*
     | GetBeast of Nexts * beast_id : BeastId * target : Range * value : int
     | GetMoney of Nexts * value : int

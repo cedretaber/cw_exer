@@ -76,22 +76,22 @@ module Party =
   let inline remove count card party =
     ListUtil.filter_limit
       count
-      (fun c ->
+      begin fun c ->
         match c, card with
           Skill left, Skill right -> Skill.equals left right
         | Item left, Item right -> Item.equals left right
         | Beast left, Beast right -> Beast.equals left right
-        | _ -> false)
+        | _ -> false end
       party.bag
 
   let inline count_card card party =
     ListUtil.count_by
-      (fun c ->
+      begin fun c ->
         match c, card with
           Skill left, Skill right -> Skill.equals left right
         | Item left, Item right -> Item.equals left right
         | Beast left, Beast right -> Beast.equals left right
-        | _ -> false)
+        | _ -> false end
       party.bag
 
   let inline has_money amount =
