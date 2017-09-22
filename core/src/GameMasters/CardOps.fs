@@ -3,6 +3,7 @@
 open CardWirthEngine.Utils
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Cards
+open CardWirthEngine.Scenario.Events.Content
 open CardWirthEngine.GameMasters
 open CardWirthEngine.GameMasters.Cards
 open CardWirthEngine.GameMasters.Cards.Adventurers
@@ -180,6 +181,13 @@ module CardOps =
     (* 取得・消失では「フィールド全体」は無効 *)
     | _ -> state
 
+  let inline private maybe_add get_card add_card goods count target state =
+    state
+    |> State.get_scenario_unsafe
+    |> get_card
+    |> Option.fold
+      (fun _ card -> add (add_card card) (goods card) count target state)
+      state
 
   let inline private remove remove_from_cast goods count target state =
 
@@ -228,6 +236,13 @@ module CardOps =
     (* 取得・消失では「フィールド全体」は無効 *)
     | _ -> state
   
+  let inline private maybe_remove get_card remove_from_cast goods count target state =
+    state
+    |> State.get_scenario_unsafe
+    |> get_card
+    |> Option.fold
+      (fun _ card -> remove (remove_from_cast card) (goods card) count target state)
+      state
   
   (* Items *)
   let item_exists : ItemId -> int -> Range -> State.t -> bool * State.t =
@@ -239,35 +254,23 @@ module CardOps =
         count
         target
 
-  let add_item id count target state =
-    state
-    |> State.get_scenario_unsafe
-    |> Scenario.get_item id
-    |> Option.fold
-      (fun _ item ->
-        add
-          (fun cast count ->
-            Cast.add_item count item cast)
-          (Party.Item item)
-          count
-          target
-          state)
-      state
+  let add_item : ItemId -> int -> Range -> State.t -> State.t =
+    fun id count target ->
+      maybe_add
+        (Scenario.get_item id)
+        (fun item cast count -> Cast.add_item count item cast)
+        Party.Item
+        count
+        target
 
-  let remove_item id count target state =
-    state
-    |> State.get_scenario_unsafe
-    |> Scenario.get_item id
-    |> Option.fold
-      (fun _ item ->
-        remove
-          (fun count cast ->
-            Cast.remove_item count item cast)
-          (Party.Item item)
-          count
-          target
-          state)
-      state
+  let remove_item : ItemId -> RemoveCount -> Range -> State.t -> State.t =
+    fun id count target ->
+      maybe_remove
+        (Scenario.get_item id)
+        (fun item count cast -> Cast.remove_item count item cast)
+        Party.Item
+        count
+        target
 
   (* Skill *)
   let skill_exists : SkillId -> int -> Range -> State.t -> bool * State.t =
@@ -279,20 +282,14 @@ module CardOps =
         count
         target
 
-  let add_skill id count target state =
-    state
-    |> State.get_scenario_unsafe
-    |> Scenario.get_skilll id
-    |> Option.fold
-      (fun _ skill ->
-        add
-          (fun cast count ->
-            Cast.add_skill count skill cast)
-          (Party.Skill skill)
-          count
-          target
-          state)
-      state
+  let add_skill : SkillId -> int -> Range -> State.t -> State.t =
+    fun id count target ->
+      maybe_add
+        (Scenario.get_skilll id)
+        (fun skill cast count -> Cast.add_skill count skill cast)
+        Party.Skill
+        count
+        target
 
   (* Beast *)
   let beast_exists : BeastId -> int -> Range -> State.t -> bool * State.t =
@@ -305,6 +302,5 @@ module CardOps =
         target
 
   (* Info *)
-  let info_exists id state =
-    State.get_scenario_unsafe state
-    |> Scenario.has_info id
+  let info_exists : InfoId -> State.t -> bool =
+    fun id -> State.get_scenario_unsafe >> Scenario.has_info id
