@@ -1,6 +1,7 @@
 ﻿namespace CardWirthEngineTest
 
 open NUnit.Framework
+open FsCheck
 open FsCheck.NUnit
 
 open CardWirthEngineTest.TestUtils
@@ -296,3 +297,18 @@ module GameMasterEventTest =
         let state', _ = read state [Content (empty_event, contents)] Input.None in
         let (Party.Beast beast') :: _ = state'.party.bag in
         beast' === beast
+
+    module GetMoneyTest =
+
+      type MoneyArb () =
+        static member gen () = Arb.fromGen <| Gen.choose (0, 999999)
+
+      [<Property( Arbitrary=[|typeof<MoneyArb>|] )>]
+      let ``正しく所持金を追加できること`` (balance : int, amount : int) =
+        let contents = GetMoney ([], amount) in
+        let party = { minimal_party with money = balance } in
+        let state = State.Scenario (empty_scenario, party, empty_global_data, state_random) in
+        let state', output = read state [Content (empty_event, contents)] Input.None in
+        let sum = balance + amount in
+        state'.party.money === sum
+        output === Output.Money sum

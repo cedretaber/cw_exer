@@ -437,6 +437,7 @@ module GameMaster =
           KeyCode.has_key_code range card_type key_code state in
         next_branch state' ((=) <| bool) bools
     
+    (* Get *)
     | GetCast (nexts, id, start_action), _ ->
         next_content
           (CardOps.add_companion id start_action state)
