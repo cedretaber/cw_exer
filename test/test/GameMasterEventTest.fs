@@ -281,4 +281,4 @@ module GameMasterEventTest =
         let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
         let state', _ = read state [Content (empty_event, contents)] Input.None in
         let scenario' = State.get_scenario_unsafe state'
-        assert' <| Set.contains id scenario'.global_state.infos
+        assert_contains id <| scenario'.global_state.infos
