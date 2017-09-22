@@ -304,3 +304,6 @@ module CardOps =
   (* Info *)
   let info_exists : InfoId -> State.t -> bool =
     fun id -> State.get_scenario_unsafe >> Scenario.has_info id
+
+  let add_info : InfoId -> State.t -> State.t =
+    fun id -> State.update_scenarion begin Scenario.add_info id end

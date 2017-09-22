@@ -324,7 +324,8 @@ module GameMaster =
             next_branch' (is_true) bools
 
     | BranchAbility (bools, ability), _ ->
-        let state', bool = Branch.Adventurer.judge ability state in
+        let state', bool =
+          Branch.Adventurer.judge ability state in
         next_branch state' ((=) bool) bools
 
     | BranchRandom (bools, percent), _ ->
@@ -343,7 +344,8 @@ module GameMaster =
           bools
 
     | BranchStatus (bools, target, status), _ ->
-        let new_state, bool = Branch.Adventurer.status target status state in
+        let new_state, bool =
+          Branch.Adventurer.status target status state in
         next_branch new_state ((=) bool) bools
 
     | BranchPartyNumber (bools, value), _ ->
@@ -367,7 +369,8 @@ module GameMaster =
           bools
 
     | BranchRandomSelect (bools, condition), _ ->
-        let state', bool = Branch.Adventurer.random_select condition state in
+        let state', bool =
+          Branch.Adventurer.random_select condition state in
         next_branch state' ((=) bool) bools
 
     | BranchRound (bools, value, cmp), _ ->
@@ -396,10 +399,7 @@ module GameMaster =
 
     | BranchBeast (bools, id, count, range), _ ->
         let bool, state' = CardOps.beast_exists id count range state in
-        next_branch
-          state'
-          ((=) bool)
-          bools
+        next_branch state' ((=) bool) bools
 
     | BranchMoney (bools, value), _ ->
         next_branch'
@@ -407,16 +407,13 @@ module GameMaster =
           bools
 
     | BranchCoupon (bools, range, matching_type, values), _ ->
-        let state', bool = Adventurer.has_coupon range matching_type values state in
-        next_branch
-          state'
-          ((=) <| bool)
-          bools
+        let state', bool =
+          Adventurer.has_coupon range matching_type values state in
+        next_branch state' ((=) <| bool) bools
 
     // TODO: 未実装
     | BranchMultiCoupon (texts, _), _ ->
-        let nexts = List.map Pair.second texts
-        through state <| Nexts nexts
+        through state <| Nexts (List.map Pair.second texts)
 
     | BranchCompleteStamp (bools, value), _ ->
         next_branch'
@@ -428,17 +425,13 @@ module GameMaster =
           ((=) <| State.has_gossip value state)
           bools
 
-
     | BranchKeyCode (bools, { range = range
                             ; card_type = card_type
                             ; key_code = key_code
                             }), _ ->
         let state', bool =
           KeyCode.has_key_code range card_type key_code state in
-        next_branch
-          state'
-          ((=) <| bool)
-          bools
+        next_branch state' ((=) <| bool) bools
     
     | GetCast (nexts, id, start_action), _ ->
         next_content
@@ -446,15 +439,21 @@ module GameMaster =
           nexts
 
     | GetItem (nexts, id, target, value), _ ->
-        let state' = CardOps.add_item id value target state in
-        next_content state' nexts
+        next_content
+          (CardOps.add_item id value target state)
+          nexts
 
     | GetSkill (nexts, id, target, value), _ ->
-        let state' = CardOps.add_skill id value target state in
-        next_content state' nexts
+        next_content
+          (CardOps.add_skill id value target state)
+          nexts
+
+    | GetInfo (nexts, id), _ ->
+        next_content
+          (CardOps.add_info id state)
+          nexts
 
     (*
-    | GetInfo of Nexts * indo_id : InfoId
     | GetBeast of Nexts * beast_id : BeastId * target : Range * value : int
     | GetMoney of Nexts * value : int
     | GetCoupon of Nexts * target : Target * point : int * value : Coupon.Name
