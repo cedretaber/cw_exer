@@ -268,3 +268,17 @@ module GameMasterEventTest =
         let state', _ = read state [Content (empty_event, contents)] Input.None in
         let (Party.Skill skill') :: _ = state'.party.bag in
         skill' === skill
+
+    module GetInfoTest =
+      [<Test>]
+      let ``正しく情報カードを追加できること`` () =
+        let info = empty_info in
+        let id = info.id in
+        let contents = GetInfo ([], id) in
+        let scenario =
+          { empty_scenario with
+              global_state = { empty_scenario.global_state with infos = Set.ofList [id] } } in
+        let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
+        let state', _ = read state [Content (empty_event, contents)] Input.None in
+        let scenario' = State.get_scenario_unsafe state'
+        assert' <| Set.contains id scenario'.global_state.infos
