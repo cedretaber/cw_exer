@@ -254,3 +254,17 @@ module GameMasterEventTest =
         let state', _ = read state [Content (empty_event, contents)] Input.None in
         let (Party.Item item') :: _ = state'.party.bag in
         item' === item
+
+    module GetSkillTest =
+      [<Test>]
+      let ``正しくスキルを荷物袋に追加できること`` () =
+        let skill = empty_skill in
+        let id = skill.property.id in
+        let contents = GetSkill ([], id, Range.Backpack, 1) in
+        let scenario =
+          { empty_scenario with
+              cards = { empty_scenario.cards with skills = Map.ofList [id, skill] } } in
+        let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
+        let state', _ = read state [Content (empty_event, contents)] Input.None in
+        let (Party.Skill skill') :: _ = state'.party.bag in
+        skill' === skill
