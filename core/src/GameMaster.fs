@@ -382,11 +382,11 @@ module GameMaster =
           bools
 
     | BranchItem (bools, id, count, range), _ ->
-        let state', bool = CardOps.item_exists id count range state in
+        let bool, state' = CardOps.item_exists id count range state in
         next_branch state' ((=) bool) bools
 
     | BranchSkill (bools, id, count, range), _ ->
-        let state', bool = CardOps.skill_exists id count range state in
+        let bool, state' = CardOps.skill_exists id count range state in
         next_branch state' ((=) bool) bools
 
     | BranchInfo (bools, id), _ ->
@@ -395,7 +395,7 @@ module GameMaster =
           bools
 
     | BranchBeast (bools, id, count, range), _ ->
-        let state', bool = CardOps.beast_exists id count range state in
+        let bool, state' = CardOps.beast_exists id count range state in
         next_branch
           state'
           ((=) bool)

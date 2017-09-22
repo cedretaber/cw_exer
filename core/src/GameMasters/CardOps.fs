@@ -50,34 +50,35 @@ module CardOps =
        パーティ全体、荷物袋、敵全体の中の1人がn枚持っている。選択中のPCを変更。
        Note: 味方NPCを含まない
   *)
-  let inline private exists count_card card_in_bag count (state : State.t) =
+  let inline private exists count_card card_in_bag count target (state : State.t) =
 
     let check_card =
       fun card -> count_card card >= count in
     let count_backpack =
       lazy(Party.count_card card_in_bag state.party) in
 
-    function
+    match target with
       Range.Selected ->
-        state, Option.fold
-          (fun _ -> check_card)
-          false
-          state.selected_cast
+        let bool =
+          Option.fold
+            (fun _ -> check_card)
+            false
+            state.selected_cast in
+        bool, state
     | Range.Random ->
         match
           Adventurers.try_find_with_position
             check_card
             state.adventurers with
-          Option.None -> state, false
+          Option.None -> false, state
         | Some (pos, _) ->
-            State.set_selected (Scenario.PC pos) state, true
+            true, State.set_selected (Scenario.PC pos) state
     | Range.Party ->
         let pos, _ = State.get_random_pc state in
-        ( State.set_selected (Scenario.PC pos) state
-        , Adventurers.forall check_card state.adventurers
-        )
+        Adventurers.forall check_card state.adventurers,
+        State.set_selected (Scenario.PC pos) state
     | Range.Backpack ->
-        state, count_backpack.Force () <= 0
+        count_backpack.Force () <= 0, state
     | Range.PartyAndBackpack ->
         let of_advs =
           Adventurers.fold
@@ -88,9 +89,8 @@ module CardOps =
             count
             state.adventurers in
         let rest = count - of_advs in
-        ( state
-        , rest <= 0 || rest - count_backpack.Force () <= 0
-        )
+        rest <= 0 || rest - count_backpack.Force () <= 0,
+        state
     | Range.Field ->
         let targets =
           seq {
@@ -112,19 +112,22 @@ module CardOps =
             targets in
         match maybe_cast with
           Some (PC (pos, _)) ->
-            ( State.set_selected (Scenario.PC pos) state
-            , true
-            )
+            true, State.set_selected (Scenario.PC pos) state
         | Some (Enemy (idx, _)) ->
-            ( State.set_selected (Scenario.Enemy idx) state
-            , true
-            )
+            true, State.set_selected (Scenario.Enemy idx) state
         | Option.None ->
-            (state, false)
-    | _ -> state, false
+            false, state
+    | _ -> false, state
 
+  let inline private maybe_exist get_card count_card card_in_bag count target state =
+    state
+    |> State.get_scenario_unsafe
+    |> get_card
+    |> Option.fold
+      (fun _ card -> exists (count_card card) (card_in_bag card) count target state)
+      (false, state)
 
-  let inline private add add_card goods count state =
+  let inline private add add_card goods count target state =
 
     let inline update_cast pos cast (state : State.t) =
       let rest, cast' = add_card cast count in
@@ -145,7 +148,7 @@ module CardOps =
         state.adventurers
       ) in
 
-    function
+    match target with
       Range.Selected ->
         let state', cast =
           State.get_selected_or_random state in
@@ -178,7 +181,7 @@ module CardOps =
     | _ -> state
 
 
-  let inline private remove remove_from_cast goods count state =
+  let inline private remove remove_from_cast goods count target state =
 
     let update_npc =
       fun cast -> remove_from_cast count cast in
@@ -195,7 +198,7 @@ module CardOps =
         state.adventurers
       ) in
 
-    function
+    match target with
       Range.Selected ->
         let state', cast =
           State.get_selected_or_random state in
@@ -227,19 +230,14 @@ module CardOps =
   
   
   (* Items *)
-  let item_exists id count target state =
-    state
-    |> State.get_scenario_unsafe
-    |> Scenario.get_item id
-    |> Option.fold
-      (fun _ item ->
-        exists
-          (Cast.item_count item)
-          (Party.Item item)
-          count
-          state
-          target)
-      (state, false)
+  let item_exists : ItemId -> int -> Range -> State.t -> bool * State.t =
+    fun id count target ->
+      maybe_exist
+        (Scenario.get_item id)
+        Cast.item_count
+        Party.Item
+        count
+        target
 
   let add_item id count target state =
     state
@@ -252,8 +250,8 @@ module CardOps =
             Cast.add_item count item cast)
           (Party.Item item)
           count
-          state
-          target)
+          target
+          state)
       state
 
   let remove_item id count target state =
@@ -267,24 +265,19 @@ module CardOps =
             Cast.remove_item count item cast)
           (Party.Item item)
           count
-          state
-          target)
+          target
+          state)
       state
 
   (* Skill *)
-  let skill_exists id count target state =
-    state
-    |> State.get_scenario_unsafe
-    |> Scenario.get_skilll id
-    |> Option.fold
-      (fun _ skill ->
-        exists
-          (Cast.count_skill skill)
-          (Party.Skill skill)
-          count
-          state
-          target)
-      (state, false)
+  let skill_exists : SkillId -> int -> Range -> State.t -> bool * State.t =
+    fun id count target ->
+      maybe_exist
+        (Scenario.get_skilll id)
+        Cast.count_skill
+        Party.Skill
+        count
+        target
 
   let add_skill id count target state =
     state
@@ -297,24 +290,19 @@ module CardOps =
             Cast.add_skill count skill cast)
           (Party.Skill skill)
           count
-          state
-          target)
+          target
+          state)
       state
 
   (* Beast *)
-  let beast_exists id count target state =
-    state
-    |> State.get_scenario_unsafe
-    |> Scenario.get_beast id
-    |> Option.fold
-      (fun _ beast ->
-        exists
-          (Cast.beast_count beast)
-          (Party.Beast beast)
-          count
-          state
-          target)
-      (state, false)
+  let beast_exists : BeastId -> int -> Range -> State.t -> bool * State.t =
+    fun id count target ->
+      maybe_exist
+        (Scenario.get_beast id)
+        Cast.beast_count
+        Party.Beast
+        count
+        target
 
   (* Info *)
   let info_exists id state =
