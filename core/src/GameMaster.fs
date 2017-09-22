@@ -442,7 +442,7 @@ module GameMaster =
     
     | GetCast (nexts, id, start_action), _ ->
         next_content
-          (State.add_companion id start_action state)
+          (CardOps.add_companion id start_action state)
           nexts
 
     | GetItem (nexts, id, target, value), _ ->

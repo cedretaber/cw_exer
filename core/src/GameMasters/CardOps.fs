@@ -14,18 +14,20 @@ module CardOps =
     fun id ->
       State.get_scenario_unsafe >> Scenario.has_companion id
 
-  let add_companion : CastId -> State.t -> State.t = 
-    fun id ->
-      State.update_scenarion
-        (fun scenario ->
+  let add_companion : CastId -> StartAction -> State.t -> State.t = 
+    fun id _start_action ->
+    // TODO: start_action対応
+      State.update_scenarion begin
+        fun scenario ->
           Scenario.get_cast id scenario
           |> Option.fold
-            (fun _ companion ->
-              Scenario.add_companion companion scenario)
-            scenario)
+            (fun _ companion -> Scenario.add_companion companion scenario)
+            scenario
+      end
   
-  let remove_companion id =
-    State.update_scenarion <| Scenario.remove_companion id
+  let remove_companion : CastId -> State.t -> State.t =
+    fun id ->
+      State.update_scenarion <| Scenario.remove_companion id
 
   type PcOrEnemy
     = PC of Adventurers.Position * Cast.t

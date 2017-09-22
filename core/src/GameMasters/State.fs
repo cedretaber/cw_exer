@@ -143,19 +143,6 @@ module State =
 
   let inline remove_from_bag count goods =
     update_party (Party.remove_goods count goods)
-
-
-  (* companion ops *)
-  let inline add_companion id start_action =
-    // TODO: start_action対応
-    update_scenarion begin
-      fun scenario ->
-        match Scenario.get_cast id scenario with
-          Option.None ->
-            scenario
-        | Some cast ->
-            Scenario.add_companion cast scenario
-    end
          
 
   (* BGM *)
