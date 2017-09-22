@@ -449,8 +449,11 @@ module GameMaster =
         let state' = CardOps.add_item id value target state in
         next_content state' nexts
 
+    | GetSkill (nexts, id, target, value), _ ->
+        let state' = CardOps.add_skill id value target state in
+        next_content state' nexts
+
     (*
-    | GetSkill of Nexts * skill_id : SkillId * target : Range * value : int
     | GetInfo of Nexts * indo_id : InfoId
     | GetBeast of Nexts * beast_id : BeastId * target : Range * value : int
     | GetMoney of Nexts * value : int
