@@ -35,7 +35,9 @@ module State =
           Scenario ({ selected = Scenario.PC pos }
                    , party, _ , _
                    ) ->
-            Some (Adventurers.get pos party.adventurers)
+            match Adventurers.get pos party.adventurers with
+              Adventurers.Exist cast -> Some cast
+            | Adventurers.Flipped cast -> Some cast
         | Scenario ({ selected = Scenario.Enemy idx
                     ; current_area = Scenario.Battle (_, _, enemies) }
                    , _, _, _
@@ -45,7 +47,9 @@ module State =
                     ; companions = companions  }
                    , _, _, _
                    ) ->
-            Some (Adventurers.get pos companions)
+            match Adventurers.get pos companions with
+              Adventurers.Exist cast -> Some cast
+            | Adventurers.Flipped cast -> Some cast
         | _ -> Option.None
 
   (* party ops *)
@@ -55,8 +59,7 @@ module State =
         Scenario (scenario, party, global_data, random)
 
   let inline set_adventurer_at pos cast (state : t) =
-    let party =
-      Party.set_adventurer pos (const' cast) state.party in
+    let party = Party.set_adventurer pos cast state.party in
     set_party party state
 
   let inline update_party f (state: t) =
@@ -136,6 +139,10 @@ module State =
     update_scenarion <|
       fun scenario -> { scenario with selected = selected }
 
+  let inline get_selected state =
+    let scenario = get_scenario_unsafe state in
+    Scenario.selected_pos
+
   let inline get_selected_or_random (state: t) =
     match state.selected_cast with
       Some cast ->
@@ -150,7 +157,6 @@ module State =
 
   let inline remove_from_bag count goods =
     update_party (Party.remove_goods count goods)
-         
 
   (* BGM *)
   let inline change_bgm bgm =

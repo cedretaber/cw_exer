@@ -19,13 +19,7 @@ module GameMasterTestUtil =
 
   let empty_path : Path = "path/to/hoge"
 
-  let no_adventurers : Adventurers.t
-    = Adventurers.Nothing
-    , Adventurers.Nothing
-    , Adventurers.Nothing
-    , Adventurers.Nothing
-    , Adventurers.Nothing
-    , Adventurers.Nothing
+  let no_adventurers : Adventurers.t = [||]
 
   let empty_cast : Cast.t =
     { property =
@@ -91,7 +85,7 @@ module GameMasterTestUtil =
         ; resist  = 0
         ; defense = 0
         }
-      ; coupons = []
+      ; coupons = CouponSet.empty
       }
     ; skill = []
     ; item  = []

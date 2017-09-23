@@ -1,8 +1,12 @@
 namespace CardWirthEngine.GameMasters.Cards
 
+open CardWirthEngine.Utils
+open CardWirthEngine.Data.Type
 open CardWirthEngine.Cards
 
 module Adventurers =
+
+  let party_limit = 6
 
   type Position
     = First
@@ -24,15 +28,13 @@ module Adventurers =
   type CardState
     = Exist of Cast.t
     | Flipped of Cast.t
-    | Nothing
+    with
+      member this.cast =
+        match this with
+          Exist cast -> cast
+        | Flipped cast -> cast
 
-  type t
-    = CardState
-    * CardState
-    * CardState
-    * CardState
-    * CardState
-    * CardState
+  type t = CardState array
 
   exception InvalidAdventurerIndexException of int
 
@@ -55,187 +57,123 @@ module Adventurers =
     | Fifth  -> 4
     | Sixth  -> 5
 
-  let length =
+  let length : t -> int = Array.length
+  let to_list : t -> CardState list = Array.toList
+  let to_list_with_pos : t -> (Position * CardState) list =
+    to_list
+    >> List.indexed
+    >> List.map (function idx, cast -> int_to_pos idx, cast)
+  let to_seq : t -> CardState seq = Array.toSeq
+  let to_seq_with_pos : t -> (Position * CardState) seq =
+    to_seq
+    >> Seq.indexed
+    >> Seq.map (function idx, cast -> int_to_pos idx, cast)
+
+  let to_cast_list : bool -> t -> Cast.t list =
+    fun include_flipped ->
+      Array.fold
+        (fun list ->
+          function
+            Exist c -> c :: list
+          | Flipped c when include_flipped -> c :: list
+          | _ -> list)
+        []
+
+  let to_cast_seq : bool -> t -> Cast.t seq =
+    fun include_flipped ->
+      to_cast_list include_flipped >> List.toSeq
+
+  let get_by_index : int -> t -> CardState =
+    fun idx ->
+      Array.tryItem idx
+      >> function
+           Some cast -> cast
+         | _ -> raise <| InvalidAdventurerIndexException idx
+
+  let get : Position -> t -> CardState =
+    pos_to_int >> get_by_index
+
+  let add : Cast.t -> t -> t =
+    fun cast advs ->
+      if length advs >= party_limit
+      then advs
+      else Array.append advs [|Exist cast|]
+
+  let remove_by_index : int -> t -> t = ArrayUtil.remove
+
+  let remove : Position -> t -> t =
+    pos_to_int >> remove_by_index
+
+  let remove_by_id : CastId -> t -> t =
+    fun id advs ->
+      advs
+      |> Array.tryFindIndex begin
+           function
+             Exist cast when cast.property.id = id -> true
+           | Flipped cast when cast.property.id = id -> true
+           | _ -> false end 
+      |> Option.fold
+           (fun _ idx -> remove_by_index idx advs)
+           advs
+
+  let set_by_index : int -> Cast.t -> t -> t =
+    fun idx cast ->
+      ArrayUtil.updated idx <| Exist cast
+
+  let set : Position -> Cast.t -> t -> t =
+    pos_to_int >> set_by_index
+
+  let update_by_index : int -> (Cast.t -> Cast.t) -> t -> t =
+    fun idx f advs ->
+      let adv =
+        match get_by_index idx advs with
+          Exist cast -> f cast
+        | Flipped cast -> f cast
+      set_by_index idx adv advs
+
+  let update : Position -> (Cast.t -> Cast.t) -> t -> t =
+    pos_to_int >> update_by_index
+
+  let inline fc'' flipped f a =
     function
-      Nothing, _, _, _, _, _ -> 0
-    | _, Nothing, _, _, _, _ -> 1
-    | _, _, Nothing, _, _, _ -> 2
-    | _, _, _, Nothing, _, _ -> 3
-    | _, _, _, _, Nothing, _ -> 4
-    | _, _, _, _, _, Nothing -> 5
-    | _ -> 6
+      Exist cast -> f a cast
+    | Flipped cast when flipped -> f a cast
+    | _ -> a
 
-  let inline to_list'' include_flipped =
-    function
-      a1, a2, a3, a4, a5, a6 ->
-        [
-          for ma in [a1; a2; a3; a4; a5; a6] do
-            match ma with
-              Exist a -> yield a
-            | Flipped a when include_flipped -> yield a
-            | _ -> ()
-        ]
+  let inline fc f a = fc'' true f a
+  let inline fc' f a = fc'' false f a
 
-  let to_list = to_list'' false
-  let to_list' = to_list'' true
-
-  let inline to_seq'' include_flipped =
-    function
-      a1, a2, a3, a4, a5, a6 ->
-        seq {
-          for ma in [a1; a2; a3; a4; a5; a6] do
-            match ma with
-              Exist a -> yield a
-            | Flipped a when include_flipped -> yield a
-            | _ -> ()
-        }
-
-  let to_seq = to_seq'' false
-  let to_seq' = to_seq'' true
-
-  let to_seq_with_pos = to_seq >> Seq.zip positions
-
-  let inline get pos advs =
-    match pos, advs with
-      First,  (Exist adv, _, _, _, _, _) -> adv
-    | Second, (_, Exist adv, _, _, _, _) -> adv
-    | Third,  (_, _, Exist adv, _, _, _) -> adv
-    | Fourth, (_, _, _, Exist adv, _, _) -> adv
-    | Fifth,  (_, _, _, _, Exist adv, _) -> adv
-    | Sixth,  (_, _, _, _, _, Exist adv) -> adv
-    | First,  (Flipped adv, _, _, _, _, _) -> adv
-    | Second, (_, Flipped adv, _, _, _, _) -> adv
-    | Third,  (_, _, Flipped adv, _, _, _) -> adv
-    | Fourth, (_, _, _, Flipped adv, _, _) -> adv
-    | Fifth,  (_, _, _, _, Flipped adv, _) -> adv
-    | Sixth,  (_, _, _, _, _, Flipped adv) -> adv
-    | _ -> raise <| InvalidAdventurerIndexException (pos_to_int pos)
-
-  let inline get_by_index i =
-    get <| int_to_pos i
-
-  let inline add adv =
-    function
-      (a1, a2, a3, a4, a5, a6) as advs ->
-        let na = Exist adv in
-        match advs with
-          Nothing, _, _, _, _, _ -> na, a2, a3, a4, a5 ,a6
-        | _, Nothing, _, _, _, _ -> a1, na, a3, a4, a5, a6
-        | _, _, Nothing, _, _, _ -> a1, a2, na, a4, a5, a6
-        | _, _, _, Nothing, _, _ -> a1, a2, a3, na, a5, a6
-        | _, _, _, _, Nothing, _ -> a1, a2, a3, a4, na, a6
-        | _, _, _, _, _, Nothing -> a1, a2, a3, a4, a5, na
-        | _ -> advs
-
-  let inline remove pos =
-    function
-      a1, a2, a3, a4, a5, a6 ->
-        match pos with
-          First  -> a2, a3, a4, a5, a6, Nothing
-        | Second -> a1, a3, a4, a5, a6, Nothing
-        | Third  -> a1, a2, a4, a5, a6, Nothing
-        | Fourth -> a1, a2, a3, a5, a6, Nothing
-        | Fifth  -> a1, a2, a3, a4, a6, Nothing
-        | Sixth  -> a1, a2, a3, a4, a5, Nothing
-
-  let rec remove_by_id id =
-    function
-      Exist a, a2, a3, a4, a5, a6 when a.property.id = id ->
-        remove_by_id id (a2, a3, a4, a5 ,a6, Nothing)
-    | a1, Exist a, a3, a4, a5, a6 when a.property.id = id ->
-        remove_by_id id (a1, a3, a4, a5 ,a6, Nothing)
-    | a1, a2, Exist a, a4, a5, a6 when a.property.id = id ->
-        remove_by_id id (a1, a2, a4, a5 ,a6, Nothing)
-    | a1, a2, a3, Exist a, a5, a6 when a.property.id = id ->
-        remove_by_id id (a1, a2, a3, a5 ,a6, Nothing)
-    | a1, a2, a3, a4, Exist a, a6 when a.property.id = id ->
-        remove_by_id id (a1, a2, a3, a4 ,a6, Nothing)
-    | a1, a2, a3, a4, a5, Exist a when a.property.id = id ->
-        remove_by_id id (a1, a2, a3, a4 ,a5, Nothing)
-    | Flipped a, a2, a3, a4, a5, a6 when a.property.id = id ->
-        remove_by_id id (a2, a3, a4, a5 ,a6, Nothing)
-    | a1, Flipped a, a3, a4, a5, a6 when a.property.id = id ->
-        remove_by_id id (a1, a3, a4, a5 ,a6, Nothing)
-    | a1, a2, Flipped a, a4, a5, a6 when a.property.id = id ->
-        remove_by_id id (a1, a2, a4, a5 ,a6, Nothing)
-    | a1, a2, a3, Flipped a, a5, a6 when a.property.id = id ->
-        remove_by_id id (a1, a2, a3, a5 ,a6, Nothing)
-    | a1, a2, a3, a4, Flipped a, a6 when a.property.id = id ->
-        remove_by_id id (a1, a2, a3, a4 ,a6, Nothing)
-    | a1, a2, a3, a4, a5, Flipped a when a.property.id = id ->
-        remove_by_id id (a1, a2, a3, a4 ,a5, Nothing)
-    | advs -> advs
-
-  let inline set pos a =
-    function
-      a1, a2, a3, a4, a5, a6 ->
-        match pos with
-          First  -> a, a2, a3, a4, a5, a6
-        | Second -> a1, a, a3, a4, a5, a6
-        | Third  -> a1, a2, a, a4, a5, a6
-        | Fourth -> a1, a2, a3, a, a5, a6
-        | Fifth  -> a1, a2, a3, a4, a, a6
-        | Sixth  -> a1, a2, a3, a4, a5, a
-
-
-  let inline updated pos f advs =
-    match pos, advs with
-      First, (Exist a, a2, a3, a4, a5, a6) ->
-        Exist (f a), a2, a3, a4, a5, a6
-    | Second, (a1, Exist a, a3, a4, a5, a6) ->
-        a1, Exist (f a), a3, a4, a5, a6
-    | Third,  (a1, a2, Exist a, a4, a5, a6) ->
-        a1, a2, Exist (f a), a4, a5, a6
-    | Fourth, (a1, a2, a3, Exist a, a5, a6) ->
-        a1, a2, a3, Exist (f a), a5, a6
-    | Fifth, (a1, a2, a3, a4, Exist a, a6) ->
-        a1, a2, a3, a4, Exist (f a), a6
-    | Sixth, (a1, a2, a3, a4, a5, Exist a) ->
-        a1, a2, a3, a4, a5, Exist (f a)
-    | First, (Flipped a, a2, a3, a4, a5, a6) ->
-        Flipped (f a), a2, a3, a4, a5, a6
-    | Second, (a1, Flipped a, a3, a4, a5, a6) ->
-        a1, Flipped (f a), a3, a4, a5, a6
-    | Third, (a1, a2, Flipped a, a4, a5, a6) ->
-        a1, a2, Flipped (f a), a4, a5, a6
-    | Fourth, (a1, a2, a3, Flipped a, a5, a6) ->
-        a1, a2, a3, Flipped (f a), a5, a6
-    | Fifth, (a1, a2, a3, a4, Flipped a, a6) ->
-        a1, a2, a3, a4, Flipped (f a), a6
-    | Sixth, (a1, a2, a3, a4, a5, Flipped a) ->
-        a1, a2, a3, a4, a5, Flipped (f a)
-    | _, advs -> advs
-
-  let foldl : ('a -> Cast.t -> 'a) -> 'a -> t -> 'a =
-    fun f a ->
-      to_list >> List.fold f a
+  let foldl : ('a -> CardState -> 'a) -> 'a -> t -> 'a = Array.fold
   
   let fold = foldl
 
-  let foldl_with_pos : ('a -> (Position * Cast.t) -> 'a) -> 'a -> t -> 'a =
+  let foldl_with_pos : ('a -> (Position * CardState) -> 'a) -> 'a -> t -> 'a =
     fun f a ->
       to_list >> List.zip positions >> List.fold f a
 
   let fold_with_pos = foldl_with_pos
       
-  let forall : (Cast.t -> bool) -> t -> bool =
+  let forall : (CardState -> bool) -> t -> bool = Array.forall
+
+  let indexed : t -> (int * CardState) array = Array.indexed
+
+  let try_find : (CardState -> bool) -> t -> CardState option = Array.tryFind
+
+  let try_find_with_position : (CardState -> bool) -> t -> (Position * CardState) option =
     fun f ->
-      to_seq >> Seq.forall f
+      Array.indexed
+      >> Array.tryFind (function idx, cast -> f cast)
+      >> Option.map (function idx, cast -> int_to_pos idx, cast)
 
-  let indexed : t -> (int * Cast.t) list =
-    to_list >> List.indexed
+  let exists : (CardState -> bool) -> t -> bool = Array.exists
 
-  let try_find : (Cast.t -> bool) -> t -> Cast.t option =
-    fun f ->
-      to_seq >> Seq.tryFind f
+  let inline cc'' flipped f =
+    function
+      Exist cast -> Exist (f cast)
+    | Flipped cast when flipped -> Flipped (f cast)
+    | Flipped cast as flipped -> flipped
 
-  let try_find_with_position : (Cast.t -> bool) -> t -> (Position * Cast.t) option =
-    fun f ->
-      to_seq
-      >> Seq.indexed
-      >> Seq.map (function idx, cast -> int_to_pos idx, cast )
-      >> Seq.tryFind (function _, cast -> f cast)
+  let inline cc f = cc'' true f
+  let inline cc' f = cc'' false f
 
-  let contains_by : (Cast.t -> bool) -> t -> bool =
-    fun f -> 
-      try_find f >> Option.isSome
+  let map : (CardState -> CardState) -> t -> t = Array.map

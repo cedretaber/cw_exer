@@ -101,7 +101,7 @@ module Cast =
     ; ability : Ability.t
     ; status : Status.t
     ; enhance : Enhance.m
-    ; coupons : Coupon.t list
+    ; coupons : CouponSet.t
     }
 
   type t =
@@ -113,6 +113,30 @@ module Cast =
     with
       member this.life = this.property.life.current
 
+  let inline update_property f =
+    function
+      { property = property } as cast ->
+        { cast with property = f property }
+
+  (* Coupon Ops *)
+  let has_coupon =
+    function
+      ({ name = name } : Coupon.t) ->
+        function
+          { property = { coupons = coupons } } ->
+            CouponSet.contains name coupons
+
+  let has_coupon_by_name name =
+    function
+      { property = { coupons = coupons } } ->
+        CouponSet.contains name coupons
+
+  let add_coupon coupon =
+    update_property <| fun property ->
+      { property with coupons = CouponSet.add coupon property.coupons }
+
+
+  (* Cast statuses *)
   let inline is_alive cast =
     let prop = cast.property in
     match prop with
@@ -151,11 +175,6 @@ module Cast =
     | { max = max; current = current } when max = current -> Fine
     | { max = max; current = current } when max / current >= 5 -> HeavyInjured
     | _ -> Injured
-
-  let inline has_coupon cast (coupon: Coupon.t) =
-    cast.property.coupons
-    |> List.exists
-      (function { name = name } -> name = coupon.name)
 
   let inline private cast_state d =
     if d > 0
@@ -203,6 +222,7 @@ module Cast =
     | d when d < 0 -> DownDefense d
     | _ -> NormalDefense
 
+  (* Card Ops *)
   let inline add_card max count card cards =
     let free_space = max - List.length cards in
     let add_count = if free_space < count then free_space else count in
@@ -216,7 +236,8 @@ module Cast =
       | RemoveCount.Count count ->
           ListUtil.filter_limit count in
     f equals cards
-
+  
+  (* Skills *)
   let inline add_skill count skill cast =
     let diff, skills =
       add_card
@@ -234,7 +255,8 @@ module Cast =
     ListUtil.count_by
       (Skill.equals skill)
       cast.skill
-
+  
+  (* Items *)
   let inline add_item count item cast =
     let diff, items =
       add_card
@@ -252,7 +274,8 @@ module Cast =
     ListUtil.count_by
       (Item.equals item)
       cast.item
-
+   
+  (* Beasts *)
   let inline add_beast count beast cast =
     let diff, beasts =
       add_card
@@ -270,3 +293,4 @@ module Cast =
     ListUtil.count_by
       (Beast.equals beast)
       cast.beast
+        

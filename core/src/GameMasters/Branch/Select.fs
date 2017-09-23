@@ -16,25 +16,29 @@ module Select =
       Adventurers.to_seq_with_pos adventurers in
     match target with
       Active ->
-        Seq.filter
-          (function _, adv -> Cast.is_active adv)
+        Seq.choose
+          (function
+            pos, (card : Adventurers.CardState) when Cast.is_active card.cast ->
+              Some (pos, card)
+          | _ ->
+              Option.None)
           advs
     | Party ->
         advs
 
-  let inline private appraise initial coupons advs =
+  let inline private appraise initial coupons (advs : (Adventurers.Position * Adventurers.CardState) seq) =
     let go =
       fun pos adv -> async {
         return pos, List.fold
           (fun acm coupon ->
               acm +
-                if Cast.has_coupon adv coupon
+                if Cast.has_coupon coupon adv
                 then coupon.value
                 else 0)
           initial
           coupons
       } in
-    [ for pos, adv in advs -> go pos adv ]
+    [ for pos, adv in advs -> go pos adv.cast ]
     |> Async.Parallel 
     |> Async.RunSynchronously
 

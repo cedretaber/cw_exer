@@ -38,6 +38,7 @@ module KeyCode =
         ((=) key_code)
         (target cast)
       |> Option.isSome
+    let f' (card : Adventurers.CardState) = f card.cast
 
     match range with
       Range.Selected ->
@@ -45,7 +46,7 @@ module KeyCode =
           Some cast -> state, f cast
         | Option.None -> state, false
     | Range.Party ->
-        state, Adventurers.forall f state.adventurers
+        state, Adventurers.forall f' state.adventurers
     // TODO: その他未実装
     | _ ->
         state, false

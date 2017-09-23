@@ -239,7 +239,7 @@ module GameMasterEventTest =
               cards = { empty_scenario.cards with casts = Map.ofList [id, cast] } } in
         let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
         let state', _ = read state [Content (empty_event, contents)] Input.None in
-        let (Adventurers.Exist cast', _, _, _, _, _) = (State.get_scenario_unsafe state').companions in
+        let [|Adventurers.Exist cast'|] = (State.get_scenario_unsafe state').companions in
         cast' === cast
 
     module GetItemTest =

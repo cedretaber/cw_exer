@@ -1,4 +1,4 @@
-﻿namespace CardWirthEngine.GameMasters.Branch
+﻿namespace CardWirthEngine.GameMasters
 
 open CardWirthEngine.Utils
 open CardWirthEngine.Data.Type
@@ -52,8 +52,9 @@ module CardOps =
   *)
   let inline private exists count_card card_in_bag count target (state : State.t) =
 
-    let check_card =
-      fun card -> count_card card >= count in
+    let inline check_card (card : Adventurers.CardState) = count_card card.cast >= count
+    let inline check_card' card = count_card card >= count
+
     let count_backpack =
       lazy begin Party.count_card card_in_bag state.party end in
 
@@ -61,7 +62,7 @@ module CardOps =
       Range.Selected ->
         let bool =
           Option.fold
-            (fun _ -> check_card)
+            (fun _ cast -> check_card' cast)
             false
             state.selected_cast in
         bool, state
@@ -82,10 +83,10 @@ module CardOps =
     | Range.PartyAndBackpack ->
         let of_advs =
           Adventurers.fold
-            (fun count cast ->
+            (fun count card ->
               if count <= 0
-              then 0
-              else count - count_card cast)
+              then count - count_card card.cast
+              else 0)
             count
             state.adventurers in
         let rest = count - of_advs in
@@ -96,7 +97,7 @@ module CardOps =
           seq {
             for p, c
               in Adventurers.to_seq_with_pos state.adventurers
-                -> PC (p, c)
+                -> PC (p, c.cast)
             let scenario = State.get_scenario_unsafe state in
             let maybe_enemies = Scenario.enemies scenario in
             if Option.isSome maybe_enemies then
@@ -107,8 +108,8 @@ module CardOps =
         let maybe_cast =
           Seq.tryFind
             (function
-              PC (_, c) -> check_card c
-            | Enemy (_, c) -> check_card c)
+              PC (_, c) -> check_card' c
+            | Enemy (_, c) -> check_card' c)
             targets in
         match maybe_cast with
           Some (PC (pos, _)) ->
@@ -134,13 +135,12 @@ module CardOps =
       State.set_adventurer_at pos cast' state
       |> State.add_to_bag rest goods
 
-    let update_npc =
-      fun cast -> add_card cast count |> Pair.second in
+    let inline update_npc cast = add_card cast count |> Pair.second
 
     let add_all_advs = lazy begin
       Adventurers.fold_with_pos
-       (fun (state' : State.t, rest) (pos, cast) ->
-          let rest', cast' = add_card cast count in
+       (fun (state' : State.t, rest) (pos, card) ->
+          let rest', cast' = add_card card.cast count in
           ( State.set_adventurer_at pos cast' state'
           , rest + rest'
           ))
@@ -155,7 +155,8 @@ module CardOps =
         let scenario = State.get_scenario_unsafe state' in
         match scenario.selected with
           Scenario.PC pos ->
-            update_cast pos cast state'
+            let card = Adventurers.get pos state.adventurers in
+            update_cast pos card.cast state'
         | Scenario.Enemy id ->
             State.update_scenarion
               (Scenario.update_enemy update_npc id)
@@ -190,8 +191,7 @@ module CardOps =
 
   let inline private remove remove_from_cast goods count target state =
 
-    let update_npc =
-      fun cast -> remove_from_cast count cast in
+    let inline update_npc cast = remove_from_cast count cast
 
     let inline update_cast pos cast (state : State.t) =
       let cast' = update_npc cast in
@@ -199,8 +199,8 @@ module CardOps =
 
     let remove_all_adv = lazy begin
       Adventurers.foldl_with_pos
-        (fun (state : State.t) (pos, cast) ->
-          update_cast pos cast state)
+        (fun (state : State.t) (pos, card) ->
+          update_cast pos card.cast state)
         state
         state.adventurers
       end in

@@ -469,6 +469,10 @@ module GameMaster =
     | GetMoney (nexts, _), _ ->
         through' <| Nexts nexts
 
+    | GetCoupon (nexts, target, point, value), Input.None ->
+        CouponOps.add_coupon target value point state
+
+
     (*
     | GetCoupon of Nexts * target : Target * point : int * value : Coupon.Name
     | GetCompleteStamp of Nexts * value : ScenarioName

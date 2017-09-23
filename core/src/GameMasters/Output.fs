@@ -37,6 +37,7 @@ module Output =
     | Effect of target : FieldCard.t * visual :  CardVisual.t * sound : Sound
     | Flag of Flag.Name * Flag.State
     | Money of Money
+    | Coupon
     | SelectPlayerCharactor of Adventurers.Position list
     | PartyDown
     | PartyUp

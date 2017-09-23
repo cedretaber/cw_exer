@@ -36,7 +36,7 @@ module Adventurer =
     | Target.Party ->
         state,
         Adventurers.forall
-          (judge_ability level sleep physical mental)
+          (fun card -> judge_ability level sleep physical mental card.cast)
           state.adventurers
     | _ ->
       state, false
@@ -97,7 +97,7 @@ module Adventurer =
     | Target.Party ->
         state,
         Adventurers.forall
-          (judge_status status)
+          (fun card -> judge_status status card.cast)
           state.adventurers
     | _ ->
         raise <| InvalidTargetException target
@@ -109,9 +109,9 @@ module Adventurer =
   let inline private generate_casts party enemy npc (state : State.t) =
     seq {
       if party then
-        for idx, cast
+        for idx, card
           in Adventurers.indexed state.party.adventurers ->
-            State.set_selected (Scenario.PC (Adventurers.int_to_pos idx)) state, cast
+            State.set_selected (Scenario.PC (Adventurers.int_to_pos idx)) state, card.cast
       let scenario = State.get_scenario_unsafe state in
       if enemy then
         let enemies =
@@ -122,8 +122,8 @@ module Adventurer =
         for cast in enemies ->
           state, cast
       if npc then 
-        for cast in Adventurers.to_list scenario.companions ->
-          state, cast
+        for card in scenario.companions ->
+          state, card.cast
     }
 
   let inline private level_filter level (casts : ('a * Cast.t) seq) =
@@ -170,13 +170,9 @@ module Adventurer =
       | Or -> List.exists f values
     let g (cast : Cast.t) =
       let had_coupons =
-        Set.ofList cast.property.coupons in
-      f
-        (fun coupon ->
-          Set.exists
-            (fun ({ name = name } : Coupon.t) ->
-              name = coupon)
-            had_coupons)
+        CouponSet.to_set cast.property.coupons in
+      f <| fun coupon -> Set.contains coupon had_coupons
+    let g' (card : Adventurers.CardState) = g card.cast
     match range with
       Selected ->
         state.selected_cast
@@ -184,13 +180,14 @@ module Adventurer =
           (fun _ cast -> state, g cast)
           (state, false)
     | Random ->
-        match Adventurers.try_find_with_position g state.adventurers with
-          Some (pos, _) ->
-            (State.set_selected (Scenario.PC pos) state), true
-        | _ ->
-          state, false
+        Adventurers.try_find_with_position g' state.adventurers
+        |> function
+             Some (pos, _) ->
+               (State.set_selected (Scenario.PC pos) state), true
+           | _ ->
+               state, false
     | Range.Party ->
-        state, Adventurers.forall g state.adventurers
+        state, Adventurers.forall g' state.adventurers
     | _ ->
       state, false
 

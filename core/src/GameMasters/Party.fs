@@ -2,6 +2,7 @@
 
 open CardWirthEngine.Scenario.Events.Content
 open CardWirthEngine.Data.Type
+open CardWirthEngine.Util
 open CardWirthEngine.Utils
 open CardWirthEngine.Cards
 open CardWirthEngine.GameMasters.Cards
@@ -26,29 +27,35 @@ module Party =
     ; name : string
     }
 
+  let inline update_adventurers f =
+    function
+      { adventurers = adventurers } as party ->
+        { party with adventurers = f adventurers }
+
   let inline party_count party =
     Adventurers.length party.adventurers
 
   let inline average_level party =
     let sum = 
       party.adventurers
-      |> Adventurers.to_list
-      |> List.sumBy
-        (fun (cast : Cast.t) -> cast.property.level) in
+      |> Adventurers.fold
+           (Adventurers.fc <| fun a c -> a + c.property.level)
+           0 in
     sum / party_count party
 
-  let inline set_adventurer pos cast party =
-    let adventurers = Adventurers.updated pos cast party.adventurers in
-    { party with adventurers = adventurers }
+  let inline update_adventurer pos f =
+    update_adventurers <| Adventurers.update pos f
+
+  let inline set_adventurer pos cast =
+    update_adventurer pos (const' cast)
 
   exception InvalidPartyIndexException of int * int
 
   let inline at index party =
-    if index >= party_count party
-    then
-      raise <| InvalidPartyIndexException (index, party_count party)
-    else
-      Adventurers.get_by_index index party.adventurers
+    match Adventurers.get_by_index index party.adventurers with
+      Adventurers.Exist cast -> cast
+    | Adventurers.Flipped cast -> cast
+    | _ -> raise <| InvalidPartyIndexException (index, party_count party)
 
   let add_goods count good party =
     let goods = ListUtil.multi_cons count good party.bag in
@@ -94,11 +101,17 @@ module Party =
         | _ -> false end
       party.bag
 
+  (* Coupon Ops *)
+  let inline add_coupon pos coupon =
+    update_adventurer pos <| Cast.add_coupon coupon
+  
+  let inline add_coupon_all coupon =
+    update_adventurers
+    <| Adventurers.map (Adventurers.cc' <| Cast.add_coupon coupon)
+
   (* Money Ops *)
   let inline has_money amount =
-    function
-      { money = money } ->
-        amount <= money
+    function { money = money } -> amount <= money
 
   let inline add_money amount =
     function

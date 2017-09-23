@@ -6,7 +6,7 @@ open CardWirthEngineTest.TestUtils
 open CardWirthEngineTest.GameMasterTestUtil
 
 open CardWirthEngine.GameMasters.State
-open CardWirthEngine.GameMasters.Branch.CardOps
+open CardWirthEngine.GameMasters.CardOps
 
 module CardOpsTest =
 

@@ -14,14 +14,12 @@ module AdventurersTest =
 
     [<Test>]
     let ``空のパーティの冒険者を追加した場合`` () =
-      let one_adv =
-        empty_adv, Nothing, Nothing, Nothing, Nothing, Nothing in
+      let one_adv = [|empty_adv|] in
       add empty_cast no_adventurers === one_adv
 
     [<Test>]
     let ``既に冒険者がいるパーティに冒険者を追加した場合`` () =
-      let two_advs =
-        empty_adv, empty_adv, Nothing, Nothing, Nothing, Nothing in
+      let two_advs = [|empty_adv; empty_adv|] in
       add empty_cast one_adventurer === two_advs
 
     [<Test>]
@@ -30,7 +28,6 @@ module AdventurersTest =
         { empty_cast with 
             property = { empty_cast.property with
                            name = "last adventurer"  } } in
-      let advs =
-        empty_adv, empty_adv, empty_adv, empty_adv, empty_adv, Exist last_adv in
-      let _, _, _, _, _, result = add empty_cast advs in
-      result === Exist last_adv
+      let advs = [|empty_adv; empty_adv; empty_adv; empty_adv; empty_adv; Exist last_adv|] in
+      let result = add empty_cast advs in
+      result === advs

@@ -164,16 +164,16 @@ module Scenario =
     { scenario with companions = companions }
 
   let inline has_companion id scenario =
-    Adventurers.contains_by
-      (fun { property = { id = id' } } -> id' = id)
+    Adventurers.exists
+      (fun card -> id = card.cast.property.id)
       scenario.companions
  
   let inline set_companion pos companion scenario =
-    let companions = Adventurers.updated pos companion scenario.companions in
+    let companions = Adventurers.update pos companion scenario.companions in
     { scenario with companions = companions }
 
   let inline update_companion f pos scenario =
-    let companions = Adventurers.updated pos f scenario.companions in
+    let companions = Adventurers.update pos f scenario.companions in
     { scenario with companions = companions }
 
   (* Info ops *)

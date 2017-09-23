@@ -14,8 +14,8 @@ module Standard =
   let inline filter_selection nexts state =
     nexts
     |> List.indexed
-    |> List.choose
-      (function
+    |> List.choose begin
+      function
         idx, (selection, Content.CheckFlag (_, name)) ->
           if FlagOps.get name state
           then
@@ -30,7 +30,7 @@ module Standard =
           else
             Option.None
       | idx, (selection, _) ->
-          Some (idx, selection))
+          Some (idx, selection) end
 
   let inline message (message: TalkMessage.t) nexts state =
     let selections = filter_selection nexts state in
