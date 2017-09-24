@@ -1,26 +1,27 @@
 ﻿namespace CardWirthEngineTest.Utils
 
-open NUnit.Framework
-open FsCheck.NUnit
-open CardWirthEngineTest.TestUtils
-
 module ListUtilTest =
+
+  open Expecto
   open CardWirthEngine.Utils.ListUtil
 
-  module filter_limitTest =
+  let list = [1;2;3;1;2;3;1;2;3] 
+  let f = (fun i -> i = 1)
 
-    let list = [1;2;3;1;2;3;1;2;3] 
-    let f = (fun i -> i = 1)
+  [<Tests>]
+  let list_util =
+    testList "CardWirthEngine.Utils.ListUtil" [
+      testList "filter_limit" [
+        test "正常系" {
+          Expect.equal (filter_limit 2 f list) [2;3;2;3;1;2;3] "正しくフィルタできること"
+        }
 
-    [<Test>]
-    let ``正しくフィルタできること`` () =
-      filter_limit 2 f list === [2;3;2;3;1;2;3]
+        test "最大値の方がリストに含まれている要素数より多い場合" {
+          Expect.equal (filter_limit 4 f list) [2;3;2;3;2;3] "リスト内の条件を満たす要素が全て取り除かれること"
+        }
 
-    [<Test>]
-    let ``最大値の方がリストに含まれている要素数より多い場合`` () =
-      filter_limit 4 f list === [2;3;2;3;2;3]
-
-    [<Test>]
-    let ``最大値が0の場合`` () =
-      filter_limit 0 f list === list
-
+        test "最大値が0の場合" {
+          Expect.equal (filter_limit 0 f list) list "元のリストがそのまま返ること"
+        }
+      ]
+    ]

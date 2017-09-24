@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\NUnit3TestAdapter.3.8.0\build\net35\NUnit3TestAdapter.props" Condition="Exists('..\packages\NUnit3TestAdapter.3.8.0\build\net35\NUnit3TestAdapter.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>1fc79a7b-96fa-41dd-b6f5-8332c67fb091</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>test</RootNamespace>
     <AssemblyName>test</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
@@ -60,20 +59,41 @@
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
-    <Compile Include="test\TestUtils.fs" />
     <Compile Include="test\UtilTest.fs" />
     <Compile Include="test\Utils\ListUtilTest.fs" />
     <Compile Include="test\GameMasterTestUtil.fs" />
     <Compile Include="test\GameMasters\Cards\AdventurersTest.fs" />
     <Compile Include="test\GameMasters\CardOpsTest.fs" />
-    <Compile Include="test\GameMasterEventTest.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchTestUtil.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchCast.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchItem.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchSkill.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchInfo.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchBeast.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchMoney.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchCompleteStamp.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchGossip.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetCast.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetItem.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetSkill.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetInfo.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetBeast.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetMoney.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetCoupon.fs" />
+    <Compile Include="test\Main.fs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="FsCheck">
-      <HintPath>..\packages\FsCheck.2.10.0\lib\net452\FsCheck.dll</HintPath>
+    <Reference Include="Argu">
+      <HintPath>..\packages\Argu.3.7.0\lib\net40\Argu.dll</HintPath>
     </Reference>
-    <Reference Include="FsCheck.NUnit">
-      <HintPath>..\packages\FsCheck.NUnit.2.10.0\lib\net452\FsCheck.NUnit.dll</HintPath>
+    <Reference Include="Expecto">
+      <HintPath>..\packages\Expecto.5.0.1\lib\net461\Expecto.dll</HintPath>
+    </Reference>
+    <Reference Include="Expecto.FsCheck">
+      <HintPath>..\packages\Expecto.FsCheck.5.0.1\lib\net461\Expecto.FsCheck.dll</HintPath>
+    </Reference>
+    <Reference Include="FsCheck">
+      <HintPath>..\packages\FsCheck.2.10.1\lib\net452\FsCheck.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core">
       <HintPath>..\packages\FSharp.Core.4.2.3\lib\net45\FSharp.Core.dll</HintPath>
@@ -81,10 +101,19 @@
     <Reference Include="Microsoft.Win32.Primitives">
       <HintPath>..\packages\Microsoft.Win32.Primitives.4.3.0\lib\net46\Microsoft.Win32.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="mscorlib" />
-    <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.3.8.1\lib\net45\nunit.framework.dll</HintPath>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks">
+      <HintPath>..\packages\Mono.Cecil.0.10.0-beta6\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
     <Reference Include="System" />
     <Reference Include="System.AppContext">
       <HintPath>..\packages\System.AppContext.4.3.0\lib\net46\System.AppContext.dll</HintPath>
@@ -96,6 +125,12 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Diagnostics.DiagnosticSource">
       <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.4.1\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.FileVersionInfo">
+      <HintPath>..\packages\System.Diagnostics.FileVersionInfo.4.3.0\lib\net46\System.Diagnostics.FileVersionInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Diagnostics.TraceSource">
+      <HintPath>..\packages\System.Diagnostics.TraceSource.4.3.0\lib\net46\System.Diagnostics.TraceSource.dll</HintPath>
     </Reference>
     <Reference Include="System.Diagnostics.Tracing">
       <Private>True</Private>
@@ -175,7 +210,6 @@
       <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets'))" />
-    <Error Condition="!Exists('..\packages\NUnit3TestAdapter.3.8.0\build\net35\NUnit3TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit3TestAdapter.3.8.0\build\net35\NUnit3TestAdapter.props'))" />
   </Target>
   <!--
   To modify your build process, add your task inside one of the targets below and uncomment it. 

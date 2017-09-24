@@ -141,7 +141,7 @@ module State =
 
   let inline get_selected state =
     let scenario = get_scenario_unsafe state in
-    Scenario.selected_pos
+    Scenario.selected_pos scenario
 
   let inline get_selected_or_random (state: t) =
     match state.selected_cast with
