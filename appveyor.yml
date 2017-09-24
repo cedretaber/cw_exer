@@ -1,5 +1,10 @@
 version: 1.0.{build}
 
+init:
+  - ps: Set-WinSystemLocale ja-JP
+  - ps: Start-Sleep -s 5
+  - ps: Restart-Computer
+
 cache:
   - packages -> **\packages.config
 
@@ -8,6 +13,6 @@ before_build:
 
 after_build:
   - ps: chcp 65001
-  - ps: .\test\bin\Debug\test.exe --summary
+  - ps: .\test\bin\Debug\test.exe --summary-location | ruby appveyor.rb
 
 test: off
