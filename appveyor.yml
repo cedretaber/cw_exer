@@ -6,10 +6,8 @@ cache:
 before_build:
   - ps: nuget restore
 
-before_test:
+after_build:
   - ps: chcp 65001
+  - ps: .\test\bin\Debug\test.exe --summary
 
 test: off
-
-after_test:
-  - ps: ./test/bin/Release/test.exe --summary
