@@ -469,8 +469,10 @@ module GameMaster =
     | GetMoney (nexts, _), _ ->
         through' <| Nexts nexts
 
-    | GetCoupon (nexts, target, point, value), Input.None ->
+    | GetCoupon (_, target, point, value), Input.None ->
         CouponOps.add_coupon target value point state
+    | GetCoupon (nexts, _, _, _), _ ->
+        through' <| Nexts nexts
 
 
     (*

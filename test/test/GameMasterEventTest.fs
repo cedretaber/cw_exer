@@ -8,6 +8,7 @@ open CardWirthEngineTest.TestUtils
 open CardWirthEngineTest.GameMasterTestUtil
 
 open CardWirthEngine.Data.Type
+open CardWirthEngine.Cards
 open CardWirthEngine.Scenario.Events.Content
 open CardWirthEngine.GameMasters
 open CardWirthEngine.GameMasters.Scenario
@@ -312,3 +313,16 @@ module GameMasterEventTest =
         let sum = balance + amount in
         state'.party.money === sum
         output === Output.Money sum
+
+    module GetCouponTest =
+
+      [<Test>]
+      let ``正しく選択中の冒険者にクーポンを追加できること`` () =
+        let coupon = "coupon1" in
+        let contents = GetCoupon ([], Target.Selected, 0, coupon) in
+        let scenario = { empty_scenario with selected = Scenario.PC Adventurers.First } in
+        let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
+        let state', output = read state [Content (empty_event, contents)] Input.None in
+        let [|Adventurers.Exist adv|] = state'.adventurers in
+        assert' <| Cast.has_coupon_by_name coupon adv
+        output === Output.Coupon
