@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-@mode2outcom = {
+@mode2outcome = {
   passed: "Passed",
   ignored: "Ignored",
   failed: "Failed",
@@ -10,7 +10,7 @@
 def test(mode, line)
   if /^(?<name>.*)\[(?<file_name>.*):(?<line_number>\d+)\]$/ =~ line
     file_name = file_name.empty? ? "" : %Q(-FileName "#{file_name}:#{line_number}")
-    outcome = @mode2outcom[mode]
+    outcome = @mode2outcome[mode]
     unless name.empty?
       message = %Q!appveyor AddTest "#{name.strip}" -Framework NUnit #{file_name} -Outcome #{outcome}!
       `#{message}`
