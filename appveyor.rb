@@ -8,20 +8,19 @@
 }.tap { |h| h.default = "None" }
 
 def test(mode, line)
-  if /^(?<name>.*)\[(?<file_name>.*):(?<line_number>\d+)\]$/ =~ line
+  if /^(?<name>.+)\[(?<file_name>.*):(?<line_number>\d+)\]$/ =~ line
     file_name = file_name.empty? ? "" : %Q(-FileName "#{file_name}:#{line_number}")
     outcome = @mode2outcome[mode]
-    unless name.empty?
-      message = %Q!appveyor AddTest "#{name.strip}" -Framework NUnit #{file_name} -Outcome #{outcome}!
-      `#{message}`
-    end
+    name.strip!
+    
+    `appveyor AddTest "#{name}" -Framework NUnit #{file_name} -Outcome #{outcome}` unless name.empty?
   end
 end
 
 mode = nil
 
 while line = gets
-  line.chomp!.strip!
+  line.strip!
 
   case line
   when /^Passed:/
