@@ -479,8 +479,7 @@ module GameMaster =
           (State.get_completed value state)
           <| Nexts nexts
 
-
-    (*
-    | GetCompleteStamp of Nexts * value : ScenarioName
-    | GetGossip of Nexts * value : GossipName
-    *)
+    | GetGossip (nexts, value), _ ->
+        through
+          (State.get_gossip value state)
+          <| Nexts nexts
