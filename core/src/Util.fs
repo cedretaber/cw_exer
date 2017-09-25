@@ -6,3 +6,6 @@ module Util =
 
   let is_true (bool: bool) = bool
   let is_false bool = not bool
+
+module String =
+  let starts_with (str : string) = str.StartsWith
