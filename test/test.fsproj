@@ -56,33 +56,6 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
-    <None Include="App.config" />
-    <Content Include="packages.config" />
-    <Compile Include="test\UtilTest.fs" />
-    <Compile Include="test\Utils\ListUtilTest.fs" />
-    <Compile Include="test\GameMasterTestUtil.fs" />
-    <Compile Include="test\GameMasters\Cards\AdventurersTest.fs" />
-    <Compile Include="test\GameMasters\CardOpsTest.fs" />
-    <Compile Include="test\GameMasters\Contents\Branch\BranchTestUtil.fs" />
-    <Compile Include="test\GameMasters\Contents\Branch\BranchCast.fs" />
-    <Compile Include="test\GameMasters\Contents\Branch\BranchItem.fs" />
-    <Compile Include="test\GameMasters\Contents\Branch\BranchSkill.fs" />
-    <Compile Include="test\GameMasters\Contents\Branch\BranchInfo.fs" />
-    <Compile Include="test\GameMasters\Contents\Branch\BranchBeast.fs" />
-    <Compile Include="test\GameMasters\Contents\Branch\BranchMoney.fs" />
-    <Compile Include="test\GameMasters\Contents\Branch\BranchCompleteStamp.fs" />
-    <Compile Include="test\GameMasters\Contents\Branch\BranchGossip.fs" />
-    <Compile Include="test\GameMasters\Contents\Get\GetCast.fs" />
-    <Compile Include="test\GameMasters\Contents\Get\GetItem.fs" />
-    <Compile Include="test\GameMasters\Contents\Get\GetSkill.fs" />
-    <Compile Include="test\GameMasters\Contents\Get\GetInfo.fs" />
-    <Compile Include="test\GameMasters\Contents\Get\GetBeast.fs" />
-    <Compile Include="test\GameMasters\Contents\Get\GetMoney.fs" />
-    <Compile Include="test\GameMasters\Contents\Get\GetCoupon.fs" />
-    <Compile Include="test\Main.fs" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="Argu">
       <HintPath>..\packages\Argu.3.7.0\lib\net40\Argu.dll</HintPath>
     </Reference>
@@ -203,6 +176,34 @@
       <Project>{1d762cec-e67e-4536-99e2-389f9b9b8b06}</Project>
       <Private>True</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.fs" />
+    <None Include="App.config" />
+    <Content Include="packages.config" />
+    <Compile Include="test\UtilTest.fs" />
+    <Compile Include="test\Utils\ListUtilTest.fs" />
+    <Compile Include="test\GameMasterTestUtil.fs" />
+    <Compile Include="test\GameMasters\Cards\AdventurersTest.fs" />
+    <Compile Include="test\GameMasters\CardOpsTest.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchTestUtil.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchCast.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchItem.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchSkill.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchInfo.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchBeast.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchMoney.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchCompleteStamp.fs" />
+    <Compile Include="test\GameMasters\Contents\Branch\BranchGossip.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetCast.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetItem.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetSkill.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetInfo.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetBeast.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetMoney.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetCoupon.fs" />
+    <Compile Include="test\GameMasters\Contents\Get\GetCompleteStamp.fs" />
+    <Compile Include="test\Main.fs" />
   </ItemGroup>
   <Import Project="..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
