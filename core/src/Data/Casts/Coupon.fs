@@ -97,3 +97,45 @@ module CouponSet =
         |> List.collect
              (Map.toList >> List.map Pair.first)
         |> Set.ofList
+
+  let elapse : t -> t =
+    function
+      { battles = battles
+      ; periods = periods
+      ; list = list
+      } as cset ->
+        let elapse set_init =
+          Map.fold
+            (fun (map, set) name point ->
+              let point' = point - 1 in
+              if point' = 0
+              then map, Set.add name set
+              else Map.add name point' map, set)
+            (Map.empty, set_init) in
+        let battles', set = elapse Set.empty battles in
+        let periods', set = elapse set periods in
+        { cset with battles = battles';
+                    periods = periods';
+                    list = List.filter (fun name -> not <| Set.contains name set) list }
+
+  let inline private clean_coupons cset set =
+    { cset with list = List.filter (fun name -> not <| Set.contains name set) cset.list }
+
+  let end_battle : t -> t =
+    function
+      { battles = battles } as cset ->
+        battles
+        |> Map.toList
+        |> List.map Pair.first
+        |> Set.ofList
+        |> clean_coupons { cset with battles = Map.empty }
+
+  let end_scenario : t -> t =
+    function
+      { battles = battles
+      ; periods = periods
+      } as cset ->
+        [battles; periods]
+        |> List.collect (Map.toList >> List.map Pair.first)
+        |> Set.ofList
+        |> clean_coupons { cset with battles = Map.empty; periods = Map.empty }
