@@ -279,22 +279,22 @@ module GameMaster =
     | SetStep (nexts, name, value), _ ->
         through
           (StepOps.set name value state)
-          (Nexts nexts)
+          <| Nexts nexts
 
     | SetStepUp (nexts, name), _ ->
         through
           (StepOps.increment name state)
-          (Nexts nexts)
+          <| Nexts nexts
 
     | SetStepDown (nexts, name), _ ->
         through
           (StepOps.decrement name state)
-          (Nexts nexts)
+          <| Nexts nexts
 
     | SubstituteStep (nexts, source, target), _ ->
         through
           (StepOps.substitute source target state)
-          (Nexts nexts)
+          <| Nexts nexts
 
     | BranchMultiStep (steps, name), _ ->
         next_branch'
@@ -474,9 +474,13 @@ module GameMaster =
     | GetCoupon (nexts, _, _, _), _ ->
         through' <| Nexts nexts
 
+    | GetCompleteStamp (nexts, value), _ ->
+        through
+          (State.get_completed value state)
+          <| Nexts nexts
+
 
     (*
-    | GetCoupon of Nexts * target : Target * point : int * value : Coupon.Name
     | GetCompleteStamp of Nexts * value : ScenarioName
     | GetGossip of Nexts * value : GossipName
     *)
