@@ -56,7 +56,7 @@ module CouponSet =
 
   let add : Coupon.t -> t -> t =
     function
-      { name = name; value = value } as coupon ->
+      { name = name; value = value } ->
         fun cset ->
           let list = cset.list in
           let contains = Map.containsKey name in
@@ -106,11 +106,11 @@ module CouponSet =
       } as cset ->
         let elapse set_init =
           Map.fold
-            (fun (map, set) name point ->
-              let point' = point - 1 in
-              if point' = 0
-              then map, Set.add name set
-              else Map.add name point' map, set)
+            (fun (map, set) name ->
+              function
+                0 -> Map.add name 0 map, set
+              | 1 -> map, Set.add name set
+              | point -> Map.add name (point - 1) map, set)
             (Map.empty, set_init) in
         let battles', set = elapse Set.empty battles in
         let periods', set = elapse set periods in

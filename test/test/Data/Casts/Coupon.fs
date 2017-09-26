@@ -35,3 +35,130 @@ let coupon_tests =
       }
     ]
   ]
+
+[<Tests>]
+let coupon_set_tests =
+  testList "CardWirthEngine.Data.Casts.CouponSet" [
+    testList "contains" [
+      test "システムクーポンがある場合" {
+        let coupon = "＠システム" in
+        let cset = { CouponSet.empty with systems = Map.ofList [coupon, 0] } in
+        Expect.isTrue (CouponSet.contains coupon cset) "trueを返すこと"
+      }
+      
+      test "システムクーポンが無い場合" {
+        let coupon = "＠システム" in
+        Expect.isFalse (CouponSet.contains coupon CouponSet.empty) "falseを返すこと"
+      }
+      
+      test "戦闘時クーポンがある場合" {
+        let coupon = "；戦闘時" in
+        let cset = { CouponSet.empty with battles = Map.ofList [coupon, 0] } in
+        Expect.isTrue (CouponSet.contains coupon cset) "trueを返すこと"
+      }
+      
+      test "戦闘時クーポンが無い場合" {
+        let coupon = "；戦闘時" in
+        Expect.isFalse (CouponSet.contains coupon CouponSet.empty) "falseを返すこと"
+      }
+      
+      test "時限クーポンがある場合" {
+        let coupon = "：時限" in
+        let cset = { CouponSet.empty with periods = Map.ofList [coupon, 0] } in
+        Expect.isTrue (CouponSet.contains coupon cset) "trueを返すこと"
+      }
+      
+      test "時限クーポンが無い場合" {
+        let coupon = "：時限" in
+        Expect.isFalse (CouponSet.contains coupon CouponSet.empty) "falseを返すこと"
+      }
+      
+      test "隠蔽クーポンがある場合" {
+        let coupon = "＿隠蔽" in
+        let cset = { CouponSet.empty with concealeds = Map.ofList [coupon, 0] } in
+        Expect.isTrue (CouponSet.contains coupon cset) "trueを返すこと"
+      }
+      
+      test "隠蔽クーポンが無い場合" {
+        let coupon = "＿隠蔽" in
+        Expect.isFalse (CouponSet.contains coupon CouponSet.empty) "falseを返すこと"
+      }
+      
+      test "クーポンがある場合" {
+        let coupon = "クーポン" in
+        let cset = { CouponSet.empty with normals = Map.ofList [coupon, 0] } in
+        Expect.isTrue (CouponSet.contains coupon cset) "trueを返すこと"
+      }
+      
+      test "クーポンが無い場合" {
+        let coupon = "クーポン" in
+        Expect.isFalse (CouponSet.contains coupon CouponSet.empty) "falseを返すこと"
+      }
+    ]
+
+    testList "add" [
+      test "システムクーポン" {
+        let coupon = "＠システム" in
+        let point = 1 in
+        let cset = CouponSet.add { name = coupon; value = point } CouponSet.empty in
+        Expect.equal cset.systems (Map.ofList [coupon, point]) "正しく追加されること"
+      }
+      
+      test "戦闘時クーポン" {
+        let coupon = "；戦闘時" in
+        let point = 1 in
+        let cset = CouponSet.add { name = coupon; value = point } CouponSet.empty in
+        Expect.equal cset.battles (Map.ofList [coupon, point]) "正しく追加されること"
+      }
+      
+      test "時限クーポン" {
+        let coupon = "：時限" in
+        let point = 1 in
+        let cset = CouponSet.add { name = coupon; value = point } CouponSet.empty in
+        Expect.equal cset.periods (Map.ofList [coupon, point]) "正しく追加されること"
+      }
+      
+      test "隠蔽クーポン" {
+        let coupon = "＿隠蔽" in
+        let point = 1 in
+        let cset = CouponSet.add { name = coupon; value = point } CouponSet.empty in
+        Expect.equal cset.concealeds (Map.ofList [coupon, point]) "正しく追加されること"
+      }
+      
+      test "一般クーポン" {
+        let coupon = "クーポン" in
+        let point = 1 in
+        let cset = CouponSet.add { name = coupon; value = point } CouponSet.empty in
+        Expect.equal cset.normals (Map.ofList [coupon, point]) "正しく追加されること"
+      }
+    ]
+
+    testList "elapse" [
+      test "時間が経過した時" {
+        let cset = { CouponSet.empty with
+                       battles = Map.ofList ["；点数付き、消えない", 2; ";点数付き、消える", 1; "；点数無し、消えない", 0];
+                       periods = Map.ofList ["：点数付き、消えない", 2; "：点数付き、消える", 1; "：点数無し、消えない", 0];
+                       list = [ "；点数付き、消えない"
+                              ; ";点数付き、消える"
+                              ; "点数無し、消えない"
+                              ; "：点数付き、消えない"
+                              ; "：点数付き、消える"
+                              ; "点数無し、消えない"
+                              ] } in
+        let cset' = CouponSet.elapse cset in
+        Expect.equal cset'.list.Length 4 "クーポンの残りは4つであること"
+        Expect.containsAll
+          cset'.list
+          ["；点数付き、消えない"; "点数無し、消えない"; "：点数付き、消えない"; "点数無し、消えない"]
+          "消えないはずのクーポンは残っていること"
+        Expect.sequenceEqual
+          (Map.toList cset'.battles)
+          ["；点数付き、消えない", 1; "；点数無し、消えない", 0]
+          "点数が減り、消えないはずのクーポンが残っていること"
+        Expect.sequenceEqual
+          (Map.toList cset'.periods)
+          ["：点数付き、消えない", 1; "：点数無し、消えない", 0]
+          "点数が減り、消えないはずのクーポンが残っていること"
+      }
+    ]
+  ]
