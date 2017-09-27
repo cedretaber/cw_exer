@@ -161,4 +161,59 @@ let coupon_set_tests =
           "点数が減り、消えないはずのクーポンが残っていること"
       }
     ]
+
+    testList "end_battle" [
+      test "戦闘が終了した時" {
+        let periods = Map.ofList ["：点数付き", 3; "：点数無し", 0] in
+        let systems = Map.ofList ["＠点数付き", 3; "＠点数無し", 0] in
+        let concealeds = Map.ofList ["＿点数付き", 3; "＿点数無し", 0] in
+        let cset = { CouponSet.empty with
+                       battles = Map.ofList ["；点数付き", 3; "；点数無し", 0];
+                       periods = periods;
+                       systems = systems;
+                       concealeds = concealeds;
+                       list = [ "；点数付き"
+                              ; "；点数無し"
+                              ; "：点数付き"
+                              ; "：点数無し"
+                              ; "＠点数付き"
+                              ; "＠点数無し"
+                              ; "＿点数付き"
+                              ; "＿点数無し"
+                              ] } in
+        let cset' = CouponSet.end_battle cset in
+        Expect.equal cset'.list.Length 6 "戦闘時クーポンは全て削除されていること"
+        Expect.isEmpty cset'.battles "戦闘時クーポンは全て削除されていること"
+        Expect.sequenceEqual cset'.periods periods "時限クーポンは変化しないこと"
+        Expect.sequenceEqual cset'.concealeds concealeds "隠蔽クーポンは変化しないこと"
+        Expect.sequenceEqual cset'.systems systems "システムクーポンは変化しないこと"
+      }
+    ]
+
+    testList "end_scenario" [
+      test "シナリオが終了した時" {
+        let systems = Map.ofList ["＠点数付き", 3; "＠点数無し", 0] in
+        let concealeds = Map.ofList ["＿点数付き", 3; "＿点数無し", 0] in
+        let cset = { CouponSet.empty with
+                       battles = Map.ofList ["；点数付き", 3; "；点数無し", 0];
+                       periods = Map.ofList ["：点数付き", 3; "：点数無し", 0];
+                       systems = systems;
+                       concealeds = concealeds;
+                       list = [ "；点数付き"
+                              ; "；点数無し"
+                              ; "：点数付き"
+                              ; "：点数無し"
+                              ; "＠点数付き"
+                              ; "＠点数無し"
+                              ; "＿点数付き"
+                              ; "＿点数無し"
+                              ] } in
+        let cset' = CouponSet.end_scenario cset in
+        Expect.equal cset'.list.Length 4 "戦闘時・時限クーポンは全て削除されていること"
+        Expect.isEmpty cset'.battles "戦闘時クーポンは全て削除されていること"
+        Expect.isEmpty cset'.periods "時限クーポンは全て削除されていること"
+        Expect.sequenceEqual cset'.concealeds concealeds "隠蔽クーポンは変化しないこと"
+        Expect.sequenceEqual cset'.systems systems "システムクーポンは変化しないこと"
+      }
+    ]
   ]
