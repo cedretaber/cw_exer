@@ -1,7 +1,7 @@
 ﻿namespace CardWirthEngine.Utils
 
 module ListUtil =
-  let inline filter_limit count f =
+  let filter_limit count f =
     let rec fl_go count acm =
       function
         [] -> List.rev acm

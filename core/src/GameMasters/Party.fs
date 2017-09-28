@@ -65,7 +65,7 @@ module Party =
     let f =
       match remove_count with
         RemoveCount.All
-          -> List.filter
+          -> fun f -> List.filter (f >> not)
       | RemoveCount.Count count
           -> ListUtil.filter_limit count in
     let goods =
