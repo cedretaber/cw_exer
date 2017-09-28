@@ -1,4 +1,4 @@
-﻿module CardWirthEngineTest.GameMasters.Contents.Get.Money
+﻿module CardWirthEngineTest.GameMasters.Contents.Lose.Money
 
 open Expecto
 open FsCheck
@@ -19,12 +19,14 @@ let get_money =
   let config = { FsCheckConfig.defaultConfig with arbitrary = [typeof<MoneyArb>] }
 
   testList "CardWirthEngine.Scenario.Events.Content.GetMoney" [
-    testPropertyWithConfig config "所持金を追加した場合" <| fun balance amount ->
-      let contents = GetMoney ([], amount) in
+    testPropertyWithConfig config "所持金から引いた場合" <| fun balance amount ->
+      let contents = LoseMoney ([], amount) in
       let party = { minimal_party with money = balance } in
       let state = State.Scenario (empty_scenario, party, empty_global_data, state_random) in
       let state', output = read state [Content (empty_event, contents)] Input.None in
-      let sum = balance + amount in
-      Expect.equal (state'.party.money) sum "正しく所持金が追加されていること"
-      Expect.equal output (Output.Money sum) "正しく所持金が返されること"
+      let difference =
+        let diff = balance - amount in
+        if diff < 0 then 0 else diff in
+      Expect.equal (state'.party.money) difference "正しく所持金が減っていること"
+      Expect.equal output (Output.Money difference) "正しく所持金が返されること"
   ]

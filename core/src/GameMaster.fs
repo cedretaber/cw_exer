@@ -510,9 +510,14 @@ module GameMaster =
           (CardOps.remove_beast id count target state)
           <| Nexts nexts
 
+    | LoseMoney (_, value), Input.None ->
+        let balance, state' = State.add_money (-value) state in
+        money_change state' balance
+    | LoseMoney (nexts, _), _ ->
+        through' <| Nexts nexts
+          
+
     (*
-    | LoseBeast of Nexts * beast_id : BeastId * target : Range * value : RemoveCount
-    | LoseMoney of Nexts * value : int
     | LoseCoupon of Nexts * target : Target * value : Coupon.Name
     | LoseCompeteStamp of Nexts * value : ScenarioName
     | LoseGossip of Nexts * value : GossipName
