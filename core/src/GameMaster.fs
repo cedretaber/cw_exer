@@ -521,10 +521,13 @@ module GameMaster =
     | LoseCoupon (nexts, _, _), _ ->
         through' <| Nexts nexts
 
+    | LoseCompleteStamp (nexts, scenario_name), _ ->
+        through
+          (State.lose_completed scenario_name state)
+          <| Nexts nexts
           
 
     (*
-    | LoseCoupon of Nexts * target : Target * value : Coupon.Name
     | LoseCompeteStamp of Nexts * value : ScenarioName
     | LoseGossip of Nexts * value : GossipName
     *)

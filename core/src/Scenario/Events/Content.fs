@@ -116,7 +116,7 @@ module Content =
     | LoseBeast of Nexts * beast_id : BeastId * target : Range * value : RemoveCount
     | LoseMoney of Nexts * value : int
     | LoseCoupon of Nexts * target : Target * value : Coupon.Name
-    | LoseCompeteStamp of Nexts * value : ScenarioName
+    | LoseCompleteStamp of Nexts * value : ScenarioName
     | LoseGossip of Nexts * value : GossipName
     (* Visual *)
     | ShowParty of Nexts
