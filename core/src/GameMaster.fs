@@ -314,18 +314,18 @@ module GameMaster =
     | BranchSelect (bools, _), Input.SelectPlayerCharactor index ->
         next_branch
           (Branch.Select.set_selected_pc index state)
-          (is_true)
+          id
           bools
     | BranchSelect (bools, _), Input.Cancel ->
-        next_branch' is_false bools
+        next_branch' not bools
     | BranchSelect (bools, select), _ ->
         match Branch.Select.select select state with
           _, (Output.SelectPlayerCharactor _ as out) ->
             output out
         | new_state, Output.None ->
-            next_branch new_state (is_true) bools
+            next_branch new_state id bools
         | _, _ ->
-            next_branch' (is_true) bools
+            next_branch' id bools
 
     | BranchAbility (bools, ability), _ ->
         let state', bool =

@@ -99,7 +99,7 @@ module Adventurers =
       then advs
       else Array.append advs [|Exist cast|]
 
-  let remove_by_index : int -> t -> t = ArrayUtil.remove
+  let remove_by_index : int -> t -> t = Array.remove
 
   let remove : Position -> t -> t =
     pos_to_int >> remove_by_index
@@ -118,7 +118,7 @@ module Adventurers =
 
   let set_by_index : int -> Cast.t -> t -> t =
     fun idx cast ->
-      ArrayUtil.updated idx <| Exist cast
+      Array.updated idx <| Exist cast
 
   let set : Position -> Cast.t -> t -> t =
     pos_to_int >> set_by_index
