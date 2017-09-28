@@ -17,7 +17,7 @@ let sring_tests =
         if String.length str1 <> 0 && String.length str2 <> 0
         then
           Expect.isTrue (String.starts_with str1 (str1 ^ str2)) "前半の文字列"
-          if not <| str1.StartsWith str2
+          if not <| str1.StartsWith str2 && str1 <> ""
           then Expect.isFalse (String.starts_with str2 (str1 ^ str2)) "後半の文字列"
     ]
   ]
