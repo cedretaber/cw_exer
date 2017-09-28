@@ -97,6 +97,7 @@
     <Compile Include="test\GameMasters\Contents\Lose\LoseInfo.fs" />
     <Compile Include="test\GameMasters\Contents\Lose\LoseBeast.fs" />
     <Compile Include="test\GameMasters\Contents\Lose\LoseMoney.fs" />
+    <Compile Include="test\GameMasters\Contents\Lose\LoseCoupon.fs" />
     <Compile Include="test\Main.fs" />
   </ItemGroup>
   <ItemGroup>
