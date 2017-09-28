@@ -27,6 +27,7 @@ module CardOps =
   
   let remove_companion : CastId -> State.t -> State.t =
     fun id ->
+      // TODO: 戦闘中に離脱した際、同キャストの行動をキャンセルする。
       State.update_scenarion <| Scenario.remove_companion id
 
   type PcOrEnemy

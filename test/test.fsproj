@@ -178,6 +178,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="test\GameMasters\Contents\Lose\" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
@@ -205,6 +208,7 @@
     <Compile Include="test\GameMasters\Contents\Get\GetCoupon.fs" />
     <Compile Include="test\GameMasters\Contents\Get\GetCompleteStamp.fs" />
     <Compile Include="test\GameMasters\Contents\Get\GetGossip.fs" />
+    <Compile Include="test\GameMasters\Contents\Lose\LoseCast.fs" />
     <Compile Include="test\Main.fs" />
   </ItemGroup>
   <Import Project="..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" />

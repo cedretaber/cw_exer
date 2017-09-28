@@ -28,5 +28,4 @@ module Property =
 
   let inline equals left right =
     left.name = right.name
-    && left.author = right.author
     && left.description = right.description

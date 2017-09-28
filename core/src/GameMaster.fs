@@ -483,3 +483,20 @@ module GameMaster =
         through
           (State.get_gossip value state)
           <| Nexts nexts
+
+    | LoseCast (nexts, id), _ ->
+        through
+          (CardOps.remove_companion id state)
+          <| Nexts nexts
+
+    (*
+    | LoseCast of Nexts * cast_id : CastId
+    | LoseItem of Nexts * item_id : ItemId * target : Range * value : RemoveCount
+    | LoseSkill of Nexts * skill_id : SkillId * target : Range * value : RemoveCount
+    | LoseInfo of Nexts * indo_id : InfoId
+    | LoseBeast of Nexts * beast_id : BeastId * target : Range * value : RemoveCount
+    | LoseMoney of Nexts * value : int
+    | LoseCoupon of Nexts * target : Target * value : Coupon.Name
+    | LoseCompeteStamp of Nexts * value : ScenarioName
+    | LoseGossip of Nexts * value : GossipName
+    *)
