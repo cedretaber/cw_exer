@@ -79,6 +79,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="src\Util.fs" />
     <Compile Include="src\Utils\Maybe.fs" />
     <Compile Include="src\Utils\ArrayUtil.fs" />
     <Compile Include="src\Utils\ListUtil.fs" />
@@ -86,7 +87,7 @@
     <Compile Include="src\Utils\Triplet.fs" />
     <Compile Include="src\Utils\Maybe.fs" />
     <Compile Include="src\Utils\OrderedSet.fs" />
-    <Compile Include="src\Util.fs" />
+    <Compile Include="src\Utils\String.fs" />
     <Compile Include="src\Data\Types\Enhance.fs" />
     <Compile Include="src\Data\Types\Comparison.fs" />
     <Compile Include="src\Data\Type.fs" />
