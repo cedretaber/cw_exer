@@ -505,6 +505,11 @@ module GameMaster =
           (CardOps.remove_info id state)
           <| Nexts nexts
 
+    | LoseBeast (nexts, id, target, count), _ ->
+        through
+          (CardOps.remove_beast id count target state)
+          <| Nexts nexts
+
     (*
     | LoseBeast of Nexts * beast_id : BeastId * target : Range * value : RemoveCount
     | LoseMoney of Nexts * value : int

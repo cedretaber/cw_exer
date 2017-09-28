@@ -88,7 +88,7 @@ module Scenario =
     get_card id <| casts scenario
 
   let inline skills scenario = scenario.cards.skills
-  let inline get_skilllget_skill id scenario =
+  let inline get_skill id scenario =
     get_card id <| skills scenario
 
   let inline items scenario = scenario.cards.items
