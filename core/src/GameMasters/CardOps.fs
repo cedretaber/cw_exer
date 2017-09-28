@@ -266,7 +266,7 @@ module CardOps =
     fun id count target ->
       maybe_remove
         (Scenario.get_item id)
-        (fun item count cast -> Cast.remove_item count item cast)
+        (fun item count -> Cast.remove_item count item)
         Party.Item
         count
         target
@@ -275,7 +275,7 @@ module CardOps =
   let skill_exists : SkillId -> int -> Range -> State.t -> bool * State.t =
     fun id count target ->
       maybe_exist
-        (Scenario.get_skilll id)
+        (Scenario.get_skilllget_skill id)
         Cast.count_skill
         Party.Skill
         count
@@ -284,11 +284,19 @@ module CardOps =
   let add_skill : SkillId -> int -> Range -> State.t -> State.t =
     fun id count target ->
       maybe_add
-        (Scenario.get_skilll id)
+        (Scenario.get_skilllget_skill id)
         (fun skill cast count -> Cast.add_skill count skill cast)
         Party.Skill
         count
         target
+
+  let remove_skill : SkillId -> RemoveCount -> Range -> State.t -> State.t =
+    fun id count target ->
+      maybe_remove
+        (Scenario.get_skilllget_skill id)
+        (fun skill count -> Cast.remove_skill count skill)
+        Party.Skill
+        count target
 
   (* Beast *)
   let beast_exists : BeastId -> int -> Range -> State.t -> bool * State.t =
