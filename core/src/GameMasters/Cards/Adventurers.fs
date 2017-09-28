@@ -171,7 +171,7 @@ module Adventurers =
     function
       Exist cast -> Exist (f cast)
     | Flipped cast when flipped -> Flipped (f cast)
-    | Flipped cast as flipped -> flipped
+    | Flipped _ as flipped -> flipped
 
   let inline cc f = cc'' true f
   let inline cc' f = cc'' false f

@@ -105,9 +105,26 @@ module Party =
   let inline add_coupon pos coupon =
     update_adventurer pos <| Cast.add_coupon coupon
   
+  (* 全員にクーポンを与える場合、裏返ったキャストは除外 *)
   let inline add_coupon_all coupon =
     update_adventurers
     <| Adventurers.map (Adventurers.cc' <| Cast.add_coupon coupon)
+
+  let inline remove_coupon pos name =
+    update_adventurer pos <| Cast.remove_coupon name
+
+  (* 全員からクーポンを除去する場合、裏返ったキャストも含める *)
+  let inline remove_coupon_all name =
+    update_adventurers
+    <| Adventurers.map (Adventurers.cc <| Cast.remove_coupon name)
+
+  let inline find_coupon_holder name party =
+    Adventurers.try_find_with_position
+      begin function
+        Adventurers.Exist cast -> Cast.has_coupon name cast
+      | Adventurers.Flipped cast -> Cast.has_coupon name cast
+      end
+      party.adventurers
 
   (* Money Ops *)
   let inline has_money amount =

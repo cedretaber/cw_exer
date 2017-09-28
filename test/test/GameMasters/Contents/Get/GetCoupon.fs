@@ -23,7 +23,7 @@ module Coupon =
         let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
         let state', output = read state [Content (empty_event, contents)] Input.None in
         let (Some adv) = state'.selected_cast in
-        Expect.isTrue (Cast.has_coupon_by_name coupon adv) "正しくクーポンが追加されていること"
+        Expect.isTrue (Cast.has_coupon coupon adv) "正しくクーポンが追加されていること"
         Expect.equal output Output.Coupon "正しくクーポン変更の通知が返ること"
       }
     ]

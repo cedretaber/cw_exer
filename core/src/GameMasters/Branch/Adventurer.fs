@@ -12,6 +12,7 @@ open CardWirthEngine.GameMasters.Cards
 
 module Adventurer =
 
+  // TODO: 実装する
   let inline private judge_ability level sleep physical mental cast =
     match sleep, cast with
       true, Cast.Bind _

@@ -471,7 +471,7 @@ module GameMaster =
         through' <| Nexts nexts
 
     | GetCoupon (_, target, point, value), Input.None ->
-        CouponOps.add_coupon target value point state
+        CouponOps.add_coupon target value point state, Output.Coupon
     | GetCoupon (nexts, _, _, _), _ ->
         through' <| Nexts nexts
 
@@ -515,6 +515,12 @@ module GameMaster =
         money_change state' balance
     | LoseMoney (nexts, _), _ ->
         through' <| Nexts nexts
+
+    | LoseCoupon (_, target, name), Input.None ->
+        CouponOps.remove_coupon target name state, Output.Coupon
+    | LoseCoupon (nexts, _, _), _ ->
+        through' <| Nexts nexts
+
           
 
     (*

@@ -119,14 +119,7 @@ module Cast =
         { cast with property = f property }
 
   (* Coupon Ops *)
-  let has_coupon =
-    function
-      ({ name = name } : Coupon.t) ->
-        function
-          { property = { coupons = coupons } } ->
-            CouponSet.contains name coupons
-
-  let has_coupon_by_name name =
+  let has_coupon name =
     function
       { property = { coupons = coupons } } ->
         CouponSet.contains name coupons
@@ -135,6 +128,9 @@ module Cast =
     update_property <| fun property ->
       { property with coupons = CouponSet.add coupon property.coupons }
 
+  let remove_coupon name =
+    update_property <| fun property ->
+      { property with coupons = CouponSet.remove name property.coupons }
 
   (* Cast statuses *)
   let inline is_alive cast =

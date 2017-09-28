@@ -1,5 +1,6 @@
 ﻿namespace CardWirthEngine.GameMasters.Branch
 
+open CardWirthEngine.Data.Casts
 open CardWirthEngine.Utils
 open CardWirthEngine.Scenario.Events.Contents.BranchSelect
 open CardWirthEngine.Cards
@@ -30,9 +31,9 @@ module Select =
     let go =
       fun pos adv -> async {
         return pos, List.fold
-          (fun acm coupon ->
+          (fun acm (coupon : Coupon.t) ->
               acm +
-                if Cast.has_coupon coupon adv
+                if Cast.has_coupon coupon.name adv
                 then coupon.value
                 else 0)
           initial

@@ -84,6 +84,26 @@ module CouponSet =
           | Coupon.Normal, { normals = normals } ->
               { cset with normals = add_map normals; list = name :: list }
 
+  let remove : Coupon.Name -> t -> t =
+    fun name cset ->
+      let list = cset.list in
+      let contains = Map.containsKey name in
+      let remove_map = Map.remove name in
+      let remove_list = List.filter_not ((=) name) in
+      match name, cset with
+        Coupon.System, { systems = systems } when contains systems ->
+          { cset with systems = remove_map systems; list = remove_list list }
+      | Coupon.Battle, { battles = battles } when contains battles ->
+          { cset with battles = remove_map battles; list = remove_list list }
+      | Coupon.Period, { periods = periods } when contains periods ->
+          { cset with periods = remove_map periods; list = remove_list list }
+      | Coupon.Concealed, { concealeds = concealeds } when contains concealeds ->
+          { cset with concealeds = remove_map concealeds; list = remove_list list }
+      | Coupon.Normal, { normals = normals } when contains normals ->
+          { cset with normals = remove_map normals; list = remove_list list }
+      | _ ->
+          cset
+
   let to_list cset = cset.list
   let to_set =
     function
