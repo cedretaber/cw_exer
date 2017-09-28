@@ -1,6 +1,8 @@
-﻿module CardWirthEngine.Utils.ListUtil
+﻿module CardWirthEngine.Utils.List
 
-let filter_limit count f =
+let inline filter_not f = List.filter (f >> not)
+
+let filter_not_limited count f =
   let rec fl_go count acm =
     function
       [] -> List.rev acm

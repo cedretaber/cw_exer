@@ -58,7 +58,7 @@ module Party =
     | _ -> raise <| InvalidPartyIndexException (index, party_count party)
 
   let add_goods count good party =
-    let goods = ListUtil.multi_cons count good party.bag in
+    let goods = List.multi_cons count good party.bag in
     { party with bag = goods }
 
   let remove_goods remove_count good party =
@@ -67,7 +67,7 @@ module Party =
         RemoveCount.All
           -> fun f -> List.filter (f >> not)
       | RemoveCount.Count count
-          -> ListUtil.filter_limit count in
+          -> List.filter_not_limited count in
     let goods =
       f (fun g -> good_equals g good) party.bag in
     { party with bag = goods }
@@ -81,7 +81,7 @@ module Party =
     { party with bag = bag party.bag count }
 
   let inline remove count card party =
-    ListUtil.filter_limit
+    List.filter_not_limited
       count
       begin fun c ->
         match c, card with
@@ -92,7 +92,7 @@ module Party =
       party.bag
 
   let inline count_card card party =
-    ListUtil.count_by
+    List.count_by
       begin fun c ->
         match c, card with
           Skill left, Skill right -> Skill.equals left right
