@@ -526,8 +526,7 @@ module GameMaster =
           (State.lose_completed scenario_name state)
           <| Nexts nexts
           
-
-    (*
-    | LoseCompeteStamp of Nexts * value : ScenarioName
-    | LoseGossip of Nexts * value : GossipName
-    *)
+    | LoseGossip (nexts, gossip_name), _ ->
+        through
+          (State.lose_gossip gossip_name state)
+          <| Nexts nexts
