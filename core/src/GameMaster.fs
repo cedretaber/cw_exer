@@ -381,7 +381,8 @@ module GameMaster =
         next_branch'
           ((=) <| Branch.AreaOrBattle.round cmp value state)
           bools
-
+    
+    // TODO: カード系コンテントは、異なるシナリオ由来のイベントであれば動かないようにするべき
     (* Branch *)
     | BranchCast (bools, id), _ ->
         next_branch'
@@ -489,8 +490,12 @@ module GameMaster =
           (CardOps.remove_companion id state)
           <| Nexts nexts
 
+    | LoseItem (nexts, id, target, count), _ ->
+        through
+          (CardOps.remove_item id count target state)
+          <| Nexts nexts
+
     (*
-    | LoseCast of Nexts * cast_id : CastId
     | LoseItem of Nexts * item_id : ItemId * target : Range * value : RemoveCount
     | LoseSkill of Nexts * skill_id : SkillId * target : Range * value : RemoveCount
     | LoseInfo of Nexts * indo_id : InfoId

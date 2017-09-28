@@ -10,7 +10,7 @@ open CardWirthEngine.GameMasters.Cards.Adventurers
 open CardWirthEngine.GameMasters.Party
 
 module CardOps =
-  
+
   let companion_exists : CastId -> State.t -> bool =
     fun id ->
       State.get_scenario_unsafe >> Scenario.has_companion id
@@ -231,8 +231,7 @@ module CardOps =
     | Range.Backpack ->
         State.remove_from_bag count goods state
     | Range.PartyAndBackpack ->
-        remove_all_adv.Force ()
-        |> State.remove_from_bag count goods
+        State.remove_from_bag count goods <| remove_all_adv.Force ()
     (* 取得・消失では「フィールド全体」は無効 *)
     | _ -> state
   

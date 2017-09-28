@@ -27,5 +27,4 @@ module Property =
     }
 
   let inline equals left right =
-    left.name = right.name
-    && left.description = right.description
+    left.name = right.name && left.description = right.description
