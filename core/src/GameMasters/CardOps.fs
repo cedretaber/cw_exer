@@ -322,4 +322,7 @@ module CardOps =
     fun id -> State.get_scenario_unsafe >> Scenario.has_info id
 
   let add_info : InfoId -> State.t -> State.t =
-    fun id -> State.update_scenarion <| Scenario.add_info id
+    Scenario.add_info >> State.update_scenarion
+
+  let remove_info : InfoId -> State.t -> State.t =
+    Scenario.remove_info >> State.update_scenarion

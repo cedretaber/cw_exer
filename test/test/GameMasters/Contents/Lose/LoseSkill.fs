@@ -4,7 +4,6 @@ open Expecto
 open CardWirthEngineTest.GameMasterTestUtil
 
 open CardWirthEngine.Data.Type
-open CardWirthEngine.Cards
 open CardWirthEngine.Scenario.Events.Content
 open CardWirthEngine.GameMasters
 open CardWirthEngine.GameMasters.Scenario
