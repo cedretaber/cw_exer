@@ -485,6 +485,7 @@ module GameMaster =
           (State.get_gossip value state)
           <| Nexts nexts
 
+    (* Lost *)
     | LoseCast (nexts, id), _ ->
         through
           (CardOps.remove_companion id state)
@@ -530,3 +531,19 @@ module GameMaster =
         through
           (State.lose_gossip gossip_name state)
           <| Nexts nexts
+    
+    (* Visual *)
+    | ShowParty _, Input.None ->
+        state, Output.PartyUp
+    | ShowParty nexts, _ ->
+        through' <| Nexts nexts
+
+    (*
+    | ShowParty of Nexts
+    | HideParty of Nexts
+    | ChangeBgImage of Nexts
+    | MoveBgImage of Nexts
+    | ReplaceBgImage of Nexts
+    | LoseBgImage of Nexts
+    | Redisplay of Nexts
+    *)
