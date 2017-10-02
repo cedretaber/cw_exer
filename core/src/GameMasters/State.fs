@@ -159,6 +159,10 @@ module State =
     update_party (Party.remove_goods count goods)
 
   (* Background *)
+  let get_backgrounds =
+    function
+      Scenario (scenario, _, _, _) -> scenario.backgrounds
+
   let inline change_background backgrounds =
     update_scenarion <| Scenario.add_backgrounds backgrounds
 

@@ -544,8 +544,8 @@ module GameMaster =
         through' <| Nexts nexts
 
     | ChangeBgImage (_, transition_speed, transition, images), Input.None ->
-        State.change_background images state
-        , Output.ChangeBackground (transition_speed, transition, images)
+        let state' = State.change_background images state in
+        state', Output.ChangeBackground (transition_speed, transition, State.get_backgrounds state')
     | ChangeBgImage (nexts, _, _, _), _ ->
         through' <| Nexts nexts
 
