@@ -27,7 +27,7 @@ module StepOps =
   let increment : Step.Name -> State.t -> State.t = crement <| fun i -> i + 1
   let decrement : Step.Name -> State.t -> State.t = crement <| fun i -> i - 1
 
-  let substitute : Content.SourceStep.t -> Step.Name -> State.t -> State.t =
+  let substitute : Content.SourceStep -> Step.Name -> State.t -> State.t =
     fun source target state ->
       let maybe_target_length = step_length target state in
       match source, maybe_target_length with

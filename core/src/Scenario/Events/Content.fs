@@ -15,16 +15,14 @@ module Content =
     = All
     | Count of int
 
-  module SourceFlag =
-    type t
-      = Random
-      | From of Flag.Name
+  type SourceFlag
+    = Random
+    | From of Flag.Name
 
-  module SourceStep =
-    type t
-      = Random
-      | SelectedPc
-      | From of Step.Name
+  type SourceStep
+    = Random
+    | SelectedPc
+    | From of Step.Name
       
   type Nexts = t list
   and Texts = (string * t) list
@@ -62,14 +60,14 @@ module Content =
     | BranchFlag of Bools * flag : Flag.Name
     | SetFlag of Nexts * flag : Flag.Name * value : Flag.State
     | ReverseFlag of Nexts * flag : Flag.Name
-    | SubstituteFlag of Nexts * source : SourceFlag.t * target : Flag.Name
+    | SubstituteFlag of Nexts * source : SourceFlag * target : Flag.Name
     | BranchFlagCmp of Bools * left : Flag.Name * right : Flag.Name
     | CheckFlag of Nexts * flag : Flag.Name
     | BranchStep of Bools * step : Step.Name * value : Step.State
     | SetStep of Nexts * step : Step.Name * value : Step.State
     | SetStepUp of Nexts * step : Step.Name
     | SetStepDown of Nexts * step : Step.Name
-    | SubstituteStep of Nexts * source : SourceStep.t * target : Step.Name
+    | SubstituteStep of Nexts * source : SourceStep * target : Step.Name
     | BranchMultiStep of Steps * step : Step.Name
     | BranchStepCmp of Trios * left : Step.Name * right : Step.Name
     | CheckStep of Nexts * step : Step.Name * value : Step.State * cmp : Comparison.t

@@ -16,7 +16,7 @@ module FlagOps =
       let bool = not <| get name state in
       set name bool state, bool
 
-  let substitute : Content.SourceFlag.t -> Flag.Name -> State.t -> State.t * bool =
+  let substitute : Content.SourceFlag -> Flag.Name -> State.t -> State.t * bool =
     fun source name state ->
       let flag =
         match source with
