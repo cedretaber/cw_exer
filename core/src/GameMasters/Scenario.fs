@@ -56,6 +56,7 @@ module Scenario =
     ; eventStack : Event list
     ; selected : SelectedCast
     ; companions : Adventurers.t
+    ; backgrounds : BackgroundImage.t list
     ; bgm : Bgm
     }
 
@@ -189,3 +190,17 @@ module Scenario =
     let infos = Set.remove id scenario.global_state.infos in
     let global_state = { scenario.global_state with infos = infos } in
     { scenario with global_state = global_state }
+
+ 
+  (* Background Ops *)
+  let add_backgrounds (backgrounds : BackgroundImage.t list) (scenario : t) : t =
+    let backgrounds' =
+      List.fold_right
+        begin fun image acm ->
+          if BackgroundImage.is_inherited image
+          then image :: acm
+          else [image]
+        end
+        scenario.backgrounds
+        backgrounds in
+    { scenario with backgrounds = backgrounds' }

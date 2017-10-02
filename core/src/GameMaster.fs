@@ -543,6 +543,12 @@ module GameMaster =
     | HideParty nexts, _ ->
         through' <| Nexts nexts
 
+    | ChangeBgImage (_, transition_speed, transition, images), Input.None ->
+        State.change_background images state
+        , Output.ChangeBackground (transition_speed, transition, images)
+    | ChangeBgImage (nexts, _, _, _), _ ->
+        through' <| Nexts nexts
+
     (*
     | ChangeBgImage of Nexts
     | MoveBgImage of Nexts

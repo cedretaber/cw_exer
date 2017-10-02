@@ -197,6 +197,7 @@ module GameMasterTestUtil =
     ; eventStack = []
     ; selected = SelectedCast.None
     ; companions = no_adventurers
+    ; backgrounds = []
     ; bgm = Bgm.Stop
     }
 

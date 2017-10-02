@@ -158,6 +158,10 @@ module State =
   let inline remove_from_bag count goods =
     update_party (Party.remove_goods count goods)
 
+  (* Background *)
+  let inline change_background backgrounds =
+    update_scenarion <| Scenario.add_backgrounds backgrounds
+
   (* BGM *)
   let inline change_bgm bgm =
     update_scenarion <|

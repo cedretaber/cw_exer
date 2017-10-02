@@ -120,7 +120,7 @@ module Content =
     (* Visual *)
     | ShowParty of Nexts
     | HideParty of Nexts
-    | ChangeBgImage of Nexts * images : BackgroundImage.t list
+    | ChangeBgImage of Nexts * transition_speed : int * transition : Transition * images : BackgroundImage.t list
     | MoveBgImage of Nexts
     | ReplaceBgImage of Nexts
     | LoseBgImage of Nexts
