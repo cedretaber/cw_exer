@@ -52,12 +52,12 @@ type t
     member this.flag = this.property.flag
 
 let is_inherited (image : t) : bool =
-  match image.flag, image.location with
-    Some _, _ ->
+  match image.flag, image.location, image.size with
+    Some _, _, _ ->
       (* フラグがある場合は無条件で背景継承 *) true
-  | Option.None, { left = left; top = top } when left > 0 || top > 0 ->
-      (* 左上に達していない場合 *) true
-  | Option.None, { left = left; top = top } ->
-      let { width = width; height = height } = image.size in
-      (* 画面全体を覆っていないか否か *)
+  | Option.None, { left = left; top = top }, _ when left > 0 || top > 0 ->
+      (* 左上に達していない場合は背景継承 *) true
+  | Option.None, { left = left; top = top }, { width = width; height = height } ->
+      (* 画面全体を覆っていない場合は背景継承 *)
       width + left < 632 || height + top < 420
+      (* そうでない場合、則ち画面全体をフラグを持たない画像が覆っている場合は背景を継承しない *)
