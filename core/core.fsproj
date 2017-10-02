@@ -104,6 +104,7 @@
     <Compile Include="src\Data\Skills\Target.fs" />
     <Compile Include="src\Data\Skills\Ability.fs" />
     <Compile Include="src\Data\Motion.fs" />
+    <Compile Include="src\Scenario\BackgroundImage.fs" />
     <Compile Include="src\Scenario\Events\Contents\BranchAbility.fs" />
     <Compile Include="src\Scenario\Events\Contents\BranchKeyCode.fs" />
     <Compile Include="src\Scenario\Events\Contents\BranchRandomSelect.fs" />

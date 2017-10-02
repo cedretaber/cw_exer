@@ -144,6 +144,22 @@ module Type =
     | True // 強制的にスムージングする
     | False // 強制的にスムージングしない
 
+  type Color =
+    { r : int
+    ; g : int
+    ; b : int
+    ; a : int
+    }
+
+  type Font =
+    { name : string
+    ; size : int
+    ; strike : bool
+    ; bold : bool
+    ; underline : bool
+    ; italic : bool
+    }
+
   type CardImagePosition
     = Default // 指定無し(クラシックな位置に合わせる)
     | Center // 中央寄せ

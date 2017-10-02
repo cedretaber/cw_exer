@@ -4,6 +4,7 @@ open CardWirthEngine.Data
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Data.Types
 open CardWirthEngine.Data.Casts
+open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Events.Contents
 
 module Content =
@@ -119,7 +120,7 @@ module Content =
     (* Visual *)
     | ShowParty of Nexts
     | HideParty of Nexts
-    | ChangeBgImage of Nexts
+    | ChangeBgImage of Nexts * images : BackgroundImage.t list
     | MoveBgImage of Nexts
     | ReplaceBgImage of Nexts
     | LoseBgImage of Nexts
