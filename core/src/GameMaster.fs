@@ -538,9 +538,12 @@ module GameMaster =
     | ShowParty nexts, _ ->
         through' <| Nexts nexts
 
+    | HideParty _, Input.None ->
+        state, Output.PartyDown
+    | HideParty nexts, _ ->
+        through' <| Nexts nexts
+
     (*
-    | ShowParty of Nexts
-    | HideParty of Nexts
     | ChangeBgImage of Nexts
     | MoveBgImage of Nexts
     | ReplaceBgImage of Nexts

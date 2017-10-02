@@ -101,6 +101,7 @@
     <Compile Include="test\GameMasters\Contents\Lose\LoseCompleteStamp.fs" />
     <Compile Include="test\GameMasters\Contents\Lose\LoseGossip.fs" />
     <Compile Include="test\GameMasters\Contents\Visual\ShowParty.fs" />
+    <Compile Include="test\GameMasters\Contents\Visual\HideParty.fs" />
     <Compile Include="test\Main.fs" />
   </ItemGroup>
   <ItemGroup>
