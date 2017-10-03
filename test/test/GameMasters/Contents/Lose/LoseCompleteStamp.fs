@@ -18,6 +18,6 @@ let lose_completed_stamp =
       let state = State.Scenario (empty_scenario, minimal_party, global_data, state_random) in
       let contents = LoseCompleteStamp ([], scenario_name) in
       let state', _ = read state [Content (empty_event, contents)] Input.None in
-      Expect.isEmpty state'.global_data.completed_scenarii "正しくシナリオ名が削除されていること"
+      Expect.isEmpty (State.get_completeds state') "正しくシナリオ名が削除されていること"
     }
   ]

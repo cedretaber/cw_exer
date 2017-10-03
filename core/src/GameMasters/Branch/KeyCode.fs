@@ -46,7 +46,7 @@ module KeyCode =
           Some cast -> state, f cast
         | Option.None -> state, false
     | Range.Party ->
-        state, Adventurers.forall f' state.adventurers
+        state, Adventurers.forall f' (State.get_adventurers state)
     // TODO: その他未実装
     | _ ->
         state, false

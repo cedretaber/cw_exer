@@ -25,6 +25,6 @@ let get_money =
       let state = State.Scenario (empty_scenario, party, empty_global_data, state_random) in
       let state', output = read state [Content (empty_event, contents)] Input.None in
       let sum = balance + amount in
-      Expect.equal (state'.party.money) sum "正しく所持金が追加されていること"
+      Expect.equal (State.get_momey state') sum "正しく所持金が追加されていること"
       Expect.equal output (Output.Money sum) "正しく所持金が返されること"
   ]

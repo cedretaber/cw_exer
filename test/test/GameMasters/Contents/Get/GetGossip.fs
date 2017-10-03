@@ -17,6 +17,6 @@ let get_gossip =
       let contents = GetGossip ([], gossip) in
       let state = State.Scenario (empty_scenario, minimal_party, empty_global_data, state_random) in
       let state', _ = read state [Content (empty_event, contents)] Input.None in
-      Expect.contains state'.global_data.gossips gossip "正しくシナリオ名が追加されていること"
+      Expect.contains (State.get_gossips state') gossip "正しくシナリオ名が追加されていること"
     }
   ]

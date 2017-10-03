@@ -52,7 +52,7 @@ module CouponOps =
            | Scenario.None ->
                id
     | Target.Random ->
-        Party.find_coupon_holder name state.party
+        Party.find_coupon_holder name (State.get_party state)
         |> function
              Some (pos, _) ->
                State.set_selected (Scenario.PC pos)

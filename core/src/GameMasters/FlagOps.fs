@@ -20,7 +20,7 @@ module FlagOps =
     fun source name state ->
       let flag =
         match source with
-          Content.SourceFlag.Random -> state.random 2 = 0
+          Content.SourceFlag.Random -> State.random 2 state = 0
         | Content.SourceFlag.From name -> get name state in
       set name flag state, flag
 

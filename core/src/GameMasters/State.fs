@@ -40,20 +40,6 @@ module State =
         , (fun r -> function Scenario (s, p, g, _) -> Scenario (s, p, g, r)) 
 
       (* Anywhere *)
-      member this.random max =
-        match this with
-          Scenario (_, _, _, random) -> random.Next max
-      member this.random (min, max) =
-        match this with
-          Scenario (_, _, _, random) -> random.Next (min, max)
-      member this.party =
-        match this with
-          Scenario (_, party, _, _) -> party
-      member this.adventurers =
-        this.party.adventurers
-      member this.global_data =
-        match this with
-          Scenario (_, _, global_data, _) -> global_data
       member this.selected_cast =
         match this with
           Scenario ({ selected = Scenario.PC pos }
@@ -81,6 +67,9 @@ module State =
   let set_party = Optic.set t.party_
   let map_party = Optic.map t.party_
 
+  let get_adventurers =
+    get_party >> Party.get_adventurers
+
   let get_adventurer_at pos =
     get_party >> Party.at (Adventurers.pos_to_int pos)
 
@@ -93,6 +82,7 @@ module State =
     map_party <| Party.add_money amount
 
   (* global data ops *)
+  let get_global_data = Optic.get t.global_data_
   let set_global_data = Optic.set t.global_data_
   let map_global_data = Optic.map t.global_data_
 
@@ -122,6 +112,15 @@ module State =
   let is_completed scenario =
     get_completeds >> Set.contains scenario
 
+  (* Random ops *)
+  let get_random = Optic.get t.random_
+
+  let random max =
+    get_random >> fun r -> r.Next max
+
+  let random_with_min min max =
+    get_random >> fun r -> r.Next (min, max)
+
   (* scenario ops *)
   exception InvalidStateException
 
@@ -137,7 +136,7 @@ module State =
 
   let get_random_pc state =
     let party = get_party state in
-    let idx = state.random <| Party.party_count party in
+    let idx = random (Party.party_count party) state in
     Adventurers.int_to_pos idx, Party.at idx party
 
   let selected = t.scenario_ >?> Scenario.t.selected_ |> Optic.get

@@ -408,7 +408,7 @@ module GameMaster =
 
     | BranchMoney (bools, value), _ ->
         next_branch'
-          ((=) <| Party.has_money value state.party)
+          ((=) <| Party.has_money value (State.get_party state))
           bools
 
     | BranchCoupon (bools, range, matching_type, values), _ ->

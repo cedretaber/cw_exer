@@ -51,13 +51,13 @@ module CardOps =
        パーティ全体、荷物袋、敵全体の中の1人がn枚持っている。選択中のPCを変更。
        Note: 味方NPCを含まない
   *)
-  let inline private exists count_card card_in_bag count target (state : State.t) =
+  let inline private exists count_card card_in_bag count target state =
 
     let inline check_card (card : Adventurers.CardState) = count_card card.cast >= count
     let inline check_card' card = count_card card >= count
 
     let count_backpack =
-      lazy begin Party.count_card card_in_bag state.party end in
+      lazy begin Party.count_card card_in_bag (State.get_party state) end in
 
     match target with
       Range.Selected ->
@@ -71,13 +71,13 @@ module CardOps =
         match
           Adventurers.try_find_with_position
             check_card
-            state.adventurers with
+            (State.get_adventurers state) with
           Option.None -> false, state
         | Some (pos, _) ->
             true, State.set_selected (Scenario.PC pos) state
     | Range.Party ->
         let pos, _ = State.get_random_pc state in
-        Adventurers.forall check_card state.adventurers,
+        Adventurers.forall check_card (State.get_adventurers state),
         State.set_selected (Scenario.PC pos) state
     | Range.Backpack ->
         count_backpack.Force () <= 0, state
@@ -89,7 +89,7 @@ module CardOps =
               then count - count_card card.cast
               else 0)
             count
-            state.adventurers in
+            (State.get_adventurers state) in
         let rest = count - of_advs in
         rest <= 0 || rest - count_backpack.Force () <= 0,
         state
@@ -97,7 +97,7 @@ module CardOps =
         let targets =
           seq {
             for p, c
-              in Adventurers.to_seq_with_pos state.adventurers
+              in Adventurers.to_seq_with_pos <| State.get_adventurers state
                 -> PC (p, c.cast)
             let scenario = State.get_scenario_unsafe state in
             let maybe_enemies = Scenario.get_enemies scenario in
@@ -146,7 +146,7 @@ module CardOps =
           , rest + rest'
           ))
         (state, 0)
-        state.adventurers
+        (State.get_adventurers state)
       end in
 
     match target with
@@ -155,7 +155,7 @@ module CardOps =
         let scenario = State.get_scenario_unsafe state' in
         match scenario.selected with
           Scenario.PC pos ->
-            let card = Adventurers.get pos state.adventurers in
+            let card = Adventurers.get pos <| State.get_adventurers state in
             update_cast pos card.cast state'
         | Scenario.Enemy id ->
             State.map_scenario
@@ -202,7 +202,7 @@ module CardOps =
         (fun (state : State.t) (pos, card) ->
           update_cast pos card.cast state)
         state
-        state.adventurers
+        (State.get_adventurers state)
       end in
 
     match target with

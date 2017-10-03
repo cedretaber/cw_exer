@@ -27,7 +27,7 @@ let lose_item =
             bag = [Party.Item item; Party.Item item] } in
       let state = State.Scenario (scenario, party, empty_global_data, state_random) in
       let state', _ = read state [Content (empty_event, contents)] Input.None in
-      Expect.isEmpty state'.party.bag "全て削除されていること"
+      Expect.isEmpty (get_bag state') "全て削除されていること"
     }
 
     test "荷物袋の中のアイテムを1つだけ削除した場合" {
@@ -42,8 +42,8 @@ let lose_item =
                       bag = [Party.Item item; Party.Item item] } in
       let state = State.Scenario (scenario, party, empty_global_data, state_random) in
       let state', _ = read state [Content (empty_event, contents)] Input.None in
-      Expect.equal state'.party.bag.Length 1 "1つだけ削除されていること"
-      let [Party.Item item'] = state'.party.bag in
+      Expect.equal (state' |> get_bag |> List.length) 1 "1つだけ削除されていること"
+      let [Party.Item item'] = get_bag state' in
       Expect.equal item' item "アイテムは変わっていないこと"
     }
   ]

@@ -33,7 +33,7 @@ module StepOps =
       let maybe_target_length = step_length target state in
       match source, maybe_target_length with
         Content.SourceStep.Random, Some target_length ->
-          Some <| state.random target_length
+          Some <| State.random target_length state
       | Content.SourceStep.SelectedPc, _ ->
           match Scenario.get_selected <| State.get_scenario_unsafe state with
             Scenario.PC pos ->

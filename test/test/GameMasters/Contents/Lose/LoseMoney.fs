@@ -27,6 +27,6 @@ let get_money =
       let difference =
         let diff = balance - amount in
         if diff < 0 then 0 else diff in
-      Expect.equal (state'.party.money) difference "正しく所持金が減っていること"
+      Expect.equal (State.get_momey state') difference "正しく所持金が減っていること"
       Expect.equal output (Output.Money difference) "正しく所持金が返されること"
   ]
