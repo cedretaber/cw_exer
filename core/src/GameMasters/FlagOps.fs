@@ -9,7 +9,7 @@ module FlagOps =
     State.get_scenario_unsafe >> Scenario.get_flag name
 
   let set name value =
-    State.update_scenarion <| Scenario.set_flag name value
+    State.map_scenario <| Scenario.set_flag name value
 
   let flip : Flag.Name -> State.t -> State.t * bool =
     fun name state ->

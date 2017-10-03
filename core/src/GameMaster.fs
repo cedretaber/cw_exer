@@ -465,8 +465,8 @@ module GameMaster =
           nexts
 
     | GetMoney (_, value), Input.None ->
-        let balance, state' = State.add_money value state in
-        money_change state' balance
+        let state' = State.add_money value state in
+        money_change state' <| State.get_momey state'
     | GetMoney (nexts, _), _ ->
         through' <| Nexts nexts
 
@@ -512,8 +512,8 @@ module GameMaster =
           <| Nexts nexts
 
     | LoseMoney (_, value), Input.None ->
-        let balance, state' = State.add_money (-value) state in
-        money_change state' balance
+        let state' = State.add_money (-value) state in
+        money_change state' <| State.get_momey state'
     | LoseMoney (nexts, _), _ ->
         through' <| Nexts nexts
 

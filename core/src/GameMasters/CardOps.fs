@@ -18,7 +18,7 @@ module CardOps =
   let add_companion : CastId -> StartAction -> State.t -> State.t = 
     fun id _start_action ->
     // TODO: start_action対応
-      State.update_scenarion <|
+      State.map_scenario <|
         fun scenario ->
           Scenario.get_cast id scenario
           |> Option.fold
@@ -28,7 +28,7 @@ module CardOps =
   let remove_companion : CastId -> State.t -> State.t =
     fun id ->
       // TODO: 戦闘中に離脱した際、同キャストの行動をキャンセルする。
-      State.update_scenarion <| Scenario.remove_companion id
+      State.map_scenario <| Scenario.remove_companion id
 
   type PcOrEnemy
     = PC of Adventurers.Position * Cast.t
@@ -151,19 +151,18 @@ module CardOps =
 
     match target with
       Range.Selected ->
-        let state', cast =
-          State.get_selected_or_random state in
+        let state' = State.force_selected state in
         let scenario = State.get_scenario_unsafe state' in
         match scenario.selected with
           Scenario.PC pos ->
             let card = Adventurers.get pos state.adventurers in
             update_cast pos card.cast state'
         | Scenario.Enemy id ->
-            State.update_scenarion
+            State.map_scenario
               (Scenario.update_enemy update_npc id)
               state
         | Scenario.Companion pos ->
-            State.update_scenarion
+            State.map_scenario
               (Scenario.update_companion update_npc pos)
               state
         | Scenario.None ->
@@ -208,18 +207,18 @@ module CardOps =
 
     match target with
       Range.Selected ->
-        let state', cast =
-          State.get_selected_or_random state in
+        let state' = State.force_selected state in
         let scenario = State.get_scenario_unsafe state' in
         match scenario.selected with
           Scenario.PC pos ->
+            let cast = State.get_adventurer_at pos state in
             update_cast pos cast state'
         | Scenario.Companion pos ->
-            State.update_scenarion
+            State.map_scenario
               (Scenario.update_companion update_npc pos)
               state
         | Scenario.Enemy id -> 
-            State.update_scenarion
+            State.map_scenario
               (Scenario.update_enemy update_npc id)
               state
         | Scenario.None -> state
@@ -332,7 +331,7 @@ module CardOps =
     fun id -> State.get_scenario_unsafe >> Scenario.has_info id
 
   let add_info : InfoId -> State.t -> State.t =
-    Scenario.add_info >> State.update_scenarion
+    Scenario.add_info >> State.map_scenario
 
   let remove_info : InfoId -> State.t -> State.t =
-    Scenario.remove_info >> State.update_scenarion
+    Scenario.remove_info >> State.map_scenario

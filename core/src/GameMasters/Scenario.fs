@@ -235,14 +235,20 @@ module Scenario =
 
  
   (* Background Ops *)
-  let add_backgrounds (backgrounds : BackgroundImage.t list) (scenario : t) : t =
-    let backgrounds' =
-      List.fold_right
-        begin fun image acm ->
-          if BackgroundImage.is_inherited image
-          then image :: acm
-          else [image]
-        end
-        scenario.backgrounds
-        backgrounds in
-    { scenario with backgrounds = backgrounds' }
+  let set_backgrounds = Optic.set t.backgrounds_
+  let map_backgrounds = Optic.map t.backgrounds_
+
+  let add_backgrounds backgrounds =
+    map_backgrounds
+      begin fun backgrounds' ->
+        List.fold_right
+          begin fun image acm ->
+            if BackgroundImage.is_inherited image
+            then image :: acm
+            else [image]
+          end
+          backgrounds'
+          backgrounds
+      end
+
+  let set_bgm = Optic.set t.bgm_

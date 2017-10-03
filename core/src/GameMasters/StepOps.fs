@@ -12,7 +12,7 @@ module StepOps =
     Scenario.get_step name <| State.get_scenario_unsafe state
 
   let set name value =
-    State.update_scenarion <| Scenario.set_step name value
+    State.map_scenario <| Scenario.set_step name value
 
   let inline private step_length name state = Scenario.get_step_length name <| State.get_scenario_unsafe state
 

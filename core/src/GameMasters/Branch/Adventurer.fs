@@ -27,8 +27,8 @@ module Adventurer =
         } = ability in
     match target with
       Target.Selected ->
-        let new_state, cast = State.get_selected_or_random state in
-        new_state, judge_ability level sleep physical mental cast
+        let cast, state' = State.force_selected_and_cast state in
+        state', judge_ability level sleep physical mental cast
     | Target.Random ->
         let idx, cast = State.get_random_pc state in
         Pair.t
@@ -49,7 +49,8 @@ module Adventurer =
       Target.Party ->
         Party.average_level state.party >= level
     | Target.Selected ->
-        (State.get_selected_or_random state |> Pair.second).property.level >= level
+        let cast, _ = State.force_selected_and_cast state in
+        cast.property.level >= level
     | _ -> raise <| InvalidTargetException target
 
   let inline private judge_status status (cast : Cast.t) =
@@ -87,9 +88,9 @@ module Adventurer =
   let inline status target status (state : State.t) =
     match target with
       Target.Selected ->
-        let new_state, cast =
-          State.get_selected_or_random state in
-        new_state, judge_status status cast
+        let cast, state' =
+          State.force_selected_and_cast state in
+        state', judge_status status cast
     | Target.Random ->
         let idx, cast =
           State.get_random_pc state in
