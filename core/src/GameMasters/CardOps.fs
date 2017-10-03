@@ -100,7 +100,7 @@ module CardOps =
               in Adventurers.to_seq_with_pos state.adventurers
                 -> PC (p, c.cast)
             let scenario = State.get_scenario_unsafe state in
-            let maybe_enemies = Scenario.enemies scenario in
+            let maybe_enemies = Scenario.get_enemies scenario in
             if Option.isSome maybe_enemies then
               let enemies = Option.get maybe_enemies in
               for i, c in Enemies.indexed enemies
@@ -159,7 +159,7 @@ module CardOps =
             update_cast pos card.cast state'
         | Scenario.Enemy id ->
             State.map_scenario
-              (Scenario.update_enemy update_npc id)
+              (Scenario.map_enemy update_npc id)
               state
         | Scenario.Companion pos ->
             State.map_scenario
@@ -219,7 +219,7 @@ module CardOps =
               state
         | Scenario.Enemy id -> 
             State.map_scenario
-              (Scenario.update_enemy update_npc id)
+              (Scenario.map_enemy update_npc id)
               state
         | Scenario.None -> state
     | Range.Random ->

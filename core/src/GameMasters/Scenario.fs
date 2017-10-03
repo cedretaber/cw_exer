@@ -16,6 +16,17 @@ module Scenario =
   type Area
     = Area of AreaId
     | Battle of BattleId * round : Round * enemies : Enemies.t
+    with
+      static member round_ =
+        (function Battle (_, r, _) -> Some r
+                | _ -> Option.None)
+        , (fun r -> function Battle (id, _, es) -> Battle (id, r, es)
+                           | other -> other)
+      static member enemies_ =
+        (function Battle (_, _, es) -> Some es
+                       | _ -> Option.None)
+        , (fun es -> function Battle (id, r, _) -> Battle (id, r, es)
+                            | other -> other)
     
   type Flags = (Flag.Name, Flag.State) Map
   type Steps = (Step.Name, Step.State) Map
@@ -89,19 +100,14 @@ module Scenario =
       static member bgm_ =
         (fun t -> t.bgm), (fun bgm t -> { t with bgm = bgm })
 
-  let enemies : t -> Enemies.t option =
-    function
-      { current_area = Battle (_, _, enemies) } ->
-        Some enemies
-    | _ ->
-        Option.None
+  let private enemies_ = t.current_area_ >-> Area.enemies_
+  let get_enemies = Optic.get enemies_
+  let map_enemies = Optic.map enemies_
 
-  let rounds : t -> Round option =
-    function
-      { current_area = Battle (_, rounds, _) } ->
-        Some rounds
-    | _ ->
-        Option.None
+  let private rounds_ = t.current_area_ >-> Area.round_
+  let get_rounds = Optic.get rounds_
+  let map_rounds = Optic.map rounds_
+
 
   let get_selected : t -> SelectedCast =
     Optic.get t.selected_
@@ -179,22 +185,14 @@ module Scenario =
         
         
   (* Enemy Ops *)
-  let inline enemy_at id scenario =
-    Option.bind (Enemies.get id) <| enemies scenario
+  let enemy_at id =
+    get_enemies >> Option.bind (Enemies.get id)
 
-  let inline set_enemy id enemy =
-    function
-      { current_area = Battle (battle_id, round, enemies) } as scenario ->
-        let battle = Battle (battle_id, round, Enemies.updated id enemy enemies) in
-        { scenario with current_area = battle }
-    | scenario -> scenario
+  let set_enemy id enemy =
+    map_enemies <| Enemies.updated id enemy
 
-  let inline update_enemy f enemy_id scenario =
-    Maybe.c {
-      let! enemies = enemies scenario
-      let! enemy = Enemies.get enemy_id enemies
-      return set_enemy enemy_id (f enemy) scenario
-    } |> Option.fold (fun _ state -> state) scenario
+  let map_enemy f id =
+    map_enemies <| Enemies.map_at id f
    
 
   (* Companions ops *)

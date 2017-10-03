@@ -120,7 +120,7 @@ module Adventurer =
           Option.fold
             (fun _ es -> Enemies.to_list es)
             List.Empty
-            (Scenario.enemies scenario)
+            (Scenario.get_enemies scenario)
         for cast in enemies ->
           state, cast
       if npc then 

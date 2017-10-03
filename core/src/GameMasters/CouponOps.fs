@@ -19,7 +19,7 @@ module CouponOps =
               (Party.add_coupon pos coupon)
         | Scenario.Enemy id ->
             State.map_scenario
-              (Scenario.update_enemy (Cast.add_coupon coupon) id)
+              (Scenario.map_enemy (Cast.add_coupon coupon) id)
         | Scenario.Companion pos ->
             State.map_scenario
               (Scenario.update_companion (Cast.add_coupon coupon) pos)
@@ -45,7 +45,7 @@ module CouponOps =
                  (Party.remove_coupon pos name)
            | Scenario.Enemy id ->
                State.map_scenario
-                 (Scenario.update_enemy (Cast.remove_coupon name) id)
+                 (Scenario.map_enemy (Cast.remove_coupon name) id)
            | Scenario.Companion pos ->
                State.map_scenario
                  (Scenario.update_companion (Cast.remove_coupon name) pos)

@@ -7,7 +7,7 @@ module Enemies =
 
   let get = Array.tryItem
  
-  let inline updated idx e es =
+  let updated idx e es =
     let es' = Array.copy es in
     es'.[idx] <- e
     es'
@@ -18,3 +18,9 @@ module Enemies =
   let to_list = Array.toList
 
   let indexed = Array.indexed
+
+  let map_at idx f es =
+    get idx es
+    |> Option.fold
+         (fun _ e -> updated idx (f e) es)
+         es
