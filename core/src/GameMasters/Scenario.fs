@@ -70,6 +70,10 @@ module Scenario =
     ; bgm : Bgm
     }
     with
+      static member summary_ =
+        (fun t -> t.summary), (fun s t -> { t with summary = s })
+      static member cards_ =
+        (fun t -> t.cards), (fun cs t -> { t with cards = cs })
       static member current_area_ =
         (fun t -> t.current_area), (fun ca t -> { t with current_area = ca })
       static member global_state_ =
@@ -148,23 +152,30 @@ module Scenario =
   (* step ops *)
   exception InvalidStepIndexException
 
-  let inline get_step name scenario =
-    scenario.global_state.steps |> Map.find name
+  let private steps_ = t.global_state_ >-> GlobalState.steps_
+  let get_steps = Optic.get steps_
+  let set_steps = Optic.set steps_
+  let map_steps = Optic.map steps_
 
-  let inline get_step_length name scenario =
-    scenario.summary.steps
-    |> Map.tryFind name
-    |> Option.map (fun steps -> Array.length steps.steps)
+  let get_step : Step.Name -> t -> Step.State =
+    fun name ->
+      get_steps >> Map.find name
 
-  let inline set_step name value scenario =
-    Maybe.c {
-      let! length = get_step_length name scenario
-      if value >= 0 && value < length then
-        let steps = Map.add name value scenario.global_state.steps in
-        return { scenario with global_state = { scenario.global_state with steps = steps } }
-    } |> function
-           Some new_scenario -> new_scenario
-         | Option.None -> raise InvalidStepIndexException
+  let get_step_length : Step.Name -> t -> int option =
+    fun name ->
+      Optic.get (t.summary_ >-> Summary.t.steps_)
+      >> Map.tryFind name
+      >> Option.map (fun steps -> Array.length steps.steps)
+
+  let set_step : Step.Name -> Step.State -> t -> t =
+    fun name value scenario ->
+      Maybe.c {
+        let! length = get_step_length name scenario
+        if value >= 0 && value < length then
+          return map_steps (Map.add name value) scenario
+      } |> function
+             Some new_scenario -> new_scenario
+           | Option.None -> raise InvalidStepIndexException
         
         
   (* Enemy Ops *)
