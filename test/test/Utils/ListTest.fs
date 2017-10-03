@@ -28,7 +28,7 @@ let list_util =
       testProperty "左右で結果は同じになること" <| fun (list : int list) ->
         Expect.equal (fold_right (+) 0 list) (List.fold (+) 0 list)
       
-      testProperty "fold_rightのconsはlistのconcatと同じ" <| fun (list1 : int list) (list2 : int list) ->
+      testProperty "fold_rightのconsはlistのconcatと同じ" <| fun (list1 : obj list) (list2 : obj list) ->
         let result = fold_right (fun e a -> e :: a) list1 list2 in
         Expect.equal result (list2 @ list1)
     ]
