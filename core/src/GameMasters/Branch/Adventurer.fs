@@ -27,8 +27,8 @@ module Adventurer =
         } = ability in
     match target with
       Target.Selected ->
-        let new_state, cast = State.get_selected_or_random state in
-        new_state, judge_ability level sleep physical mental cast
+        let cast, state' = State.force_selected_and_cast state in
+        state', judge_ability level sleep physical mental cast
     | Target.Random ->
         let idx, cast = State.get_random_pc state in
         Pair.t
@@ -38,18 +38,19 @@ module Adventurer =
         state,
         Adventurers.forall
           (fun card -> judge_ability level sleep physical mental card.cast)
-          state.adventurers
+          (State.get_adventurers state)
     | _ ->
       state, false
 
   exception InvalidTargetException of Target
 
-  let inline level target level (state : State.t) =
+  let inline level target level state =
     match target with
       Target.Party ->
-        Party.average_level state.party >= level
+        Party.average_level (State.get_party state) >= level
     | Target.Selected ->
-        (State.get_selected_or_random state |> Pair.second).property.level >= level
+        let cast, _ = State.force_selected_and_cast state in
+        cast.property.level >= level
     | _ -> raise <| InvalidTargetException target
 
   let inline private judge_status status (cast : Cast.t) =
@@ -87,9 +88,9 @@ module Adventurer =
   let inline status target status (state : State.t) =
     match target with
       Target.Selected ->
-        let new_state, cast =
-          State.get_selected_or_random state in
-        new_state, judge_status status cast
+        let cast, state' =
+          State.force_selected_and_cast state in
+        state', judge_status status cast
     | Target.Random ->
         let idx, cast =
           State.get_random_pc state in
@@ -99,19 +100,19 @@ module Adventurer =
         state,
         Adventurers.forall
           (fun card -> judge_status status card.cast)
-          state.adventurers
+          <| State.get_adventurers state
     | _ ->
         raise <| InvalidTargetException target
       
   let inline party_count value (state : State.t) =
-    Party.party_count state.party > value
+    Party.party_count (State.get_party state) > value
 
   (* random_select *)
   let inline private generate_casts party enemy npc (state : State.t) =
     seq {
       if party then
         for idx, card
-          in Adventurers.indexed state.party.adventurers ->
+          in Adventurers.indexed <| State.get_adventurers state ->
             State.set_selected (Scenario.PC (Adventurers.int_to_pos idx)) state, card.cast
       let scenario = State.get_scenario_unsafe state in
       if enemy then
@@ -119,7 +120,7 @@ module Adventurer =
           Option.fold
             (fun _ es -> Enemies.to_list es)
             List.Empty
-            (Scenario.enemies scenario)
+            (Scenario.get_enemies scenario)
         for cast in enemies ->
           state, cast
       if npc then 
@@ -176,19 +177,20 @@ module Adventurer =
     let g' (card : Adventurers.CardState) = g card.cast
     match range with
       Selected ->
-        state.selected_cast
+        state
+        |> State.selected_cast
         |> Option.fold
           (fun _ cast -> state, g cast)
           (state, false)
     | Random ->
-        Adventurers.try_find_with_position g' state.adventurers
+        Adventurers.try_find_with_position g' (State.get_adventurers state)
         |> function
              Some (pos, _) ->
                (State.set_selected (Scenario.PC pos) state), true
            | _ ->
                state, false
     | Range.Party ->
-        state, Adventurers.forall g' state.adventurers
+        state, Adventurers.forall g' (State.get_adventurers state)
     | _ ->
       state, false
 

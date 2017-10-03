@@ -49,7 +49,7 @@ module Select =
     match method with
       Manual ->
         let filtered =
-          filter target state.party.adventurers
+          filter target (State.get_adventurers state)
           |> Seq.map Pair.first in
         ( state
         , Output.SelectPlayerCharactor
@@ -62,7 +62,7 @@ module Select =
 
     | Valued (initial, coupons) ->
         let pos, _ =
-          Adventurers.to_seq_with_pos state.adventurers
+          Adventurers.to_seq_with_pos (State.get_adventurers state)
           |> appraise initial coupons
           |> Array.maxBy Pair.second in
         State.set_selected (Scenario.PC pos) state, Output.None

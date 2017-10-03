@@ -1,5 +1,7 @@
 ﻿namespace CardWirthEngine.Scenario
 
+open Aether
+
 open CardWirthEngine.Data
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Data.Casts
@@ -18,9 +20,13 @@ module Summary =
     ; tags : string list
     ; scenario_type : string
     }
+
   type t =
     { data_version : DataVersion
     ; property : Property
     ; flags : (Flag.Name, Flag.t) Map
     ; steps : (Step.Name, Step.t) Map
     }
+    with
+      static member steps_ =
+        (fun t -> t.steps), (fun steps t -> { t with steps = steps })

@@ -1,5 +1,8 @@
 ﻿namespace CardWirthEngine.GameMasters
 
+open Aether
+open Aether.Operators
+
 open CardWirthEngine.Scenario.Events.Content
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Util
@@ -26,14 +29,21 @@ module Party =
     ; bag : Goods list
     ; name : string
     }
+    with
+      static member adventurers_ =
+        (fun p -> p.adventurers), (fun advs p -> { p with adventurers = advs })
+      static member money_ =
+        (fun p -> p.money), (fun m p -> { p with money = m })
+      static member bag_ =
+        (fun p -> p.bag), (fun b p -> { p with bag = b })
+      static member name_ =
+        (fun p -> p.name), (fun n p -> ({ p with name = n } : t))
+  
+  let get_adventurers = Optic.get t.adventurers_
+  let map_adventurers = Optic.map t.adventurers_
 
-  let inline update_adventurers f =
-    function
-      { adventurers = adventurers } as party ->
-        { party with adventurers = f adventurers }
-
-  let inline party_count party =
-    Adventurers.length party.adventurers
+  let party_count =
+    get_adventurers >> Adventurers.length
 
   let inline average_level party =
     let sum = 
@@ -43,55 +53,55 @@ module Party =
            0 in
     sum / party_count party
 
-  let inline update_adventurer pos f =
-    update_adventurers <| Adventurers.update pos f
+  let inline map_adventurer pos f =
+    map_adventurers <| Adventurers.update pos f
 
   let inline set_adventurer pos cast =
-    update_adventurer pos (const' cast)
+    map_adventurer pos (const' cast)
 
   exception InvalidPartyIndexException of int * int
 
-  let inline at index party =
+  let at index party =
     match Adventurers.get_by_index index party.adventurers with
       Adventurers.Exist cast -> cast
     | Adventurers.Flipped cast -> cast
     | _ -> raise <| InvalidPartyIndexException (index, party_count party)
 
-  let add_goods count good party =
-    let goods = List.multi_cons count good party.bag in
-    { party with bag = goods }
+  let map_bag = Optic.map t.bag_
 
-  let remove_goods remove_count good party =
+  let add_goods count good =
+    map_bag <| List.multi_cons count good
+
+  let remove_goods remove_count good =
     let f =
       match remove_count with
         RemoveCount.All
           -> fun f -> List.filter (f >> not)
       | RemoveCount.Count count
           -> List.filter_not_limited count in
-    let goods =
-      f (fun g -> good_equals g good) party.bag in
-    { party with bag = goods }
+    map_bag <| f (fun g -> good_equals g good)
 
   (* Card Ops *)
-  let inline add count card party =
+  let add count card =
     let rec bag cards =
       function
         0 -> cards
       | count -> bag (card :: cards) (count - 1) in
-    { party with bag = bag party.bag count }
+    map_bag (fun b -> bag b count)
 
-  let inline remove count card party =
-    List.filter_not_limited
-      count
-      begin fun c ->
-        match c, card with
-          Skill left, Skill right -> Skill.equals left right
-        | Item left, Item right -> Item.equals left right
-        | Beast left, Beast right -> Beast.equals left right
-        | _ -> false end
-      party.bag
+  let remove count card =
+    map_bag <|
+      List.filter_not_limited
+        count
+        begin fun c ->
+          match c, card with
+            Skill left, Skill right -> Skill.equals left right
+          | Item left, Item right -> Item.equals left right
+          | Beast left, Beast right -> Beast.equals left right
+          | _ -> false
+          end in
 
-  let inline count_card card party =
+  let count_card card party =
     List.count_by
       begin fun c ->
         match c, card with
@@ -103,22 +113,22 @@ module Party =
 
   (* Coupon Ops *)
   let inline add_coupon pos coupon =
-    update_adventurer pos <| Cast.add_coupon coupon
+    map_adventurer pos <| Cast.add_coupon coupon
   
   (* 全員にクーポンを与える場合、裏返ったキャストは除外 *)
   let inline add_coupon_all coupon =
-    update_adventurers
+    map_adventurers
     <| Adventurers.map (Adventurers.cc' <| Cast.add_coupon coupon)
 
   let inline remove_coupon pos name =
-    update_adventurer pos <| Cast.remove_coupon name
+    map_adventurer pos <| Cast.remove_coupon name
 
   (* 全員からクーポンを除去する場合、裏返ったキャストも含める *)
   let inline remove_coupon_all name =
-    update_adventurers
+    map_adventurers
     <| Adventurers.map (Adventurers.cc <| Cast.remove_coupon name)
 
-  let inline find_coupon_holder name party =
+  let find_coupon_holder name party =
     Adventurers.try_find_with_position
       begin function
         Adventurers.Exist cast -> Cast.has_coupon name cast
@@ -127,12 +137,13 @@ module Party =
       party.adventurers
 
   (* Money Ops *)
+  let map_money = Optic.map t.money_
+
   let inline has_money amount =
     function { money = money } -> amount <= money
 
-  let inline add_money amount =
-    function
-      { money = money } as party ->
-        let balance' = money + amount in
-        let balance = if balance' < 0 then 0 else balance' in
-        { party with money = balance }
+  let add_money amount =
+    map_money <|
+      fun money ->
+        let balance = money + amount in
+        if balance < 0 then 0 else balance

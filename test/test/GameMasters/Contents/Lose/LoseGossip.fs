@@ -18,6 +18,6 @@ let get_gossip =
       let state = State.Scenario (empty_scenario, minimal_party, global_data, state_random) in
       let contents = LoseGossip ([], gossip) in
       let state', _ = read state [Content (empty_event, contents)] Input.None in
-      Expect.isEmpty state'.global_data.gossips "正しくゴシップが削除されていること"
+      Expect.isEmpty (State.get_gossips state') "正しくゴシップが削除されていること"
     }
   ]

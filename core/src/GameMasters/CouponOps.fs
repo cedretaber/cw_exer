@@ -15,22 +15,22 @@ module CouponOps =
       Target.Selected ->
         begin function
           Scenario.PC pos ->
-            State.update_party
+            State.map_party
               (Party.add_coupon pos coupon)
         | Scenario.Enemy id ->
-            State.update_scenarion
-              (Scenario.update_enemy (Cast.add_coupon coupon) id)
+            State.map_scenario
+              (Scenario.map_enemy (Cast.add_coupon coupon) id)
         | Scenario.Companion pos ->
-            State.update_scenarion
+            State.map_scenario
               (Scenario.update_companion (Cast.add_coupon coupon) pos)
         | Scenario.None ->
             id
         end (State.get_scenario_unsafe state).selected
     | Target.Random ->
         let pos, _ = State.get_random_pc state in
-        State.update_party <| Party.add_coupon pos coupon
+        State.map_party <| Party.add_coupon pos coupon
     | Target.Party ->
-        State.update_party <| Party.add_coupon_all coupon
+        State.map_party <| Party.add_coupon_all coupon
     | _ ->
         id
     end state
@@ -41,18 +41,18 @@ module CouponOps =
         (State.get_scenario_unsafe state).selected
         |> function
              Scenario.PC pos ->
-               State.update_party
+               State.map_party
                  (Party.remove_coupon pos name)
            | Scenario.Enemy id ->
-               State.update_scenarion
-                 (Scenario.update_enemy (Cast.remove_coupon name) id)
+               State.map_scenario
+                 (Scenario.map_enemy (Cast.remove_coupon name) id)
            | Scenario.Companion pos ->
-               State.update_scenarion
+               State.map_scenario
                  (Scenario.update_companion (Cast.remove_coupon name) pos)
            | Scenario.None ->
                id
     | Target.Random ->
-        Party.find_coupon_holder name state.party
+        Party.find_coupon_holder name (State.get_party state)
         |> function
              Some (pos, _) ->
                State.set_selected (Scenario.PC pos)
@@ -60,7 +60,7 @@ module CouponOps =
            | Option.None ->
                id
     | Target.Party ->
-        State.update_party <| Party.remove_coupon_all name
+        State.map_party <| Party.remove_coupon_all name
     | _ ->
       id
     end state

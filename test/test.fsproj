@@ -105,6 +105,9 @@
     <Compile Include="test\Main.fs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Aether">
+      <HintPath>..\packages\Aether.8.2.0\lib\net45\Aether.dll</HintPath>
+    </Reference>
     <Reference Include="Argu">
       <HintPath>..\packages\Argu.3.7.0\lib\net40\Argu.dll</HintPath>
     </Reference>

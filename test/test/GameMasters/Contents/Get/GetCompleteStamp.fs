@@ -17,6 +17,6 @@ let get_completed_stamp =
       let contents = GetCompleteStamp ([], scenario_name) in
       let state = State.Scenario (empty_scenario, minimal_party, empty_global_data, state_random) in
       let state', _ = read state [Content (empty_event, contents)] Input.None in
-      Expect.contains state'.global_data.completed_scenarii scenario_name "正しくシナリオ名が追加されていること"
+      Expect.contains (State.get_completeds state') scenario_name "正しくシナリオ名が追加されていること"
     }
   ]
