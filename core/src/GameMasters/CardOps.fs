@@ -65,7 +65,7 @@ module CardOps =
           Option.fold
             (fun _ cast -> check_card' cast)
             false
-            state.selected_cast in
+            (State.selected_cast state) in
         bool, state
     | Range.Random ->
         match

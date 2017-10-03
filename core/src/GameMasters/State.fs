@@ -5,7 +5,7 @@ open System
 open Aether
 open Aether.Operators
 
-open CardWirthEngine.Util
+open CardWirthEngine.Utils
 open CardWirthEngine.Data.Type
 open CardWirthEngine.GameMasters.Cards
 
@@ -25,7 +25,6 @@ module State =
   type t
     = Scenario of Scenario.t * Party.t * GlobalData * System.Random
     with
-      (* Lens and Prism *)
       static member scenario_ =
         (function Scenario (s, _, _, _) -> Some s)
         , (fun s -> function Scenario (_, p, g, r) -> Scenario (s, p, g, r))
@@ -37,30 +36,7 @@ module State =
         , (fun g -> function Scenario (s, p, _, r) -> Scenario (s, p, g, r))
       static member random_ =
         (function Scenario (_, _, _, r) -> r)
-        , (fun r -> function Scenario (s, p, g, _) -> Scenario (s, p, g, r)) 
-
-      (* Anywhere *)
-      member this.selected_cast =
-        match this with
-          Scenario ({ selected = Scenario.PC pos }
-                   , party, _ , _
-                   ) ->
-            match Adventurers.get pos party.adventurers with
-              Adventurers.Exist cast -> Some cast
-            | Adventurers.Flipped cast -> Some cast
-        | Scenario ({ selected = Scenario.Enemy idx
-                    ; current_area = Scenario.Battle (_, _, enemies) }
-                   , _, _, _
-                   ) ->
-            Enemies.get idx enemies
-        | Scenario ({ selected = Scenario.Companion pos
-                    ; companions = companions  }
-                   , _, _, _
-                   ) ->
-            match Adventurers.get pos companions with
-              Adventurers.Exist cast -> Some cast
-            | Adventurers.Flipped cast -> Some cast
-        | _ -> Option.None
+        , (fun r -> function Scenario (s, p, g, _) -> Scenario (s, p, g, r))
 
   (* party ops *)
   let get_party = Optic.get t.party_
@@ -140,6 +116,31 @@ module State =
     Adventurers.int_to_pos idx, Party.at idx party
 
   let selected = t.scenario_ >?> Scenario.t.selected_ |> Optic.get
+
+  let selected_cast state =
+    match selected state with
+      Some (Scenario.PC pos) ->
+        match Adventurers.get pos <| get_adventurers state with
+          Adventurers.Exist cast -> Some cast
+        | Adventurers.Flipped cast -> Some cast
+    | Some (Scenario.Enemy idx) ->
+        Maybe.c {
+          let! scenario = get_scenario state
+          let! enemies = Scenario.get_enemies scenario
+          let! cast = Enemies.get idx enemies
+          return cast
+        }
+    | Some (Scenario.Companion pos) ->
+        state
+        |> get_scenario
+        |> Option.fold
+             begin fun _ scenario ->
+               match Adventurers.get pos <| Scenario.get_companions scenario with
+                 Adventurers.Exist cast -> Some cast
+               | Adventurers.Flipped cast -> Some cast
+             end
+             Option.None
+    | _ -> Option.None
 
   let set_selected selected =
     map_scenario <| Scenario.set_selected selected

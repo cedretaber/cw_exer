@@ -42,7 +42,7 @@ module KeyCode =
 
     match range with
       Range.Selected ->
-        match state.selected_cast with
+        match State.selected_cast state with
           Some cast -> state, f cast
         | Option.None -> state, false
     | Range.Party ->

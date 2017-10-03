@@ -177,7 +177,8 @@ module Adventurer =
     let g' (card : Adventurers.CardState) = g card.cast
     match range with
       Selected ->
-        state.selected_cast
+        state
+        |> State.selected_cast
         |> Option.fold
           (fun _ cast -> state, g cast)
           (state, false)
