@@ -1,5 +1,8 @@
 ﻿namespace CardWirthEngine.GameMasters
 
+open Aether
+open Aether.Operators
+
 open CardWirthEngine.Utils
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Data
@@ -22,6 +25,13 @@ module Scenario =
     ; steps : Steps
     ; infos : InfoId Set
     }
+    with
+      static member flags_ =
+        (fun gs -> gs.flags), (fun flags gs -> { gs with flags = flags })
+      static member steps_ =
+        (fun gs -> gs.steps), (fun steps gs -> { gs with steps = steps })
+      static member infos_ =
+        (fun gs -> gs.infos), (fun infos gs -> { gs with infos = infos })
 
   type Casts = (CastId, Cast.t) Map
   type Skills = (SkillId, Skill.t) Map
@@ -53,12 +63,27 @@ module Scenario =
     (* 以下、可変情報 *)
     ; current_area : Area
     ; global_state : GlobalState
-    ; eventStack : Event list
+    ; event_stack : Event list
     ; selected : SelectedCast
     ; companions : Adventurers.t
     ; backgrounds : BackgroundImage.t list
     ; bgm : Bgm
     }
+    with
+      static member current_area_ =
+        (fun t -> t.current_area), (fun ca t -> { t with current_area = ca })
+      static member global_state_ =
+        (fun t -> t.global_state), (fun gs t -> { t with global_state = gs })
+      static member event_stack_ =
+        (fun t -> t.event_stack), (fun es t -> { t with event_stack = es })
+      static member selected_ =
+        (fun t -> t.selected), (fun s t -> { t with selected = s })
+      static member companions_ =
+        (fun t -> t.companions), (fun cs t -> { t with companions = cs })
+      static member backgrounds_ =
+        (fun t -> t.backgrounds), (fun bg t -> { t with backgrounds = bg })
+      static member bgm_ =
+        (fun t -> t.bgm), (fun bgm t -> { t with bgm = bgm })
 
   let enemies =
     function
@@ -106,12 +131,18 @@ module Scenario =
     
 
   (* flag ops *)
-  let inline get_flag name scenario =
-    scenario.global_state.flags |> Map.find name
+  let private flags_ = t.global_state_ >-> GlobalState.flags_
+  let get_flags = Optic.get flags_
+  let set_flags = Optic.set flags_
+  let map_flags = Optic.map flags_
 
-  let inline set_flag name value scenario =
-    let flags = Map.add name value scenario.global_state.flags in
-    { scenario with global_state = { scenario.global_state with flags = flags } }
+  let get_flag : Flag.Name -> t -> Flag.State =
+    fun name ->
+      get_flags >> Map.find name
+  
+  let set_flag : Flag.Name -> Flag.State -> t -> t =
+    fun name value ->
+      map_flags <| Map.add name value
 
 
   (* step ops *)

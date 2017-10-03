@@ -65,6 +65,9 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
+    <Reference Include="Aether">
+      <HintPath>..\packages\Aether.8.2.0\lib\net45\Aether.dll</HintPath>
+    </Reference>
     <Reference Include="FSharp.Core">
       <HintPath>..\packages\FSharp.Core.4.2.3\lib\net45\FSharp.Core.dll</HintPath>
     </Reference>

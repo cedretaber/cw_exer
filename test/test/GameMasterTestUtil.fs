@@ -194,7 +194,7 @@ module GameMasterTestUtil =
       ; steps = Map.empty
       ; infos = Set.empty
       }
-    ; eventStack = []
+    ; event_stack = []
     ; selected = SelectedCast.None
     ; companions = no_adventurers
     ; backgrounds = []
