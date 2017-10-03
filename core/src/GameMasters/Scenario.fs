@@ -217,18 +217,18 @@ module Scenario =
     map_companions <| Adventurers.update pos f
 
   (* Info ops *)
-  let inline has_info id scenario =
-    Set.contains id scenario.global_state.infos
-  
-  let inline add_info id scenario =
-    let infos = Set.add id scenario.global_state.infos in
-    let global_state = { scenario.global_state with infos = infos } in
-    { scenario with global_state = global_state }
+  let private infos_ = t.global_state_ >-> GlobalState.infos_
+  let get_infos = Optic.get infos_
+  let map_infos = Optic.map infos_
 
-  let inline remove_info id scenario =
-    let infos = Set.remove id scenario.global_state.infos in
-    let global_state = { scenario.global_state with infos = infos } in
-    { scenario with global_state = global_state }
+  let has_info id =
+    get_infos >> Set.contains id
+  
+  let add_info id =
+    map_infos <| Set.add id
+
+  let remove_info id =
+    map_infos <| Set.remove id
 
  
   (* Background Ops *)
