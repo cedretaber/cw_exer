@@ -196,26 +196,25 @@ module Scenario =
    
 
   (* Companions ops *)
-  let inline add_companion companion scenario =
-    let companions = Adventurers.add companion scenario.companions in
-    { scenario with companions = companions }
+  let get_companions = Optic.get t.companions_
+  let map_companions = Optic.map t.companions_
 
-  let inline remove_companion id scenario =
-    let companions = Adventurers.remove_by_id id scenario.companions in
-    { scenario with companions = companions }
+  let add_companion companion =
+    map_companions <| Adventurers.add companion
 
-  let inline has_companion id scenario =
-    Adventurers.exists
-      (fun card -> id = card.cast.property.id)
-      scenario.companions
+  let remove_companion id =
+    map_companions <| Adventurers.remove_by_id id
+
+  let has_companion id =
+    get_companions
+    >> Adventurers.exists
+         (fun card -> id = card.cast.property.id)
  
-  let inline set_companion pos companion scenario =
-    let companions = Adventurers.update pos companion scenario.companions in
-    { scenario with companions = companions }
+  let set_companion pos companion =
+    map_companions <| Adventurers.update pos companion
 
-  let inline update_companion f pos scenario =
-    let companions = Adventurers.update pos f scenario.companions in
-    { scenario with companions = companions }
+  let update_companion f pos =
+    map_companions <| Adventurers.update pos f
 
   (* Info ops *)
   let inline has_info id scenario =
