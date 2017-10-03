@@ -4,6 +4,7 @@ open CardWirthEngine.Utils
 open CardWirthEngine.Data
 open CardWirthEngine.Scenario.Events
 open CardWirthEngine.GameMasters
+open CardWirthEngine.GameMasters.Cards
 
 module StepOps =
 
@@ -32,11 +33,15 @@ module StepOps =
       let maybe_target_length = step_length target state in
       match source, maybe_target_length with
         Content.SourceStep.Random, Some target_length ->
-          Some (state.random target_length)
+          Some <| state.random target_length
       | Content.SourceStep.SelectedPc, _ ->
-          Scenario.selected_pos <| State.get_scenario_unsafe state
+          match Scenario.get_selected <| State.get_scenario_unsafe state with
+            Scenario.PC pos ->
+              Some <| Adventurers.pos_to_int pos
+          | _ ->
+              Option.None
       | Content.SourceStep.From name, _ ->
-          Some (get name state)
+          Some <| get name state
       | _ -> Option.None
       |> Option.fold
         (fun _ step -> set target step state)

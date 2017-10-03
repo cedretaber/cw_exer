@@ -89,24 +89,24 @@ module Scenario =
       static member bgm_ =
         (fun t -> t.bgm), (fun bgm t -> { t with bgm = bgm })
 
-  let enemies =
+  let enemies : t -> Enemies.t option =
     function
       { current_area = Battle (_, _, enemies) } ->
         Some enemies
     | _ ->
         Option.None
 
-  let rounds =
+  let rounds : t -> Round option =
     function
       { current_area = Battle (_, rounds, _) } ->
         Some rounds
     | _ ->
         Option.None
 
-  let selected_pos =
-    function
-      { selected = PC pos } -> Some (Adventurers.pos_to_int pos)
-    | _ -> Option.None
+  let get_selected : t -> SelectedCast =
+    Optic.get t.selected_
+  let set_selected : SelectedCast -> t -> t =
+    Optic.set t.selected_
         
   
   (* Cards Ops *)

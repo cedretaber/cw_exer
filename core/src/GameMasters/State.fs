@@ -1,5 +1,8 @@
 ﻿namespace CardWirthEngine.GameMasters
 
+open Aether
+open Aether.Operators
+
 open CardWirthEngine.Util
 open CardWirthEngine.Data.Type
 open CardWirthEngine.GameMasters.Cards
@@ -15,6 +18,20 @@ module State =
   type t
     = Scenario of Scenario.t * Party.t * GlobalData * System.Random
     with
+      (* Lens and Prism *)
+      static member scenario_ =
+        (function Scenario (s, _, _, _) -> Some s)
+        , (fun s -> function Scenario (_, p, g, r) -> Scenario (s, p, g, r))
+      static member party_ =
+        (function Scenario (_, p, _, _) -> p)
+        , (fun p -> function Scenario (s, _, g, r) -> Scenario (s, p, g, r))
+      static member global_data_ =
+        (function Scenario (_, _, g, _) -> g)
+        , (fun g -> function Scenario (s, p, _, r) -> Scenario (s, p, g, r))
+      static member random_ =
+        (function Scenario (_, _, _, r) -> r)
+        , (fun r -> function Scenario (s, p, g, _) -> Scenario (s, p, g, r)) 
+
       (* Anywhere *)
       member this.random max =
         match this with
@@ -53,10 +70,9 @@ module State =
         | _ -> Option.None
 
   (* party ops *)
-  let inline set_party party (state : t) =
-    match state with
-      Scenario (scenario, _, global_data, random) ->
-        Scenario (scenario, party, global_data, random)
+  let get_party = Optic.get t.party_
+  let set_party = Optic.set t.party_
+  let map_party = Optic.map t.party_
 
   let inline set_adventurer_at pos cast (state : t) =
     let party = Party.set_adventurer pos cast state.party in
@@ -138,10 +154,6 @@ module State =
   let inline set_selected selected =
     update_scenarion <|
       fun scenario -> { scenario with selected = selected }
-
-  let inline get_selected state =
-    let scenario = get_scenario_unsafe state in
-    Scenario.selected_pos scenario
 
   let inline get_selected_or_random (state: t) =
     match state.selected_cast with
