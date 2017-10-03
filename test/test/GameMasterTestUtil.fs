@@ -233,3 +233,21 @@ let empty_event : Event.t =
   }
 
 let get_bag = State.t.party_ >-> Party.t.bag_ |> Optic.get
+
+module Party =
+  let set_bag = Optic.set Party.t.bag_
+
+module Scenario =
+  let set_casts =
+    Scenario.t.cards_ >-> Scenario.Cards.casts_ |> Optic.set
+  let set_items =
+    Scenario.t.cards_ >-> Scenario.Cards.items_ |> Optic.set
+  let set_skills =
+    Scenario.t.cards_ >-> Scenario.Cards.skills_ |> Optic.set
+  let set_beasts =
+    Scenario.t.cards_ >-> Scenario.Cards.beasts_ |> Optic.set
+  let set_infos =
+    Scenario.t.cards_ >-> Scenario.Cards.infos_ |> Optic.set
+
+  let set_infos_gd =
+    Scenario.t.global_state_ >-> Scenario.GlobalState.infos_ |> Optic.set

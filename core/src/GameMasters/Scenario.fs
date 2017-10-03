@@ -57,6 +57,17 @@ module Scenario =
     ; beasts : Beasts
     ; infos : Infos
     }
+    with
+      static member casts_ =
+        (fun cd -> cd.casts), (fun cs cd -> { cd with casts = cs })
+      static member skills_ =
+        (fun cd -> cd.skills), (fun ss cd -> { cd with skills = ss })
+      static member items_ =
+        (fun cd -> cd.items), (fun is cd -> { cd with items = is })
+      static member beasts_ =
+        (fun cd -> cd.beasts), (fun bs cd -> { cd with beasts = bs })
+      static member infos_ =
+        (fun cd -> cd.infos), (fun is cd -> { cd with infos = is })
 
   type Event
     = Content of Event.t * Content.t
@@ -116,6 +127,7 @@ module Scenario =
         
   
   (* Cards Ops *)
+
   let inline private get_card id cards =
     Map.tryFind id cards
 

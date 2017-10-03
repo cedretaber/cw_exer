@@ -16,12 +16,7 @@ module Info =
     testList "CardWirthEngine.Scenario.Events.Content.BranchInfo" [
       test "情報カードを持っている場合" {
         let info_id = empty_info.id in
-        let global_state =
-          { empty_scenario.global_state with
-              infos = Set.ofList [info_id] } in
-        let scenario =
-          { empty_scenario with
-              global_state = global_state } in
+        let scenario = Scenario.set_infos_gd (Set.ofList [info_id]) empty_scenario in
         let state = make_empty_state scenario in
         let contents =
           BranchInfo

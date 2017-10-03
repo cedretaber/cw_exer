@@ -18,9 +18,7 @@ let get_item =
       let item = empty_item in
       let id = item.property.id in
       let contents = GetItem ([], id, Range.Backpack, 1) in
-      let scenario =
-        { empty_scenario with
-            cards = { empty_scenario.cards with items = Map.ofList [id, item] } } in
+      let scenario = Scenario.set_items (Map.ofList [id, item]) empty_scenario in
       let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
       let state', _ = read state [Content (empty_event, contents)] Input.None in
       let (Party.Item item') :: _ = get_bag state' in

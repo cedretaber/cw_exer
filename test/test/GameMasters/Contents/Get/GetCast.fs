@@ -20,9 +20,7 @@ module Cast =
         let cast = empty_cast in
         let id = cast.property.id in
         let contents = GetCast ([], id, StartAction.NextRound) in
-        let scenario =
-          { empty_scenario with
-              cards = { empty_scenario.cards with casts = Map.ofList [id, cast] } } in
+        let scenario = Scenario.set_casts (Map.ofList [id, cast]) empty_scenario in
         let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
         let state', _ = read state [Content (empty_event, contents)] Input.None in
         let [|Adventurers.Exist cast'|] = (State.get_scenario_unsafe state').companions in
