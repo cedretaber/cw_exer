@@ -121,7 +121,7 @@ module Content =
     | ShowParty of Nexts
     | HideParty of Nexts
     | ChangeBgImage of Nexts * transition_speed : int * transition : Transition * images : BackgroundImage.t list
-    | MoveBgImage of Nexts
+    | MoveBgImage of Nexts * move : MoveBackgroundImage.t
     | ReplaceBgImage of Nexts
     | LoseBgImage of Nexts
     | Redisplay of Nexts

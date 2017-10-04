@@ -116,6 +116,7 @@
     <Compile Include="src\Scenario\Events\Contents\TalkMessage.fs" />
     <Compile Include="src\Scenario\Events\Contents\Effect.fs" />
     <Compile Include="src\Scenario\Events\Contents\Play.fs" />
+    <Compile Include="src\Scenario\Events\Contents\MoveBackgroundImage.fs" />
     <Compile Include="src\Scenario\Events\Content.fs" />
     <Compile Include="src\Scenario\Event.fs" />
     <Compile Include="src\Scenario\Summary.fs" />
