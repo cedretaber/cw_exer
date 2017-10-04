@@ -78,6 +78,8 @@ let map_size = Optic.map size_
 
 let get_flag = t.property_ >-> Property.flag_ |> Optic.get
 
+let get_level = t.property_ >-> Property.level_ |> Optic.get
+
 let private has_mask =
   function
     BackgroundImage (_, { mask = true }) -> true

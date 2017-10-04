@@ -246,18 +246,48 @@ let remove_info id =
 let set_backgrounds = Optic.set t.backgrounds_
 let map_backgrounds = Optic.map t.backgrounds_
 
+//let private sort_backgrounds_by_level =
+//  (* List.sortBy は安定なソート *)
+//  List.sortBy
+//    begin fun image -> -(BackgroundImage.get_level image) end
+    
+let inline private insert_background image =
+  let rec impl =
+    function
+      [] ->
+        [image]
+    | image' :: rest ->
+        if BackgroundImage.get_level image < BackgroundImage.get_level image'
+        then
+          image' :: (impl rest)
+        else
+          if BackgroundImage.is_inherited image
+          then image :: image' :: rest
+          else [image]
+  impl
+
 let add_backgrounds backgrounds =
   map_backgrounds
     begin fun backgrounds' ->
       List.fold_right
-        begin fun image acm ->
-          if BackgroundImage.is_inherited image
-          then image :: acm
-          else [image]
-        end
+        insert_background
         backgrounds'
         backgrounds
     end
+
+//let add_backgrounds backgrounds =
+//  map_backgrounds
+//    begin fun backgrounds' ->
+//      backgrounds
+//      |> List.fold_right
+//           begin fun image acm ->
+//             if BackgroundImage.is_inherited image
+//             then image :: acm
+//             else [image]
+//           end
+//           backgrounds'
+//      |> sort_backgrounds_by_level
+//    end
 
 let private modify o p = int <| float (o * p) * 0.01
 
