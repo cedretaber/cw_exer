@@ -250,28 +250,25 @@ let map_backgrounds = Optic.map t.backgrounds_
 //  (* List.sortBy は安定なソート *)
 //  List.sortBy
 //    begin fun image -> -(BackgroundImage.get_level image) end
-    
-let inline private insert_background image =
-  let rec impl =
-    function
-      [] ->
-        [image]
-    | image' :: rest ->
-        if BackgroundImage.get_level image < BackgroundImage.get_level image'
-        then
-          image' :: (impl rest)
-        else
-          if BackgroundImage.is_inherited image
-          then image :: image' :: rest
-          else [image]
-  impl
+
+let rec private insert_background image =
+  function
+    image' :: rest when BackgroundImage.get_level image < BackgroundImage.get_level image' ->
+      if BackgroundImage.is_inherited image'
+      then image' :: (insert_background image rest)
+      else [image']
+  | images ->
+      if BackgroundImage.is_inherited image
+      then image :: images
+      else [image]
+
 
 let add_backgrounds backgrounds =
   map_backgrounds
-    begin fun backgrounds' ->
+    begin fun current_backgrounds ->
       List.fold_right
         insert_background
-        backgrounds'
+        current_backgrounds
         backgrounds
     end
 
