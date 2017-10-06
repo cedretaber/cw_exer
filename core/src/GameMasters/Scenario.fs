@@ -227,6 +227,7 @@ let set_companion pos companion =
 let update_companion f pos =
   map_companions <| Adventurers.update pos f
 
+
 (* Info ops *)
 let private infos_ = t.global_state_ >-> GlobalState.infos_
 let get_infos = Optic.get infos_
@@ -246,89 +247,68 @@ let remove_info id =
 let set_backgrounds = Optic.set t.backgrounds_
 let map_backgrounds = Optic.map t.backgrounds_
 
-//let private sort_backgrounds_by_level =
-//  (* List.sortBy は安定なソート *)
-//  List.sortBy
-//    begin fun image -> -(BackgroundImage.get_level image) end
-    
-let inline private insert_background image =
-  let rec impl =
-    function
-      [] ->
-        [image]
-    | image' :: rest ->
-        if BackgroundImage.get_level image < BackgroundImage.get_level image'
-        then
-          image' :: (impl rest)
-        else
-          if BackgroundImage.is_inherited image
-          then image :: image' :: rest
-          else [image]
-  impl
+let rec private insert_background image =
+  function
+    image' :: rest when BackgroundImage.get_level image < BackgroundImage.get_level image' ->
+      if BackgroundImage.is_inherited image'
+      then image' :: (insert_background image rest)
+      else [image']
+  | images ->
+      if BackgroundImage.is_inherited image
+      then image :: images
+      else [image]
 
 let add_backgrounds backgrounds =
   map_backgrounds
-    begin fun backgrounds' ->
+    begin fun current_backgrounds ->
       List.fold_right
         insert_background
-        backgrounds'
+        current_backgrounds
         backgrounds
     end
 
-//let add_backgrounds backgrounds =
-//  map_backgrounds
-//    begin fun backgrounds' ->
-//      backgrounds
-//      |> List.fold_right
-//           begin fun image acm ->
-//             if BackgroundImage.is_inherited image
-//             then image :: acm
-//             else [image]
-//           end
-//           backgrounds'
-//      |> sort_backgrounds_by_level
-//    end
-
-let private modify o p = int <| float (o * p) * 0.01
-
-let private move_position : MoveBackgroundImage.Position -> BackgroundImage.t -> BackgroundImage.t =
-  function
-    { coordinate_type = CoordinateType.None } ->
-      id
-  | { coordinate_type = CoordinateType.Absolute; x = x; y = y } ->
-      BackgroundImage.set_location { left = x; top = y }
-  | { coordinate_type = CoordinateType.Relative; x = x; y = y } ->
-      BackgroundImage.map_location
-        (function { left = left; top = top } -> { left = left + x; top = top + y })
-  | { coordinate_type = CoordinateType.Percentage; x = x; y = y } ->
-      BackgroundImage.map_location
-        (function { left = left; top = top } -> { left = modify left x; top = modify top y })
-
-let private resize : MoveBackgroundImage.Size -> BackgroundImage.t -> BackgroundImage.t =
-  function
-    { coordinate_type = CoordinateType.None } ->
-      id
-  | { coordinate_type = CoordinateType.Absolute; height = h; width = w } ->
-      BackgroundImage.set_size { height = h; width = w }
-  | { coordinate_type = CoordinateType.Relative; height = h; width = w } ->
-      BackgroundImage.map_size
-        (function { height = height; width = width } -> { height = height + h; width = width + w })
-  | { coordinate_type = CoordinateType.Percentage; height = h; width = w } ->
-      BackgroundImage.map_size
-        (function { height = height; width = width } -> { height = modify height h; width = modify width w })
-        
-let private move_to_f (move : MoveBackgroundImage.t) background =
-  match BackgroundImage.get_cellname background with
-    Option.None ->
-      background
-  | Some cellname when cellname <> move.cellname ->
-      background
-  | Some _ ->
-      background 
-      |> move_position move.position 
-      |> resize move.size
-      
 let move_backgrounds move =
+  let modify o p = int <| float (o * p) * 0.01
+
+  let move_position : MoveBackgroundImage.Position -> BackgroundImage.t -> BackgroundImage.t =
+    function
+      { coordinate_type = CoordinateType.None } ->
+        id
+    | { coordinate_type = CoordinateType.Absolute; x = x; y = y } ->
+        BackgroundImage.set_location { left = x; top = y }
+    | { coordinate_type = CoordinateType.Relative; x = x; y = y } ->
+        BackgroundImage.map_location
+          (function { left = left; top = top } -> { left = left + x; top = top + y })
+    | { coordinate_type = CoordinateType.Percentage; x = x; y = y } ->
+        BackgroundImage.map_location
+          (function { left = left; top = top } -> { left = modify left x; top = modify top y })
+
+  let resize : MoveBackgroundImage.Size -> BackgroundImage.t -> BackgroundImage.t =
+    function
+      { coordinate_type = CoordinateType.None } ->
+        id
+    | { coordinate_type = CoordinateType.Absolute; height = h; width = w } ->
+        BackgroundImage.set_size { height = h; width = w }
+    | { coordinate_type = CoordinateType.Relative; height = h; width = w } ->
+        BackgroundImage.map_size
+          (function { height = height; width = width } -> { height = height + h; width = width + w })
+    | { coordinate_type = CoordinateType.Percentage; height = h; width = w } ->
+        BackgroundImage.map_size
+          (function { height = height; width = width } -> { height = modify height h; width = modify width w })
+
+  let move_to_f (move : MoveBackgroundImage.t) background =
+    match BackgroundImage.get_cellname background with
+      Option.None ->
+        background
+    | Some cellname when cellname <> move.cellname ->
+        background
+    | Some _ ->
+        background 
+        |> move_position move.position 
+        |> resize move.size
+
   map_backgrounds (List.map <| move_to_f move)
 
+
+(* BGM ops *)
 let set_bgm = Optic.set t.bgm_
