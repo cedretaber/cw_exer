@@ -40,9 +40,11 @@ and private read_content state event content rest input =
   let end_line' =
     end_line state
 
-  (* Output with same state *)
-  let inline output output =
+  (* Output *)
+  let inline output state output =
     Output.t state output
+  let inline output' output' =
+    output state output'
 
   (* Check step or flag *)
   let inline check state =
@@ -162,19 +164,19 @@ and private read_content state event content rest input =
       through' <| Nexts nexts
 
   | StartBattle battle_id, _ ->
-      output <| Terminal.start_battle battle_id
+      output' <| Terminal.start_battle battle_id
 
   | End is_completed, _ ->
-      output <| Terminal.end_scenario is_completed
+      output' <| Terminal.end_scenario is_completed
 
   | EndBadEnd, _ ->
-      output Terminal.gameover
+      output' Terminal.gameover
 
   | ChangeArea area_id, _ ->
-      output <| Terminal.move_area area_id
+      output' <| Terminal.move_area area_id
 
   | EffectBreak, _ ->
-      output Terminal.effect_break
+      output' Terminal.effect_break
 
   | LinkStart start_name, _ ->
       go_start start_name
@@ -184,31 +186,31 @@ and private read_content state event content rest input =
 
   (* Standard *)
   | TalkMessage (nexts, message), Input.None -> // メッセージ表示
-      output <| Standard.message message nexts state
+      output' <| Standard.message message nexts state
   | TalkMessage (nexts, _), Input.NextMessage selected -> // 選択肢選択
       select_message selected nexts
   | TalkMessage (nexts, _), _ ->
       through' <| List nexts
       
   | TalkDialog (nexts, dialog), Input.None ->
-      output <| Standard.dialog dialog nexts state
+      output' <| Standard.dialog dialog nexts state
   | TalkDialog (nexts, _), Input.NextMessage selected ->
       select_message selected nexts
   | TalkDialog (nexts, _), _ ->
       through' <| List nexts
 
   | PlayBgm (_, bgm, play), Input.None ->
-      Output.t <|| Standard.bgm state bgm play
+      output <|| Standard.bgm state bgm play
   | PlayBgm (nexts, _, _), _ ->
       through' <| Nexts nexts
 
   | PlaySound (_, sound, play), Input.None ->
-      output <| Standard.sound sound play
+      output' <| Standard.sound sound play
   | PlaySound (nexts, _, _), _ ->
       through' <| Nexts nexts
 
   | Wait (_, deciseconds), Input.None ->
-      output <| Standard.wait deciseconds
+      output' <| Standard.wait deciseconds
   | Wait (nexts, _), _ ->
       through' <| Nexts nexts
         
@@ -218,7 +220,7 @@ and private read_content state event content rest input =
         (Nexts nexts)
 
   | Effect (_, effect), Input.None ->
-      output <| Standard.effect effect
+      output' <| Standard.effect effect
   | Effect (nexts, _), _ ->
       through' <| Nexts nexts
         
@@ -319,15 +321,14 @@ and private read_content state event content rest input =
   | BranchSelect (bools, select), _ ->
       match Branch.Select.select select state with
         _, (Output.SelectPlayerCharactor _ as out) ->
-          output out
+          output' out
       | new_state, Output.None ->
           next_branch new_state id bools
       | _, _ ->
           next_branch' id bools
 
   | BranchAbility (bools, ability), _ ->
-      let state', bool =
-        Branch.Adventurer.judge ability state in
+      let state', bool = Branch.Adventurer.judge ability state in
       next_branch state' ((=) bool) bools
 
   | BranchRandom (bools, percent), _ ->
@@ -346,8 +347,7 @@ and private read_content state event content rest input =
         bools
 
   | BranchStatus (bools, target, status), _ ->
-      let new_state, bool =
-        Branch.Adventurer.status target status state in
+      let new_state, bool = Branch.Adventurer.status target status state in
       next_branch new_state ((=) bool) bools
 
   | BranchPartyNumber (bools, value), _ ->
@@ -371,8 +371,7 @@ and private read_content state event content rest input =
         bools
 
   | BranchRandomSelect (bools, condition), _ ->
-      let state', bool =
-        Branch.Adventurer.random_select condition state in
+      let state', bool = Branch.Adventurer.random_select condition state in
       next_branch state' ((=) bool) bools
 
   | BranchRound (bools, value, cmp), _ ->
@@ -410,8 +409,7 @@ and private read_content state event content rest input =
         bools
 
   | BranchCoupon (bools, range, matching_type, values), _ ->
-      let state', bool =
-        Adventurer.has_coupon range matching_type values state in
+      let state', bool = Adventurer.has_coupon range matching_type values state in
       next_branch state' ((=) <| bool) bools
 
   // TODO: 未実装
@@ -432,8 +430,7 @@ and private read_content state event content rest input =
                           ; card_type = card_type
                           ; key_code = key_code
                           }), _ ->
-      let state', bool =
-        KeyCode.has_key_code range card_type key_code state in
+      let state', bool = KeyCode.has_key_code range card_type key_code state in
       next_branch state' ((=) <| bool) bools
     
   (* Get *)
@@ -543,15 +540,13 @@ and private read_content state event content rest input =
 
   | ChangeBgImage (_, transition_speed, transition, images), Input.None ->
       let backgrounds, state' = State.change_background images state in
-      state'
-      , Output.ChangeBackground (transition_speed, transition, true, false, backgrounds)
+      state', Output.ChangeBackground (transition_speed, transition, true, false, backgrounds)
   | ChangeBgImage (nexts, _, _, _), _ ->
       through' <| Nexts nexts
 
   | MoveBgImage (_, move), Input.None ->
       let backgrounds, state' = State.move_backgrounds move state in
-      state'
-      , Output.ChangeBackground (move.transition_speed, move.transition, move.doanime, move.ignore_effectbooster, backgrounds)
+      state', Output.ChangeBackground (move.transition_speed, move.transition, move.doanime, move.ignore_effectbooster, backgrounds)
   | MoveBgImage (nexts, _), _ ->
       through' <| Nexts nexts
 
