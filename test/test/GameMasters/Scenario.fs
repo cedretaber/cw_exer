@@ -9,7 +9,6 @@ open CardWirthEngine.GameMasters.Scenario
 
 open CardWirthEngineTest.GameMasterTestUtil
 
-
 let background_image =
   { smoothing = Smoothing.Default
   ; mask = false
