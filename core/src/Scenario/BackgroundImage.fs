@@ -6,6 +6,13 @@ open Aether.Operators
 open CardWirthEngine.Data
 open CardWirthEngine.Data.Type
 
+type Depiction =
+  { transition : Transition
+  ; transition_speed : int
+  ; doanime : bool
+  ; ignore_effectbooster : bool
+  }
+
 type Property =
   { cellname : string option
   ; location : Location

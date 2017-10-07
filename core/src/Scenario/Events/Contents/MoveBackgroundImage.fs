@@ -1,5 +1,6 @@
 ﻿module CardWirthEngine.Scenario.Events.Contents.MoveBackgroundImage
 
+open CardWirthEngine.Scenario
 open CardWirthEngine.Data.Type
 
 type Position =
@@ -18,8 +19,5 @@ type t =
   { cellname : string
   ; position : Position
   ; size : Size
-  ; transition : Transition
-  ; transition_speed : int
-  ; doanime : bool
-  ; ignore_effectbooster : bool
+  ; depiction : BackgroundImage.Depiction
   }

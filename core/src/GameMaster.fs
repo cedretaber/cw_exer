@@ -540,13 +540,18 @@ and private read_content state event content rest input =
 
   | ChangeBgImage (_, transition_speed, transition, images), Input.None ->
       let backgrounds, state' = State.change_background images state in
-      state', Output.ChangeBackground (transition_speed, transition, true, false, backgrounds)
+      let depiction : BackgroundImage.Depiction =
+        { transition = transition
+        ; transition_speed = transition_speed
+        ; doanime = true
+        ; ignore_effectbooster = false } in
+      state', Output.ChangeBackground (backgrounds, depiction)
   | ChangeBgImage (nexts, _, _, _), _ ->
       through' <| Nexts nexts
 
   | MoveBgImage (_, move), Input.None ->
       let backgrounds, state' = State.move_backgrounds move state in
-      state', Output.ChangeBackground (move.transition_speed, move.transition, move.doanime, move.ignore_effectbooster, backgrounds)
+      state', Output.ChangeBackground (backgrounds, move.depiction)
   | MoveBgImage (nexts, _), _ ->
       through' <| Nexts nexts
 

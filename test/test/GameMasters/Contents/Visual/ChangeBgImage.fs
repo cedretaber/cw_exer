@@ -43,6 +43,13 @@ let change_bg_image =
           }
         )
 
+    let depiction ts t : BackgroundImage.Depiction =
+      { transition = t
+      ; transition_speed = ts
+      ; doanime = true
+      ; ignore_effectbooster = false
+      }
+
     yield test "背景変更" {
       let images = [fullsize] in
       let ts = 5 in
@@ -50,7 +57,7 @@ let change_bg_image =
       let contents = ChangeBgImage ([], ts, t, images) in
       let state = State.Scenario (empty_scenario, minimal_party, empty_global_data, state_random) in
       let state', output = read state [Content (empty_event, contents)] Input.None in
-      Expect.equal output (Output.ChangeBackground (ts, t, true, false, images)) "正しく変更後の画像が返ること"
+      Expect.equal output (Output.ChangeBackground (images, depiction ts t)) "正しく変更後の画像が返ること"
       Expect.equal (State.get_backgrounds state') (Some images) "stateの背景が更新されていること"
     }
 
@@ -63,7 +70,7 @@ let change_bg_image =
       let scenario = Scenario.set_backgrounds current_images empty_scenario in
       let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
       let state', output = read state [Content (empty_event, contents)] Input.None in
-      Expect.equal output (Output.ChangeBackground (ts, t, true, false, images @ current_images)) "正しく変更後の画像が返ること"
+      Expect.equal output (Output.ChangeBackground (images @ current_images, depiction ts t)) "正しく変更後の画像が返ること"
       Expect.equal (State.get_backgrounds state') (Some <| images @ current_images) "stateの背景が更新されていること"
     }
 
@@ -76,7 +83,7 @@ let change_bg_image =
       let scenario = Scenario.set_backgrounds current_images empty_scenario in
       let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
       let state', output = read state [Content (empty_event, contents)] Input.None in
-      Expect.equal output (Output.ChangeBackground (ts, t, true, false, images)) "正しく変更後の画像が返ること"
+      Expect.equal output (Output.ChangeBackground (images, depiction ts t)) "正しく変更後の画像が返ること"
       Expect.equal (State.get_backgrounds state') (Some images) "stateの背景が更新されていること"
     }
   ]

@@ -41,7 +41,7 @@ module Output =
     | SelectPlayerCharactor of Adventurers.Position list
     | PartyDown
     | PartyUp
-    | ChangeBackground of transition_speed : int * transition : Transition * doanime : bool * ignore_effectbooster : bool * images : BackgroundImage.t list
+    | ChangeBackground of images : BackgroundImage.t list * depitcion : BackgroundImage.Depiction
     | Break
     | EventEnd
     | None

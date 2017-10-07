@@ -37,14 +37,17 @@ let move_bg_image =
     let ie = false in
 
     yield testList "サイズの変更" begin
+            let depiction : BackgroundImage.Depiction = 
+              { transition = t
+              ; transition_speed = ts
+              ; doanime = doanime
+              ; ignore_effectbooster = ie
+              }
             let resize coordinate_type : MoveBackgroundImage.t =
               { cellname = cellname
               ; position = { coordinate_type = CoordinateType.None; x = 0; y = 0 }
               ; size = { coordinate_type = coordinate_type; width = 50; height = 50 }
-              ; transition = t
-              ; transition_speed = ts
-              ; doanime = doanime
-              ; ignore_effectbooster = ie
+              ; depiction = depiction
               }
 
             testParam resize [
@@ -57,7 +60,7 @@ let move_bg_image =
                     BackgroundImage.map_size
                       (fun size -> { size with width = 50; height = 50 })
                       image in
-                  Expect.equal output (Output.ChangeBackground (ts, t, doanime, ie, [expected])) "正しく変更後の画像が返ること"
+                  Expect.equal output (Output.ChangeBackground ([expected], depiction)) "正しく変更後の画像が返ること"
                   Expect.equal (State.get_backgrounds state') (Some [expected]) "正しく背景が変化していること"
               "相対サイズ"
               , fun resize () ->
@@ -68,7 +71,7 @@ let move_bg_image =
                     BackgroundImage.map_size
                       (fun size -> { size with width = size.width + 50; height = size.height + 50 })
                       image in
-                  Expect.equal output (Output.ChangeBackground (ts, t, doanime, ie, [expected])) "正しく変更後の画像が返ること"
+                  Expect.equal output (Output.ChangeBackground ([expected], depiction)) "正しく変更後の画像が返ること"
                   Expect.equal (State.get_backgrounds state') (Some [expected]) "正しく背景が変化していること"
               "割合"
               , fun resize () ->
@@ -79,20 +82,23 @@ let move_bg_image =
                     BackgroundImage.map_size
                       (fun size -> { size with width = 60; height = 60 }) (* 120の50% = 60 *)
                       image in
-                  Expect.equal output (Output.ChangeBackground (ts, t, doanime, ie, [expected])) "正しく変更後の画像が返ること"
+                  Expect.equal output (Output.ChangeBackground ([expected], depiction)) "正しく変更後の画像が返ること"
                   Expect.equal (State.get_backgrounds state') (Some [expected]) "正しく背景が変化していること"
             ] |> List.ofSeq
           end
 
     yield testList "位置の変更" begin
+            let depiction : BackgroundImage.Depiction = 
+              { transition = t
+              ; transition_speed = ts
+              ; doanime = doanime
+              ; ignore_effectbooster = ie
+              }
             let move coordinate_type : MoveBackgroundImage.t =
               { cellname = cellname
               ; position = { coordinate_type = coordinate_type; x = 50; y = 50 }
               ; size = { coordinate_type = CoordinateType.None; width = 0; height = 0 }
-              ; transition = t
-              ; transition_speed = ts
-              ; doanime = doanime
-              ; ignore_effectbooster = ie
+              ; depiction = depiction
               }
 
             testParam move [
@@ -105,7 +111,7 @@ let move_bg_image =
                     BackgroundImage.map_location
                       (fun location -> { location with top = 50; left = 50 })
                       image in
-                  Expect.equal output (Output.ChangeBackground (ts, t, doanime, ie, [expected])) "正しく変更後の画像が返ること"
+                  Expect.equal output (Output.ChangeBackground ([expected], depiction)) "正しく変更後の画像が返ること"
                   Expect.equal (State.get_backgrounds state') (Some [expected]) "正しく背景が移動していること"
               "相対サイズ"
               , fun move () ->
@@ -116,7 +122,7 @@ let move_bg_image =
                     BackgroundImage.map_location
                       (fun location -> { location with top = location.top + 50; left = location.left + 50 })
                       image in
-                  Expect.equal output (Output.ChangeBackground (ts, t, doanime, ie, [expected])) "正しく変更後の画像が返ること"
+                  Expect.equal output (Output.ChangeBackground ([expected], depiction)) "正しく変更後の画像が返ること"
                   Expect.equal (State.get_backgrounds state') (Some [expected]) "正しく背景が移動していること"
               "割合"
               , fun move () ->
@@ -127,7 +133,7 @@ let move_bg_image =
                     BackgroundImage.map_location
                       (fun location -> { location with top = 30; left = 30 }) (* 60の50% = 30 *)
                       image in
-                  Expect.equal output (Output.ChangeBackground (ts, t, doanime, ie, [expected])) "正しく変更後の画像が返ること"
+                  Expect.equal output (Output.ChangeBackground ([expected], depiction)) "正しく変更後の画像が返ること"
                   Expect.equal (State.get_backgrounds state') (Some [expected]) "正しく背景が移動していること"
             ] |> List.ofSeq
           end
