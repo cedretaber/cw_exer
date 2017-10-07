@@ -115,15 +115,6 @@ let scenario_test =
 
       let config = { FsCheckConfig.defaultConfig with arbitrary = [typeof<BackgroundImageArb>] }
 
-      let sort_backgrounds =
-        let merge =
-          let rec impl acm =
-            function [] -> List.rev acm
-                   | img :: rest -> impl (img :: acm) <| if is_inherited img then rest else []
-          impl []
-        (* List.sortByは安定なソートなはず *)
-        List.sortBy (fun img -> -(get_level img)) >> merge in
-
       yield testPropertyWithConfig config "背景を追加した場合"
         begin fun current images ->
           let scenario = { empty_scenario with backgrounds = sort_backgrounds current } in

@@ -122,6 +122,6 @@ module Content =
     | HideParty of Nexts
     | ChangeBgImage of Nexts * transition_speed : int * transition : Transition * images : BackgroundImage.t list
     | MoveBgImage of Nexts * move : MoveBackgroundImage.t
-    | ReplaceBgImage of Nexts
+    | ReplaceBgImage of Nexts * depiction : BackgroundImage.Depiction * cellname : string * images : BackgroundImage.t list
     | LoseBgImage of Nexts
     | Redisplay of Nexts

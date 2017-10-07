@@ -247,6 +247,15 @@ let remove_info id =
 let set_backgrounds = Optic.set t.backgrounds_
 let map_backgrounds = Optic.map t.backgrounds_
 
+let sort_backgrounds =
+  let merge =
+    let rec impl acm =
+      function [] -> List.rev acm
+             | img :: rest -> impl (img :: acm) <| if BackgroundImage.is_inherited img then rest else []
+    impl []
+  (* List.sortByは安定なソートなはず *)
+  List.sortBy (fun img -> -(BackgroundImage.get_level img)) >> merge in
+
 let rec private insert_background image =
   function
     image' :: rest when BackgroundImage.get_level image < BackgroundImage.get_level image' ->
@@ -309,6 +318,14 @@ let move_backgrounds move =
 
   map_backgrounds (List.map <| move_to_f move)
 
+let replace_backgrounds cellname images =
+  map_backgrounds begin
+    List.collect
+      begin function img when BackgroundImage.get_cellname img = Some cellname -> images
+                   | img -> [img] end
+    >> sort_backgrounds
+  end
+  
 
 (* BGM ops *)
 let set_bgm = Optic.set t.bgm_
