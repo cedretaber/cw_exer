@@ -105,6 +105,7 @@
     <Compile Include="test\GameMasters\Contents\Visual\HideParty.fs" />
     <Compile Include="test\GameMasters\Contents\Visual\ChangeBgImage.fs" />
     <Compile Include="test\GameMasters\Contents\Visual\MoveBgImage.fs" />
+    <Compile Include="test\GameMasters\Contents\Visual\ReplaceBgImage.fs" />
     <Compile Include="test\Main.fs" />
   </ItemGroup>
   <ItemGroup>

@@ -562,7 +562,6 @@ and private read_content state event content rest input =
       through' <| Nexts nexts
 
   (*
-  | ReplaceBgImage of Nexts
   | LoseBgImage of Nexts
   | Redisplay of Nexts
   *)
