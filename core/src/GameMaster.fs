@@ -561,7 +561,12 @@ and private read_content state event content rest input =
   | ReplaceBgImage (nexts, _, _, _), _ ->
       through' <| Nexts nexts
 
+  | LoseBgImage (_, depiction, cellname), Input.None ->
+      let backgrounds, state' = State.remove_backgrounds cellname state in
+      state', Output.ChangeBackground (backgrounds, depiction)
+  | LoseBgImage (nexts, _, _), _ ->
+      through' <| Nexts nexts
+
   (*
-  | LoseBgImage of Nexts
   | Redisplay of Nexts
   *)

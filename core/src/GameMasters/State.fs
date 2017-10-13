@@ -202,6 +202,9 @@ let move_backgrounds move =
 let replace_backgrounds cellname backgrounds =
   modify_bg (map_scenario <| Scenario.replace_backgrounds cellname backgrounds)
 
+let remove_backgrounds cellname =
+  modify_bg (map_scenario <| Scenario.remove_background cellname)
+
 (* BGM *)
 let private bgm_ = t.scenario_ >?> Scenario.t.bgm_
 let set_bgm = Optic.set bgm_

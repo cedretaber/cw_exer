@@ -325,6 +325,10 @@ let replace_backgrounds cellname images =
                    | img -> [img] end
     >> sort_backgrounds
   end
+
+let remove_background cellname =
+  map_backgrounds <|
+    List.filter_not (fun image -> BackgroundImage.get_cellname image = Some cellname)
   
 
 (* BGM ops *)

@@ -123,5 +123,5 @@ module Content =
     | ChangeBgImage of Nexts * transition_speed : int * transition : Transition * images : BackgroundImage.t list
     | MoveBgImage of Nexts * move : MoveBackgroundImage.t
     | ReplaceBgImage of Nexts * depiction : BackgroundImage.Depiction * cellname : string * images : BackgroundImage.t list
-    | LoseBgImage of Nexts
+    | LoseBgImage of Nexts * depiction : BackgroundImage.Depiction * cellname : string
     | Redisplay of Nexts
