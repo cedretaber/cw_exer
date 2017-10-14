@@ -537,14 +537,12 @@ and private read_content state event content rest input =
       state, Output.PartyDown
   | HideParty nexts, _ ->
       through' <| Nexts nexts
-
+      
+  // TODO: Output.ChangeBackgroundには、flag=trueのものだけを含めるようにする
   | ChangeBgImage (_, transition_speed, transition, images), Input.None ->
       let backgrounds, state' = State.change_background images state in
-      let depiction : BackgroundImage.Depiction =
-        { transition = transition
-        ; transition_speed = transition_speed
-        ; doanime = true
-        ; ignore_effectbooster = false } in
+      let depiction =
+        BackgroundImage.Depiction.create' transition transition_speed in
       state', Output.ChangeBackground (backgrounds, depiction)
   | ChangeBgImage (nexts, _, _, _), _ ->
       through' <| Nexts nexts
@@ -567,6 +565,14 @@ and private read_content state event content rest input =
   | LoseBgImage (nexts, _, _), _ ->
       through' <| Nexts nexts
 
-  (*
-  | Redisplay of Nexts
-  *)
+  | Redisplay (_, transition_speed, transition), Input.None ->
+      let backgrounds =
+        state
+        |> State.get_backgrounds
+        |> Option.defaultValue [] in
+      let depiction =
+        BackgroundImage.Depiction.create' transition transition_speed in
+      state, Output.ChangeBackground (backgrounds, depiction)
+
+  | Redisplay (nexts, _, _), _ ->
+      through' <| Nexts nexts

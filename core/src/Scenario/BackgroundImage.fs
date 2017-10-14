@@ -12,6 +12,15 @@ type Depiction =
   ; doanime : bool
   ; ignore_effectbooster : bool
   }
+  with
+    static member create t ts d ie =
+      { transition = t
+      ; transition_speed = ts
+      ; doanime = d
+      ; ignore_effectbooster = ie
+      }
+    static member create' t ts =
+      Depiction.create t ts true false
 
 type Property =
   { cellname : string option
