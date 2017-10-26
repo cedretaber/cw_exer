@@ -84,8 +84,8 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="src\Util.fs" />
     <Compile Include="src\Utils\Maybe.fs" />
-    <Compile Include="src\Utils\ArrayUtil.fs" />
     <Compile Include="src\Utils\List.fs" />
+    <Compile Include="src\Utils\Array.fs" />
     <Compile Include="src\Utils\Pair.fs" />
     <Compile Include="src\Utils\Triplet.fs" />
     <Compile Include="src\Utils\Maybe.fs" />
