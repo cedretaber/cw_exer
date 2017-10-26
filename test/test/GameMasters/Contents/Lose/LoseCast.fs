@@ -17,9 +17,8 @@ let lose_cast =
     test "キャストを削除した場合" {
       let cast = empty_cast in
       let id = cast.property.id in
-      let contents = LoseCast ([], id)
-      let one_companions = Adventurers.add cast no_adventurers in
-      let scenario = { empty_scenario with companions = one_companions } in
+      let contents = LoseCast ([], id) in
+      let scenario = { empty_scenario with companions = Adventurers.add cast no_adventurers } in
       let state = State.Scenario (scenario, minimal_party, empty_global_data, state_random) in
       let state', _ = read state [Content (empty_event, contents)] Input.None in
       Expect.isEmpty (State.get_scenario_unsafe state').companions "正しくキャストが削除されていること"

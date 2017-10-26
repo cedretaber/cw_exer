@@ -19,7 +19,7 @@ module Item =
       test "対象: Randomでキャストがアイテムを保有している場合" {
         let item_id = empty_item.property.id in
         let cast1 =
-          { empty_cast with item = [empty_item] } in
+          { empty_cast with item = [|empty_item|] } in
         let party =
           { minimal_party with
               adventurers = Adventurers.add cast1 no_adventurers } in

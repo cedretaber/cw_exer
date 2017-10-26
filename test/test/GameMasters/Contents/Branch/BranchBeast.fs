@@ -19,7 +19,7 @@ module Beast =
       test "対象: Randomでキャストが召喚獣を保有している場合" {
         let beast_id = empty_beast.property.id in
         let cast1 =
-          { empty_cast with beast = [empty_beast] } in
+          { empty_cast with beast = [|empty_beast|] } in
         let party =
           { minimal_party with
               adventurers = Adventurers.add cast1 no_adventurers } in

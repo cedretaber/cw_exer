@@ -19,7 +19,7 @@ module Skill =
       test "対象: Randomでキャストがスキルを保有している場合" {
         let skill_id = empty_skill.property.id in
         let cast1 =
-          { empty_cast with skill = [empty_skill] } in
+          { empty_cast with skill = [|empty_skill|] } in
         let party =
           { minimal_party with
               adventurers = Adventurers.add cast1 no_adventurers } in

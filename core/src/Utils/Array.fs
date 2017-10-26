@@ -6,7 +6,7 @@ let inline updated index value old_arr =
   new_arr
 
 let inline remove index (arr : 'a array) =
-  Array.append arr.[0..index] arr.[index+1..]
+  Array.append arr.[0..index-1] arr.[index+1..]
 
 let inline count_by f = Array.sumBy <| fun e -> if f e then 1 else 0
 

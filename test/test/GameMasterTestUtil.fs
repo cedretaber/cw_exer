@@ -88,9 +88,9 @@ let empty_cast : Cast.t =
       }
     ; coupons = CouponSet.empty
     }
-  ; skill = []
-  ; item  = []
-  ; beast = []
+  ; skill = [||]
+  ; item  = [||]
+  ; beast = [||]
   }
 
 let empty_enhance =

@@ -119,9 +119,9 @@ type Property =
 
 type t =
   { property : Property
-  ; skill : Skill.t list
-  ; item : Item.t list
-  ; beast : Beast.t list
+  ; skill : Skill.t array
+  ; item : Item.t array
+  ; beast : Beast.t array
   }
   with
     static member property_ =
@@ -234,17 +234,17 @@ let (|UpDefense|DownDefense|NormalDefense|) cast =
 
 (* Card Ops *)
 let inline add_card max count card cards =
-  let free_space = max - List.length cards in
+  let free_space = max - Array.length cards in
   let add_count = if free_space < count then free_space else count in
-  count - add_count, List.multi_cons add_count card cards
+  count - add_count, Array.multi_cons add_count card cards
 
 let inline remove_card remove_count equals cards =
   let f =
     match remove_count with
       RemoveCount.All ->
-        fun f -> List.filter (f >> not)
+        fun f -> Array.filter (f >> not)
     | RemoveCount.Count count ->
-        List.filter_not_limited count in
+        Array.filter_not_limited count in
   f equals cards
   
 (* Skills *)
@@ -262,7 +262,7 @@ let inline remove_skill remove_count skill cast =
                         (Skill.equals skill)
                         cast.skill }
 let inline count_skill skill cast =
-  List.count_by
+  Array.count_by
     (Skill.equals skill)
     cast.skill
   
@@ -281,7 +281,7 @@ let inline remove_item remove_count item cast =
                         (Item.equals item)
                         cast.item }
 let inline item_count item cast =
-  List.count_by
+  Array.count_by
     (Item.equals item)
     cast.item
    
@@ -300,7 +300,7 @@ let inline remove_beast remove_count beast cast =
                         (Beast.equals beast)
                         cast.beast }
 let inline beast_count beast cast =
-  List.count_by
+  Array.count_by
     (Beast.equals beast)
     cast.beast
         
