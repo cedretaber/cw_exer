@@ -573,6 +573,5 @@ and private read_content state event content rest input =
       let depiction =
         BackgroundImage.Depiction.create' transition transition_speed in
       state, Output.ChangeBackground (backgrounds, depiction)
-
   | Redisplay (nexts, _, _), _ ->
       through' <| Nexts nexts

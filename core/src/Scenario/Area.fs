@@ -1,6 +1,5 @@
 ﻿namespace CardWirthEngine.Scenario
 
-open CardWirthEngine.Data
 open CardWirthEngine.Data.Type
 open CardWirthEngine.Scenario
 open CardWirthEngine.Scenario.Areas
@@ -10,14 +9,7 @@ module Area =
     { id : AreaId
     ; name : string
     }
-  type BackgroundImage =
-    { smoothing : string
-    ; mask : bool
-    ; path : Path
-    ; flag : Flag.Name option
-    ; location : Location
-    ; size : Size
-    }
+
   type MenuCards =
     { spread_type : SpreadType
     ; cards : MenuCard.t list

@@ -10,7 +10,7 @@ module AreaOrBattle =
 
   let inline is_area_in id (state : State.t) =
     match get_area state with
-      Scenario.Area id' when id' = id -> true
+      Scenario.Area (id', _) when id' = id -> true
     | _ -> false
 
   let inline is_battle_in id (state : State.t) =

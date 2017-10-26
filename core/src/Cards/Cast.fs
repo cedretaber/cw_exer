@@ -25,6 +25,10 @@ type Life =
   { max : int
   ; current : int
   }
+  with
+    static member current_ 
+      = begin fun l -> l.current end
+      , begin fun c l -> { l with current = c } end
 
 module Feature =
   type NoEffect =
@@ -110,6 +114,8 @@ type Property =
       (fun p -> p.name), (fun n p -> ({ p with name = n } : Property))
     static member coupons_ =
       (fun p -> p.coupons), (fun cs p -> { p with coupons = cs })
+    static member life_ =
+      (fun p -> p.life), (fun l p -> { p with life = l })
 
 type t =
   { property : Property
@@ -120,9 +126,11 @@ type t =
   with
     static member property_ =
       (fun t -> t.property), (fun p t -> { t with property = p })
-    member this.life = this.property.life.current
 
 let map_property = Optic.map t.property_
+
+let private life_ = t.property_ >-> Property.life_ >-> Life.current_
+let get_life = Optic.get life_
 
 (* Coupon Ops *)
 let private coupons_ = t.property_ >-> Property.coupons_

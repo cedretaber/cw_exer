@@ -12,10 +12,17 @@ open CardWirthEngine.Scenario.Events.Contents
 open CardWirthEngine.Cards
 open CardWirthEngine.GameMasters.Cards
 
+module AreaData = CardWirthEngine.Scenario.Area
+
 type Area
-  = Area of AreaId
+  = Area of AreaId * AreaData.t
   | Battle of BattleId * round : Round * enemies : Enemies.t
   with
+    static member area_data_ =
+      (function Area (_, d) -> Some d
+              | _ -> Option.None)
+      , (fun d -> function Area (id, _) -> Area (id, d)
+                         | other -> other)
     static member round_ =
       (function Battle (_, r, _) -> Some r
               | _ -> Option.None)

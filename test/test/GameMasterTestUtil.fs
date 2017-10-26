@@ -165,6 +165,14 @@ let empty_info : Info.t =
 let one_adventurer : Adventurers.t =
   Adventurers.add empty_cast no_adventurers
 
+module AreaData = CardWirthEngine.Scenario.Area
+let empty_area : AreaData.t =
+  { property = { id = 1; name = "empty area" }
+  ; player_card_events = []
+  ; menu_cards = { spread_type = SpreadType.Manual; cards = [] }
+  ; events = []
+  }
+
 let empty_scenario : Scenario.t =
   { summary =
     { data_version = 0
@@ -189,7 +197,7 @@ let empty_scenario : Scenario.t =
     ; beasts = Map.empty
     ; infos  = Map.empty
     }
-  ; current_area = Area 1
+  ; current_area = Area (1, empty_area)
   ; global_state =
     { flags = Map.empty
     ; steps = Map.empty

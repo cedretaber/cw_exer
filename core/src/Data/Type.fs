@@ -177,6 +177,7 @@ module Type =
 
   type SpreadType
     = Auto
+    | Manual
 
   type Bgm
     = Midi of Path
