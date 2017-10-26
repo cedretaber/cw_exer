@@ -43,6 +43,8 @@ module Type =
   type Decisecond = int
 
   type Percent = int
+
+  type ActionCard = Skill | Item | Beast
   
   type Target
     = Selected

@@ -14,10 +14,21 @@ let rec run : State.t -> Input.t -> Output.t =
   fun state input ->
     match state with
       State.Scenario ({ event_stack = [] }, _, _, _) ->
-        state, Void
+        match input with
+          Input.Field -> field state input
+        | _ -> state, Output.None
     | State.Scenario ({ event_stack = contents }, _, _, _) ->
         read state contents input
+      
+(* フィールド。クリックもしくはカード使用を検知。行動をイベントスタックに追加してreadに進む。 *)
+and field : State.t -> Input.t -> Output.t =
+  fun state input ->
+    match input with
+      Input.Click id -> read state [Scenario.Action <| GameMasters.Action.Click id] Input.None
+    | Input.Action (pos, card_type, idx) -> read state [Scenario.Action <| GameMasters.Action.UseCard (pos, card_type, idx)] Input.None
+    | _ -> state, Output.None
 
+(* イベント・行動の途中。進める *)
 and read : State.t -> Scenario.Event list -> Input.t -> Output.t =
   fun state contents input ->
     match contents with
@@ -25,8 +36,8 @@ and read : State.t -> Scenario.Event list -> Input.t -> Output.t =
         Output.t state Output.EventEnd
     | Scenario.Content (event, content) :: rest ->
         read_content state event content rest input
-    | Scenario.Action :: rest ->
-        read state rest input
+    | Scenario.Action action :: rest ->
+        read_action state action rest input
 
 and private read_content state event content rest input =
   (* Step next contens *)
@@ -575,3 +586,8 @@ and private read_content state event content rest input =
       state, Output.ChangeBackground (backgrounds, depiction)
   | Redisplay (nexts, _, _), _ ->
       through' <| Nexts nexts
+
+(* カード使用（戦闘中・フィールドを問わない）。
+   カード使用の場合は行動 -> カード表示終了 -> フィールドイベント終了 -> 対象選択（0..n）終了 -> カードイベント終了 -> 効果発動（0..n）終了 -> 表示リセット *)
+and private read_action state action contents input =
+  state, Output.None

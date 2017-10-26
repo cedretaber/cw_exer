@@ -134,6 +134,7 @@
     <Compile Include="src\GameMasters\Cards\Adventurers.fs" />
     <Compile Include="src\GameMasters\Cards\Enemies.fs" />
     <Compile Include="src\GameMasters\Party.fs" />
+    <Compile Include="src\GameMasters\Action.fs" />
     <Compile Include="src\GameMasters\Scenario.fs" />
     <Compile Include="src\GameMasters\State.fs" />
     <Compile Include="src\GameMasters\FlagOps.fs" />

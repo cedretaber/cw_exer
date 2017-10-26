@@ -74,10 +74,10 @@ type Cards =
       (fun cd -> cd.beasts), (fun bs cd -> { cd with beasts = bs })
     static member infos_ =
       (fun cd -> cd.infos), (fun is cd -> ({ cd with infos = is } : Cards))
-
+      
 type Event
   = Content of Event.t * Content.t
-  | Action
+  | Action of Action.t
   
 type SelectedCast
   = PC of Adventurers.Position
