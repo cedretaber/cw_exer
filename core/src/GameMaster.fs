@@ -588,6 +588,6 @@ and private read_content state event content rest input =
       through' <| Nexts nexts
 
 (* カード使用（戦闘中・フィールドを問わない）。
-   カード使用の場合は行動 -> カード表示終了 -> フィールドイベント終了 -> 対象選択（0..n）終了 -> カードイベント終了 -> 効果発動（0..n）終了 -> 表示リセット *)
+   カード使用の場合は行動 -> カード表示 -> フィールドイベント -> 対象選択（0..n） -> カードイベント -> 効果発動（0..n） -> 表示リセット *)
 and private read_action state action contents input =
   state, Output.None
